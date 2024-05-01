@@ -1,10 +1,10 @@
 #include "framework.h"
 
-framework::framework(HWND hwnd) : hwnd(hwnd)
+Framework::Framework(HWND hwnd) : hwnd(hwnd)
 {
 }
 
-bool framework::initialize()
+bool Framework::Initialize()
 {
 	//デバイス・デバイスコンテキスト・スワップチェーンの作成
 	HRESULT hr{ S_OK };
@@ -114,7 +114,7 @@ bool framework::initialize()
 	return true;
 }
 
-void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
+void Framework::Update(float elapsed_time/*Elapsed seconds from last frame*/)
 {
 #ifdef USE_IMGUI
 	ImGui_ImplDX11_NewFrame();
@@ -130,7 +130,7 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 	ImGui::End();
 #endif
 }
-void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
+void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
 	HRESULT hr{ S_OK };
 
@@ -152,7 +152,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 
 }
 
-bool framework::uninitialize()
+bool Framework::Uninitialize()
 {
 	device->Release();
 	immediate_context->Release();
@@ -163,7 +163,7 @@ bool framework::uninitialize()
 	return true;
 }
 
-framework::~framework()
+Framework::~Framework()
 {
 
 }

@@ -2,10 +2,10 @@
 
 #include <windows.h>
 
-class high_resolution_timer
+class High_resolution_timer
 {
 public:
-	high_resolution_timer()
+	High_resolution_timer()
 	{
 		LONGLONG counts_per_sec;
 		QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&counts_per_sec));
@@ -15,11 +15,11 @@ public:
 		base_time = this_time;
 		last_time = this_time;
 	}
-	~high_resolution_timer() = default;
-	high_resolution_timer(const high_resolution_timer&) = delete;
-	high_resolution_timer& operator=(const high_resolution_timer&) = delete;
-	high_resolution_timer(high_resolution_timer&&) noexcept = delete;
-	high_resolution_timer& operator=(high_resolution_timer&&) noexcept = delete;
+	~High_resolution_timer() = default;
+	High_resolution_timer(const High_resolution_timer&) = delete;
+	High_resolution_timer& operator=(const High_resolution_timer&) = delete;
+	High_resolution_timer(High_resolution_timer&&) noexcept = delete;
+	High_resolution_timer& operator=(High_resolution_timer&&) noexcept = delete;
 
 	// Returns the total time elapsed since Reset() was called, NOT counting any
 	// time when the clock is stopped.
@@ -59,7 +59,7 @@ public:
 		return static_cast<float>(delta_time);
 	}
 
-	void reset() // Call before message loop.
+	void Reset() // Call before message loop.
 	{
 		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&this_time));
 		base_time = this_time;
@@ -69,7 +69,7 @@ public:
 		stopped = false;
 	}
 
-	void start() // Call when unpaused.
+	void Start() // Call when unpaused.
 	{
 		LONGLONG start_time;
 		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&start_time));
@@ -88,7 +88,7 @@ public:
 		}
 	}
 
-	void stop() // Call when paused.
+	void Stop() // Call when paused.
 	{
 		if (!stopped)
 		{
@@ -97,7 +97,7 @@ public:
 		}
 	}
 
-	void tick() // Call every frame.
+	void Tick() // Call every frame.
 	{
 		if (stopped)
 		{

@@ -12,13 +12,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\framework.h">
+    <ClInclude Include="Source\Framework.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\high_resolution_timer.h">
+    <ClInclude Include="Source\High_resolution_timer.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\misc.h">
+    <ClInclude Include="Source\Misc.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imconfig.h">
@@ -45,12 +45,15 @@
     <ClInclude Include="Imgui\imstb_truetype.h">
       <Filter>Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\DeviceManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\framework.cpp">
+    <ClCompile Include="Source\Framework.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\main.cpp">
+    <ClCompile Include="Source\Main.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="Imgui\imgui_widgets.cpp">
       <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DeviceManager.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

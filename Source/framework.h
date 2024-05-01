@@ -24,19 +24,19 @@ CONST LONG SCREEN_HEIGHT{ 720 };
 CONST BOOL FULLSCREEN{ FALSE };
 CONST LPCWSTR APPLICATION_NAME{ L"MyProjectGame" };
 
-class framework
+class Framework
 {
 public:
 	CONST HWND hwnd;
 
 
-	framework(HWND hwnd);
-	~framework();
+	Framework(HWND hwnd);
+	~Framework();
 
-	framework(const framework&) = delete;
-	framework& operator=(const framework&) = delete;
-	framework(framework&&) noexcept = delete;
-	framework& operator=(framework&&) noexcept = delete;
+	Framework(const Framework&) = delete;
+	Framework& operator=(const Framework&) = delete;
+	Framework(Framework&&) noexcept = delete;
+	Framework& operator=(Framework&&) noexcept = delete;
 
 	//DirectX11で利用する様々なリソースの作成
 	ID3D11Device* device;
@@ -56,7 +56,7 @@ public:
 	{
 		MSG msg{};
 
-		if (!initialize())
+		if (!Initialize())
 		{
 			return 0;
 		}
@@ -79,10 +79,10 @@ public:
 			}
 			else
 			{
-				tictoc.tick();
-				calculate_frame_stats();
-				update(tictoc.time_interval());
-				render(tictoc.time_interval());
+				tictoc.Tick();
+				Calculate_frame_stats();
+				Update(tictoc.time_interval());
+				Render(tictoc.time_interval());
 			}
 		}
 
@@ -101,7 +101,7 @@ public:
 		}
 #endif
 
-		return uninitialize() ? static_cast<int>(msg.wParam) : 0;
+		return Uninitialize() ? static_cast<int>(msg.wParam) : 0;
 	}
 
 	LRESULT CALLBACK handle_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -132,10 +132,10 @@ public:
 			}
 			break;
 		case WM_ENTERSIZEMOVE:
-			tictoc.stop();
+			tictoc.Stop();
 			break;
 		case WM_EXITSIZEMOVE:
-			tictoc.start();
+			tictoc.Start();
 			break;
 		default:
 			return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -144,16 +144,16 @@ public:
 	}
 
 private:
-	bool initialize();
-	void update(float elapsed_time/*Elapsed seconds from last frame*/);
-	void render(float elapsed_time/*Elapsed seconds from last frame*/);
-	bool uninitialize();
+	bool Initialize();
+	void Update(float elapsed_time/*Elapsed seconds from last frame*/);
+	void Render(float elapsed_time/*Elapsed seconds from last frame*/);
+	bool Uninitialize();
 
 private:
-	high_resolution_timer tictoc;
+	High_resolution_timer tictoc;
 	uint32_t frames{ 0 };
 	float elapsed_time{ 0.0f };
-	void calculate_frame_stats()
+	void Calculate_frame_stats()
 	{
 		if (++frames, (tictoc.time_stamp() - elapsed_time) >= 1.0f)
 		{

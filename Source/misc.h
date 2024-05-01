@@ -19,30 +19,30 @@ inline LPWSTR hr_trace(HRESULT hr)
 	return msg;
 }
 
-class benchmark
+class Benchmark
 {
 	LARGE_INTEGER ticks_per_second;
 	LARGE_INTEGER start_ticks;
 	LARGE_INTEGER current_ticks;
 
 public:
-	benchmark()
+	Benchmark()
 	{
 		QueryPerformanceFrequency(&ticks_per_second);
 		QueryPerformanceCounter(&start_ticks);
 		QueryPerformanceCounter(&current_ticks);
 	}
-	~benchmark() = default;
-	benchmark(const benchmark&) = delete;
-	benchmark& operator=(const benchmark&) = delete;
-	benchmark(benchmark&&) noexcept = delete;
-	benchmark& operator=(benchmark&&) noexcept = delete;
+	~Benchmark() = default;
+	Benchmark(const Benchmark&) = delete;
+	Benchmark& operator=(const Benchmark&) = delete;
+	Benchmark(Benchmark&&) noexcept = delete;
+	Benchmark& operator=(Benchmark&&) noexcept = delete;
 
-	void begin()
+	void Begin()
 	{
 		QueryPerformanceCounter(&start_ticks);
 	}
-	float end()
+	float End()
 	{
 		QueryPerformanceCounter(&current_ticks);
 		return static_cast<float>(current_ticks.QuadPart - start_ticks.QuadPart) / static_cast<float>(ticks_per_second.QuadPart);

@@ -1,80 +1,101 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{09449cf7-1116-40b1-bd3d-666c22bb45d9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources">
-      <UniqueIdentifier>{a09e8fb5-a751-4909-b872-f6fc1e2ca32e}</UniqueIdentifier>
+      <UniqueIdentifier>{33b518f0-9773-4209-9386-4714b812b204}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Imgui">
+    <Filter Include="Sources\Graphics">
+      <UniqueIdentifier>{ad2f59e6-0563-47a3-b9d8-e23d5491bf16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Imgui">
       <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Scene">
+      <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL">
+      <UniqueIdentifier>{3f4336d2-9a1b-4ad9-8c1e-5fba258e8073}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Framework.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\High_resolution_timer.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Misc.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Imgui\imconfig.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imgui.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imgui_impl_dx11.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imgui_impl_win32.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imgui_internal.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imstb_rectpack.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imstb_textedit.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Imgui\imstb_truetype.h">
-      <Filter>Imgui</Filter>
+      <Filter>Sources\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneManager.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneTitle.h">
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\DeviceManager.h">
-      <Filter>Headers</Filter>
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\High_resolution_timer.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Misc.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Imgui\imgui.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_draw.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_impl_win32.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_ja_gryph_ranges.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgui\imgui_widgets.cpp">
+      <Filter>Sources\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManeger.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneTitle.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DeviceManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Framework.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Main.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_draw.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_impl_win32.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_ja_gryph_ranges.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_widgets.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DeviceManager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

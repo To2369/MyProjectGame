@@ -1,49 +1,32 @@
 #include "Framework.h"
+#include"SceneTitle.h"
+#include "SceneManager.h"
 Framework::Framework(HWND hwnd) : hwnd(hwnd)
 {
 	// デバイス管理の初期化
 	deviceMgr = DeviceManager::Instance()->Initialize(hwnd);
+
+	//シーン初期化
+	SceneManager::Instance().ChangeScene(new SceneTitle);
 }
 
 Framework::~Framework()
 {
-
+	//シーン終了化
+	SceneManager::Instance().Clear();
 }
 
-void Framework::Update(float elapsed_time/*Elapsed seconds from last frame*/)
+void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 {
-#ifdef USE_IMGUI
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-#endif
-
-
-#ifdef USE_IMGUI
-	ImGui::Begin("ImGUI");
-
-
-	ImGui::End();
-#endif
+	// シーン更新処理
+	SceneManager::Instance().Update(elapsedTime);
 }
 void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
 	ID3D11DeviceContext* dc = deviceMgr->GetDeviceContext();
 
-	/*HRESULT hr{ S_OK };
-
-	FLOAT color[]{ 0.2f,0.2f,0.2f,0.2f };
-	immediate_context->ClearRenderTargetView(render_target_view, color);
-	immediate_context->ClearDepthStencilView(depth_stencil_view,
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);*/
-
-
-
-#ifdef USE_IMGUI
-		ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif
+	// シーン描画処理
+	SceneManager::Instance().Render();
 
 	// バックバッファに描画した画を画面に表示する。
 	deviceMgr->GetSwapChain()->Present(syncInterval, 0);

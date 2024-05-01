@@ -140,6 +140,9 @@
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\High_resolution_timer.h" />
     <ClInclude Include="Source\Misc.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\SceneTitle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp" />
@@ -151,6 +154,8 @@
     <ClCompile Include="Source\DeviceManager.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\SceneManeger.cpp" />
+    <ClCompile Include="Source\SceneTitle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

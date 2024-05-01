@@ -9,7 +9,6 @@
 
 #include <d3d11.h>
 #include"DeviceManager.h"
-
 #ifdef USE_IMGUI
 
 #include "../Imgui/imgui.h"
@@ -38,8 +37,8 @@ public:
 	LRESULT CALLBACK Handle_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 private:
-	void Update(float elapsed_time/*Elapsed seconds from last frame*/);
-	void Render(float elapsed_time/*Elapsed seconds from last frame*/);
+	void Update(float elapsed_Time/*Elapsed seconds from last frame*/);
+	void Render(float elapsed_Time/*Elapsed seconds from last frame*/);
 
 	void Calculate_frame_stats();
 

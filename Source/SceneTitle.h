@@ -1,6 +1,7 @@
 #pragma once
 #include"Scene.h"
 #include"DeviceManager.h"
+#include"Graphics/Sprite.h"
 //タイトルシーン
 class SceneTitle :public Scene
 {
@@ -21,5 +22,5 @@ public:
     void Render()override;
 
 private:
-
+    std::unique_ptr<Sprite> spr;
 };

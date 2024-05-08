@@ -49,23 +49,23 @@ DeviceManager* DeviceManager::Initialize(HWND hwnd)
 		1,							//上のD3D_FEATURE_LEVEL配列の要素数
 		D3D11_SDK_VERSION,			//SDKバージョン
 		&swap_chain_desc,			//DXGI_SWAP_CHAIN_DESC
-		&swap_chain,				//関数成功時のSwapChainの出力先
-		&device,					//関数成功時のDeviceの出力先
+		swap_chain.GetAddressOf(),				//関数成功時のSwapChainの出力先
+		device.GetAddressOf(),					//関数成功時のDeviceの出力先
 		NULL,						//成功したD3D_FEATURE_LEVELの出力先
-		&immediate_context);		//関数成功時のContextの出力先
+		immediate_context.GetAddressOf());		//関数成功時のContextの出力先
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	//レンダーターゲットビューの作成
-	ID3D11Texture2D* back_buffer{};
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer;
 	hr = swap_chain->GetBuffer(
 		0,											//バッファのインデックス(基本は０)
 		__uuidof(ID3D11Texture2D),					//取得するバッファのインターフェースID
-		reinterpret_cast<LPVOID*>(&back_buffer));	//バッファの取得先、voidポインタでアドレスで取得する
+		reinterpret_cast<LPVOID*>(back_buffer.GetAddressOf()));	//バッファの取得先、voidポインタでアドレスで取得する
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	//バックバッファを設定してレンダーターゲットビューを作成
 	hr = device->CreateRenderTargetView(
-		back_buffer,							//作成するバッファのリソース
+		back_buffer.Get(),							//作成するバッファのリソース
 		NULL,									//作成するViewの設定内容データの指定(nullptrでデフォルト設定)
 		&render_target_view);					//作成されたRenderTargetViewを格納するためのポインタのアドレス
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
@@ -74,7 +74,6 @@ DeviceManager* DeviceManager::Initialize(HWND hwnd)
 
 	//深度ステンシルビューの作成
 	// ID3D11Texture2D の設定を行うための構造体。ID3D11Texture2D に深度ステンシル用の設定を行う
-	ID3D11Texture2D* depth_stencil_buffer{};
 	D3D11_TEXTURE2D_DESC texture2d_desc{};
 	texture2d_desc.Width = screenWidth;						//テクスチャの幅
 	texture2d_desc.Height = screenHeight;					//テクスチャの高さ
@@ -89,9 +88,9 @@ DeviceManager* DeviceManager::Initialize(HWND hwnd)
 	texture2d_desc.CPUAccessFlags = 0;						//CPUからの読み書きを不可
 	texture2d_desc.MiscFlags = 0;							//リソースオプションのフラグ
 	hr = device->CreateTexture2D(
-		&texture2d_desc,			//作成するテクスチャの詳細情報
-		NULL,						//テクスチャの情報に付与するデータを指定する、読み込んだ画像データをせていしたりする
-		&depth_stencil_buffer);		//作成されたTextureを格納するためのポインタのアドレス
+		&texture2d_desc,							//作成するテクスチャの詳細情報
+		NULL,										//テクスチャの情報に付与するデータを指定する、読み込んだ画像データをせていしたりする
+		depth_stencil_buffer.GetAddressOf());		//作成されたTextureを格納するためのポインタのアドレス
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	// ID3D11DepthStencilView の設定を行うための構造体。深度ステンシルビューを作成するために必要な設定を行う
@@ -103,9 +102,9 @@ DeviceManager* DeviceManager::Initialize(HWND hwnd)
 	depth_stencil_view_desc.Texture2D.MipSlice = 0;							// 最初に使用するミップマップのレベルを指定 				
 	// リソースデータにアクセスするための深度ステンシルビューを作成			
 	hr = device->CreateDepthStencilView(
-		depth_stencil_buffer,		//View作成に必要なリソース
-		&depth_stencil_view_desc,	//DSVに関する設定を行ったデータ
-		&depth_stencil_view);		//ID3D11DepthStencilViewの出力先
+		depth_stencil_buffer.Get(),					//View作成に必要なリソース
+		&depth_stencil_view_desc,					//DSVに関する設定を行ったデータ
+		depth_stencil_view.GetAddressOf());			//ID3D11DepthStencilViewの出力先
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	//ビューポートの設定

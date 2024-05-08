@@ -72,7 +72,7 @@ private:
 	//色を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	render_target_view;
 
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D>	depthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>	depth_stencil_buffer;
 
 	//奥行情報を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth_stencil_view;

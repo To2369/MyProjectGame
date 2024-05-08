@@ -3,7 +3,7 @@
 //‰Šú‰»
 void SceneTitle::Initialize()
 {
-    
+    spr = std::make_unique<Sprite>(DeviceManager::Instance()->GetDevice());
 }
 
 //I—¹‰»
@@ -14,6 +14,7 @@ void SceneTitle::Finalize()
 
 void SceneTitle::Update(float elapsedTime)
 {
+
 #ifdef USE_IMGUI
     
     ImGui_ImplDX11_NewFrame();
@@ -44,6 +45,7 @@ void SceneTitle::Render()
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
 
+    spr->Render(mgr->GetDeviceContext(),0,0,1280,720,1,1,1,1);
 #ifdef USE_IMGUI
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

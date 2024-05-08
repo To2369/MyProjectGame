@@ -5,9 +5,10 @@
 #include "../Imgui/imgui_internal.h"
 #include "../Imgui/imgui_impl_dx11.h"
 #include "../Imgui/imgui_impl_win32.h"
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-extern ImWchar glyphRangesJapanese[];
+//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern ImWchar glyphRangesJapanese[];
 #endif
+#include<wrl.h>
 class Scene
 {
 public:

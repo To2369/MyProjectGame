@@ -7,14 +7,14 @@
     <Filter Include="Sources\Graphics">
       <UniqueIdentifier>{ad2f59e6-0563-47a3-b9d8-e23d5491bf16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Imgui">
-      <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
     <Filter Include="HLSL">
       <UniqueIdentifier>{3f4336d2-9a1b-4ad9-8c1e-5fba258e8073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Imgui">
+      <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +63,12 @@
     <ClInclude Include="Source\Misc.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Sprite.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\Shader.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -98,5 +104,24 @@
     <ClCompile Include="Source\Main.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Sprite.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Shader.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HLSL\Sprite.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HLSL\Sprite_vs.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\Sprite_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

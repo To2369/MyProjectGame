@@ -9,6 +9,7 @@
 
 #include <d3d11.h>
 #include"DeviceManager.h"
+#include"Graphics/Sprite.h"
 #ifdef USE_IMGUI
 
 #include "../Imgui/imgui.h"

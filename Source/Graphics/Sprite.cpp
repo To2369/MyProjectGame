@@ -56,8 +56,8 @@ Sprite::~Sprite()
 void Sprite::Render(ID3D11DeviceContext* immediate_context, 
     float dx, float dy,
     float dw, float dh,
-    float r, float g,
-    float b, float a)
+    float r, float g,float b, float a,
+    float angle)
 {
     //スクリーン（ビューポート）のサイズを取得
     D3D11_VIEWPORT viewport{};
@@ -84,6 +84,27 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     float x3{ dx + dw };
     float y3{ dy + dh };
 
+    auto rotate = [](float& x, float& y, float cx, float cy, float angle)
+        {
+            x -= cx;
+            y -= cy;
+            
+            float cos{ cosf(DirectX::XMConvertToRadians(angle)) };
+            float sin{ sinf(DirectX::XMConvertToRadians(angle)) };
+            float tx{ x }, ty{ y };
+            x = cos * tx + -sin * ty;
+            y = sin * tx + cos * ty;
+
+            x += cx;
+            y += cy;
+        };
+    //回転の中心を短径の中心点にした場合
+    float cx = dx + dw * 0.5f;
+    float cy = dy + dh * 0.5f;
+    rotate(x0, y0, cx, cy, angle);
+    rotate(x1, y1, cx, cy, angle);
+    rotate(x2, y2, cx, cy, angle);
+    rotate(x3, y3, cx, cy, angle);
     // スクリーン座標系からNDCへの座標変換を行う
     x0 = 2.0f * x0 / viewport.Width - 1.0f;
     y0 = 1.0f - 2.0f * y0 / viewport.Height;

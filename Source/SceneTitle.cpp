@@ -45,7 +45,7 @@ void SceneTitle::Render()
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
 
-    spr->Render(mgr->GetDeviceContext(),0,0,1280,720,1,1,1,1);
+    spr->Render(mgr->GetDeviceContext(),0,0,100,100,1,1,1,1,45);
 #ifdef USE_IMGUI
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

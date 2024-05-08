@@ -20,7 +20,8 @@ public:
     void Render(ID3D11DeviceContext* immediate_context,
         float dx, float dy,     //短形の左上の座標(スクリーン座標系)
         float dw, float dh,     //短形のサイズ(スクリーン座標系)
-        float r, float g,float b, float a       //色と透明度
+        float r, float g,float b, float a,       //色と透明度
+        float angle             //角度(degree)
     );
 private:
     //頂点シェーダー

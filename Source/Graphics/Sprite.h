@@ -11,9 +11,10 @@ public:
     {
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT4 color;
+        DirectX::XMFLOAT2 texcoord;
     };
 
-    Sprite(ID3D11Device* device);
+    Sprite(ID3D11Device* device, const wchar_t* filename);
     ~Sprite();
 
     //描画
@@ -32,8 +33,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
     //頂点データ
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
-
-    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
-
-    //D3D11_TEXTURE2D_DESC texture2d_desc;
+    //シェーダーリソースビュー
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
+    //テクスチャ
+    D3D11_TEXTURE2D_DESC texture2d_desc;
 };

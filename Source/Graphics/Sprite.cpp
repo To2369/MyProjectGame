@@ -2,17 +2,18 @@
 #include"../misc.h"
 #include <sstream>
 #include"Shader.h"
-Sprite::Sprite(ID3D11Device* device)
+#include<WICTextureLoader.h>
+Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
 {
     HRESULT hr{ S_OK };
 
     //頂点情報のセット
     vertex vertices[]
     {
-        { { -0.5, +0.5, 0 }, { 1, 1, 1, 1 } },
-        { { +0.5, +0.5, 0 }, { 1, 0, 0, 1 } },
-        { { -0.5, -0.5, 0 }, { 0, 1, 0, 1 } },
-        { { +0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
+        { { -1.0, +1.0, 0 }, { 1, 1, 1, 1 }, {0,0}},
+        { { +1.0, +1.0, 0 }, { 1, 1, 1, 1 }, {1,0}},
+        { { -1.0, -1.0, 0 }, { 1, 1, 1, 1 }, {0,1}},
+        { { +1.0, -1.0, 0 }, { 1, 1, 1, 1 }, {1,1}},
     };
 
     //頂点バッファオブジェクトの生成
@@ -40,12 +41,26 @@ Sprite::Sprite(ID3D11Device* device)
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
         {"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+        {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,
+        D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
     };
     
     ShaderManager::Instance()->CreateVsFromCso(device,"Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     ShaderManager::Instance()->CreatePsFromCso(device, "Sprite_ps.cso", pixel_shader.GetAddressOf());
 
+    ID3D11Resource* resource{};
+    //画像ファイルからリソースとシェーダーリソースビューを生成
+    hr = DirectX::CreateWICTextureFromFile(device, filename, &resource, shader_resource_view.GetAddressOf());
+    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    resource->Release();
 
+    ID3D11Texture2D* texture2D{};
+    //リソースからテクスチャを生成
+    hr = resource->QueryInterface<ID3D11Texture2D>(&texture2D);
+    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    //テクスチャからテクスチャ情報を取り出す
+    texture2D->GetDesc(&texture2d_desc);
+    texture2D->Release();
 }
 
 Sprite::~Sprite()
@@ -128,7 +143,12 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
         vertices[1].position = { x1,y1,0 };
         vertices[2].position = { x2,y2,0 };
         vertices[3].position = { x3,y3,0 };
-        vertices[0].color = vertices[1].color = vertices[2].color = vertices[3].color = { 1,1,1,1 };
+        vertices[0].color = vertices[1].color = vertices[2].color = vertices[3].color = { r,g,b,a };
+
+        vertices[0].texcoord = { 0,0 };
+        vertices[1].texcoord = { 1,0 };
+        vertices[2].texcoord = { 0,1 };
+        vertices[3].texcoord = { 1,1 };
     }
 
     immediate_context->Unmap(vertex_buffer.Get(), 0);
@@ -156,7 +176,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
     //ピクセルシェーダーオブジェクトの設定
     immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-    //immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
     //プリミティブ描画
     //描画処理
     immediate_context->Draw(4, 0);

@@ -23,4 +23,5 @@ public:
 
 private:
     std::unique_ptr<Sprite> spr;
+    const wchar_t* filename = L".\\Data\\Sprite\\cyberpunk.jpg";
 };

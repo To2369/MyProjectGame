@@ -74,6 +74,24 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     float r, float g,float b, float a,
     float angle)
 {
+    //幅高さを0.0からが画像最大にしてオーバーロードしたほうのRenderを呼び出す
+    Render(immediate_context,
+        dx, dy,
+        dw, dh,
+        r, g, b, a,
+        angle,
+        0.0f, 0.0f,
+        static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
+}
+
+void Sprite::Render(ID3D11DeviceContext* immediate_context,
+    float dx, float dy,
+    float dw, float dh,
+    float r, float g, float b, float a,
+    float angle,
+    float sx, float sy, float sw, float sh
+)
+{
     //スクリーン（ビューポート）のサイズを取得
     D3D11_VIEWPORT viewport{};
     UINT num_viewports{ 1 };
@@ -85,7 +103,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     //           | /  |
     //           |/   |
     //  (x2, y2) *----* (x3, y3)
-    
+
     // left-top
     float x0{ dx };
     float y0{ dy };
@@ -94,7 +112,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     float y1{ dy };
     // left-bottom
     float x2{ dx };
-    float y2{ dx + dh };
+    float y2{ dy + dh };
     //right-bottom
     float x3{ dx + dw };
     float y3{ dy + dh };
@@ -103,7 +121,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
         {
             x -= cx;
             y -= cy;
-            
+
             float cos{ cosf(DirectX::XMConvertToRadians(angle)) };
             float sin{ sinf(DirectX::XMConvertToRadians(angle)) };
             float tx{ x }, ty{ y };
@@ -120,7 +138,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     rotate(x1, y1, cx, cy, angle);
     rotate(x2, y2, cx, cy, angle);
     rotate(x3, y3, cx, cy, angle);
-    // スクリーン座標系からNDCへの座標変換を行う
+    //スクリーン座標系から NDC 座標系に変換
     x0 = 2.0f * x0 / viewport.Width - 1.0f;
     y0 = 1.0f - 2.0f * y0 / viewport.Height;
     x1 = 2.0f * x1 / viewport.Width - 1.0f;
@@ -145,10 +163,10 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
         vertices[3].position = { x3,y3,0 };
         vertices[0].color = vertices[1].color = vertices[2].color = vertices[3].color = { r,g,b,a };
 
-        vertices[0].texcoord = { 0,0 };
-        vertices[1].texcoord = { 1,0 };
-        vertices[2].texcoord = { 0,1 };
-        vertices[3].texcoord = { 1,1 };
+        vertices[0].texcoord = { sx / texture2d_desc.Width, sy / texture2d_desc.Height };
+        vertices[1].texcoord = { (sx + sw) / texture2d_desc.Width, sy / texture2d_desc.Height };
+        vertices[2].texcoord = { sx / texture2d_desc.Width, (sy + sh) / texture2d_desc.Height };
+        vertices[3].texcoord = { (sx + sw) / texture2d_desc.Width, (sy + sh) / texture2d_desc.Height };
     }
 
     immediate_context->Unmap(vertex_buffer.Get(), 0);

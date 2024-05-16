@@ -9,6 +9,9 @@
 //extern ImWchar glyphRangesJapanese[];
 #endif
 #include<wrl.h>
+#include<DirectXMath.h>
+#include"Graphics/GraphicsManager.h"
+#include"DeviceManager.h"
 class Scene
 {
 public:
@@ -33,6 +36,15 @@ public:
     //準備完了設定
     void SetReady() { ready = true; }
 
+public:
+    // シーン定数
+    struct SceneConstants
+    {
+        DirectX::XMFLOAT4X4		viewProjection;
+        DirectX::XMFLOAT4		lightDirection;
+    };
+    // シーン定数バッファ
+    Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 private:
     bool ready = false;
 };

@@ -20,7 +20,6 @@ public:
 
     //•`‰æXV
     void Render()override;
-
 private:
     std::unique_ptr<Sprite> spr[8];
     const wchar_t* filename[8] = { L".\\Data\\Sprite\\cyberpunk.jpg", L".\\Data\\Sprite\\player-sprites.png" };

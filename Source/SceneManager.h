@@ -30,14 +30,6 @@ public:
     void ChangeScene(Scene* scene);
 
 private:
-    // シーン定数
-    struct SceneConstants
-    {
-        DirectX::XMFLOAT4X4		viewProjection;
-        DirectX::XMFLOAT4		lightDirection;
-    };
-    // シーン定数バッファ
-    Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
     Scene* currentScene = nullptr;
     Scene* nextScene = nullptr;
 };

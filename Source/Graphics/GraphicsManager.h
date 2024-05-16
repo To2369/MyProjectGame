@@ -3,7 +3,7 @@
 #include<wrl.h>
 #include<functional>
 #include<memory>
-
+#include"../Buffer.h"
 enum class SAMPLER_STATE
 {
     POINT,
@@ -38,7 +38,7 @@ enum class RASTERIZER_STATE
 struct RenderContext
 {
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_states[3];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStates[4];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_states[4];
 	Microsoft::WRL::ComPtr<ID3D11BlendState> blendStates[4];
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerStates[4];
 };
@@ -60,7 +60,7 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> GetSamplerState(SAMPLER_STATE state) const { return renderContext.sampler_states[static_cast<int>(state)]; }
 
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GetDepthStencilStates(DEPTH_STENCIL_STATE state) const { return renderContext.depthStencilStates[static_cast<int>(state)]; }
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GetDepthStencilStates(DEPTH_STENCIL_STATE state) const { return renderContext.depth_stencil_states[static_cast<int>(state)]; }
 
 	Microsoft::WRL::ComPtr<ID3D11BlendState> GetBlendStates(BLEND_STATE state) const { return renderContext.blendStates[static_cast<int>(state)]; }
 

@@ -1,8 +1,10 @@
 #include"SceneTitle.h"
-#include"Graphics/GraphicsManager.h"
 //初期化
 void SceneTitle::Initialize()
 {
+    // シーン定数バッファの作成
+    createBuffer<SceneTitle::SceneConstants>(DeviceManager::Instance()->GetDevice(), buffer.GetAddressOf());
+
     spr[0] = std::make_unique<Sprite>(DeviceManager::Instance()->GetDevice(), filename[0]);
     spr[1]= std::make_unique<Sprite>(DeviceManager::Instance()->GetDevice(), filename[1]);
 }
@@ -12,7 +14,7 @@ void SceneTitle::Finalize()
 {
 
 }
-
+int a = 4;
 void SceneTitle::Update(float elapsedTime)
 {
 
@@ -27,11 +29,10 @@ void SceneTitle::Update(float elapsedTime)
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
 
-    //ImGui::SliderFloat("a", &a, 0, 1280);
+    ImGui::SliderInt("a", &a, 0, 4);
     ImGui::End();
 #endif
 }
-
 void SceneTitle::Render()
 {
     DeviceManager* deviceMgr = DeviceManager::Instance();
@@ -53,13 +54,13 @@ void SceneTitle::Render()
     // 3D 描画設定
     //graphicsMgr->SettingRenderContext([&](RenderContext& rc) {
     //    // サンプラーステートの設定（アニソトロピック）
-    //    //dc->PSSetSamplers(0, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
+    //    dc->PSSetSamplers(0, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
     //    // ブレンドステートの設定（アルファ）
-    //    //dc->OMSetBlendState(rc.blendStates[static_cast<uint32_t>(BLEND_STATE::ALPHABLENDING)].Get(), nullptr, 0xFFFFFFFF);
+    //    dc->OMSetBlendState(rc.blendStates[static_cast<uint32_t>(BLEND_STATE::ALPHABLENDING)].Get(), nullptr, 0xFFFFFFFF);
     //    // 深度ステンシルステートの設定（深度テストオン、深度書き込みオン）
-    //    //dc->OMSetDepthStencilState(rc.depthStencilStates[static_cast<uint32_t>(DEPTH_STENCIL_STATE::ON_ON)].Get(), 0);
+    //    dc->OMSetDepthStencilState(rc.depth_stencil_states[static_cast<uint32_t>(DEPTH_STENCIL_STATE::ON_ON)].Get(), 0);
     //    // ラスタライザステートの設定（ソリッド、裏面表示オフ）
-    //    //dc->RSSetState(rc.rasterizerStates[static_cast<uint32_t>(RASTERIZER_STATE::SOLID_CULLNONE)].Get());
+    //    dc->RSSetState(rc.rasterizerStates[static_cast<uint32_t>(RASTERIZER_STATE::SOLID_CULLNONE)].Get());
     //    });
     
     // 3D 描画
@@ -91,18 +92,18 @@ void SceneTitle::Render()
             //サンプラーステートの設定（リニア）
             //dc->PSSetSamplers(1, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::POINT)].GetAddressOf());
             //サンプラーステートの設定（アニソトロピック）
-            //dc->PSSetSamplers(2, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::POINT)].GetAddressOf());
+            //dc->PSSetSamplers(2, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
             //ブレンドステートの設定（アルファ）
-            dc->OMSetBlendState(rc.blendStates[static_cast<uint32_t>(BLEND_STATE::ALPHABLENDING)].Get(), nullptr, 0xFFFFFFFF);
+            //dc->OMSetBlendState(rc.blendStates[static_cast<uint32_t>(BLEND_STATE::ALPHABLENDING)].Get(), nullptr, 0xFFFFFFFF);
             //深度ステンシルステートの設定（深度テストオフ、深度書き込みオフ）
-            dc->OMSetDepthStencilState(rc.depthStencilStates[static_cast<uint32_t>(DEPTH_STENCIL_STATE::OFF_OFF)].Get(), 0);
+            dc->OMSetDepthStencilState(rc.depth_stencil_states[static_cast<uint32_t>(DEPTH_STENCIL_STATE::OFF_OFF)].Get(), 1);
             //ラスタライザステートの設定（ソリッド、裏面表示オフ）
-            dc->RSSetState(rc.rasterizerStates[static_cast<uint32_t>(RASTERIZER_STATE::SOLID_CULLNONE)].Get());
+            //dc->RSSetState(rc.rasterizerStates[static_cast<uint32_t>(RASTERIZER_STATE::SOLID_CULLNONE)].Get());
         });
     // 2D 描画
     {
-        spr[0]->Render(deviceMgr->GetDeviceContext(), 100, 100, 500, 500, 1, 1, 1, 1, 45);
-        spr[1]->Render(deviceMgr->GetDeviceContext(), 700, 200, 200, 200, 1, 1, 1, 1, 45, 140, 0, 140, 240);
+        spr[0]->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);
+        spr[1]->Render(dc, 500, 200, 200, 200, 1, 1, 1, 1, 0, 0, 0, 140, 240);
     }
     // 2DデバッグGUI描画
     {

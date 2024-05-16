@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include"SceneTitle.h"
+#include "SceneTitle.h"
 #include "SceneManager.h"
 Framework::Framework(HWND hwnd) : hwnd(hwnd)
 {

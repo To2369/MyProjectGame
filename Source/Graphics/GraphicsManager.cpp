@@ -38,6 +38,35 @@ bool GraphicsManager::Initialize(ID3D11Device* device)
 	hr = device->CreateSamplerState(&sampler_desc, renderContext.sampler_states[2].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
+	//深度テストを ON 深度書き込みを ON
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+	depth_stencil_desc.DepthEnable = TRUE;
+	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	hr = device->CreateDepthStencilState(&depth_stencil_desc, renderContext.depth_stencil_states[0].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//深度テストを ON 深度書き込みを OFF
+	depth_stencil_desc.DepthEnable = TRUE;
+	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	hr = device->CreateDepthStencilState(&depth_stencil_desc, renderContext.depth_stencil_states[1].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//深度テストを OFF 深度書き込みを ON
+	depth_stencil_desc.DepthEnable = FALSE;
+	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	hr = device->CreateDepthStencilState(&depth_stencil_desc, renderContext.depth_stencil_states[2].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//深度テストを OFF 深度書き込みを OFF
+	depth_stencil_desc.DepthEnable = FALSE;
+	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	hr = device->CreateDepthStencilState(&depth_stencil_desc, renderContext.depth_stencil_states[3].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
 	return true;
 }
 

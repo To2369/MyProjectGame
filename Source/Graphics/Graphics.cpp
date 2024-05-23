@@ -1,8 +1,8 @@
-#include"Misc.h"
-#include"DeviceManager.h"
+#include "../misc.h"
+#include"Graphics.h"
 
 //‰Šú‰»ˆ—
-DeviceManager* DeviceManager::Initialize(HWND hwnd)
+Graphics* Graphics::Initialize(HWND hwnd)
 {
 	RECT rc;
 	GetClientRect(hwnd, &rc);

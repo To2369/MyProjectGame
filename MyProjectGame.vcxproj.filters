@@ -51,16 +51,13 @@
     <ClInclude Include="Source\SceneTitle.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DeviceManager.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Graphics\Sprite.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\Shader.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\GraphicsManager.h">
+    <ClInclude Include="Source\Graphics\RenderState.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework.h">
@@ -73,6 +70,12 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Source\Buffer.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\Graphics.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\RenderContext.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -101,16 +104,13 @@
     <ClCompile Include="Source\SceneTitle.cpp">
       <Filter>Sources\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DeviceManager.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\Sprite.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Shader.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\GraphicsManager.cpp">
+    <ClCompile Include="Source\Graphics\RenderState.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework.cpp">
@@ -118,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="Source\Misc.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Graphics.cpp">
+      <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

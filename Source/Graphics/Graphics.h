@@ -5,21 +5,21 @@
 #include <mutex>
 
 
-class DeviceManager
+class Graphics
 {
 private:
-	DeviceManager() : screenWidth(0), screenHeight(0) {}
-	~DeviceManager() {}
+	Graphics() : screenWidth(0), screenHeight(0) {}
+	~Graphics() {}
 
 public:
-	static DeviceManager* Instance()
+	static Graphics* Instance()
 	{
-		static DeviceManager ins;
+		static Graphics ins;
 		return &ins;
 	}
 
 	// 初期化処理
-	DeviceManager* Initialize(HWND hwnd);
+	Graphics* Initialize(HWND hwnd);
 
 	// デバイス取得
 	ID3D11Device* GetDevice() const { return device.Get(); }

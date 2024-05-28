@@ -53,7 +53,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthEnable = TRUE;
 			depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[DEPTH_STENCIL_STATE::ON_ON].GetAddressOf());
+			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::ON_ON)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
@@ -62,7 +62,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthEnable = TRUE;
 			depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[DEPTH_STENCIL_STATE::ON_OFF].GetAddressOf());
+			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::ON_OFF)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
@@ -71,7 +71,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthEnable = FALSE;
 			depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[DEPTH_STENCIL_STATE::OFF_ON].GetAddressOf());
+			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::OFF_ON)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
@@ -80,7 +80,92 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthEnable = FALSE;
 			depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[DEPTH_STENCIL_STATE::OFF_OFF].GetAddressOf());
+			hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::OFF_OFF)].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+	}
+
+	//ƒuƒŒƒ“ƒhƒXƒe[ƒg
+	{
+		D3D11_BLEND_DESC blend_desc{};
+
+		//‡¬–³‚µ
+		{
+			blend_desc.AlphaToCoverageEnable = FALSE;
+			blend_desc.IndependentBlendEnable = FALSE;
+			blend_desc.RenderTarget[0].BlendEnable = FALSE;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			hr = device->CreateBlendState(&blend_desc, blend_states[static_cast<int>(BLEND_STATE::NONE)].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		//’Êí‡¬
+		{
+			blend_desc.AlphaToCoverageEnable = FALSE;
+			blend_desc.IndependentBlendEnable = FALSE;
+			blend_desc.RenderTarget[0].BlendEnable = TRUE;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			hr = device->CreateBlendState(&blend_desc, blend_states[static_cast<int>(BLEND_STATE::ALPHABLENDING)].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		//‰ÁŽZ‡¬
+		{
+			blend_desc.AlphaToCoverageEnable = FALSE;
+			blend_desc.IndependentBlendEnable = FALSE;
+			blend_desc.RenderTarget[0].BlendEnable = TRUE;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			hr = device->CreateBlendState(&blend_desc, blend_states[static_cast<int>(BLEND_STATE::ADD)].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		//Œ¸ŽZ‡¬
+		{
+			blend_desc.AlphaToCoverageEnable = FALSE;
+			blend_desc.IndependentBlendEnable = FALSE;
+			blend_desc.RenderTarget[0].BlendEnable = TRUE;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			hr = device->CreateBlendState(&blend_desc, blend_states[static_cast<int>(BLEND_STATE::SUB)].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		//æŽZ‡¬
+		{
+			blend_desc.AlphaToCoverageEnable = FALSE;
+			blend_desc.IndependentBlendEnable = FALSE;
+			blend_desc.RenderTarget[0].BlendEnable = TRUE;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_SRC_COLOR;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			hr = device->CreateBlendState(&blend_desc, blend_states[static_cast<int>(BLEND_STATE::MULTIPLE)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 	}

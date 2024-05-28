@@ -10,8 +10,8 @@
 #endif
 #include<wrl.h>
 #include<DirectXMath.h>
-#include"Graphics/GraphicsManager.h"
-#include"DeviceManager.h"
+#include"Graphics/Graphics.h"
+#include"Graphics/RenderState.h"
 class Scene
 {
 public:

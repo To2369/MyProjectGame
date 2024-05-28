@@ -3,13 +3,13 @@
 #include <d3d11.h>
 #include <wrl.h>
 #include <mutex>
-
+#include"RenderState.h"
 
 class Graphics
 {
 private:
-	Graphics() : screenWidth(0), screenHeight(0) {}
-	~Graphics() {}
+	Graphics() = default;
+	~Graphics() = default;
 
 public:
 	static Graphics* Instance()
@@ -19,7 +19,16 @@ public:
 	}
 
 	// 初期化処理
-	Graphics* Initialize(HWND hwnd);
+	void Initialize(HWND hwnd);
+
+	// クリア
+	void Clear(float r, float g, float b, float a);
+
+	// レンダーターゲット設定
+	void SetRenderTargets();
+
+	// 画面表示
+	void Present(UINT syncInterval);
 
 	// デバイス取得
 	ID3D11Device* GetDevice() const { return device.Get(); }
@@ -54,6 +63,10 @@ public:
 	//// ImGuiレンダラ取得
 	//ImGuiRenderer* GetImGuiRenderer() const { return imguiRenderer.get(); }
 
+
+	// レンダーステート取得
+	RenderState* GetRenderState() { return renderState.get(); }
+
 	std::mutex& GetMutex() { return mutex; }
 
 private:
@@ -77,5 +90,9 @@ private:
 	//奥行情報を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth_stencil_view;
 
+	D3D11_VIEWPORT									viewport;
+
 	std::mutex mutex;
+
+	std::unique_ptr<RenderState>					renderState;
 };

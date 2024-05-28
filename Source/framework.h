@@ -8,7 +8,7 @@
 #include "High_resolution_timer.h"
 
 #include <d3d11.h>
-#include"DeviceManager.h"
+#include"Graphics/Graphics.h"
 #include"Graphics/Sprite.h"
 #ifdef USE_IMGUI
 
@@ -44,12 +44,12 @@ private:
 	void Calculate_frame_stats();
 
 private:
-	const HWND				hwnd;
-
+	const HWND				hWnd;
+	HDC						hDC;
 	High_resolution_timer timer;
 	uint32_t frames{ 0 };
 	float elapsed_time{ 0.0f };
-	DeviceManager* deviceMgr;
+	Graphics* graphics;
 	const int	syncInterval = 1;		// êÇíºìØä˙ä‘äuê›íË
 };
 

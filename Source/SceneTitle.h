@@ -1,6 +1,5 @@
 #pragma once
 #include"Scene.h"
-#include"DeviceManager.h"
 #include"Graphics/Sprite.h"
 //タイトルシーン
 class SceneTitle :public Scene

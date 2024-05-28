@@ -26,6 +26,7 @@ enum class BLEND_STATE
 	NONE,
 	ALPHABLENDING,
 	ADD,
+	SUB,
 	MULTIPLE,
 
 	Enum_Max,
@@ -43,11 +44,9 @@ enum class RASTERIZER_STATE
 
 class RenderState
 {
-private:
-	RenderState(ID3D11Device* device);
-	~RenderState() {}
-
 public:
+	RenderState(ID3D11Device* device);
+	~RenderState() = default;
 
 	ID3D11SamplerState* GetSamplerState(SAMPLER_STATE state) const
 	{ 

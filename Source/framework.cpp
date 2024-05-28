@@ -1,10 +1,13 @@
 #include "Framework.h"
 #include "SceneTitle.h"
 #include "SceneManager.h"
-Framework::Framework(HWND hwnd) : hwnd(hwnd)
+Framework::Framework(HWND hwnd) : hWnd(hwnd)
 {
+	hDC = GetDC(hwnd);
+
 	// デバイス管理の初期化
-	deviceMgr = DeviceManager::Instance()->Initialize(hwnd);
+	graphics = Graphics::Instance();
+	graphics->Initialize(hwnd);
 
 	//シーン初期化
 	SceneManager::Instance().ChangeScene(new SceneTitle);
@@ -14,6 +17,8 @@ Framework::~Framework()
 {
 	//シーン終了化
 	SceneManager::Instance().Clear();
+
+	ReleaseDC(hWnd, hDC);
 }
 
 void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
@@ -21,16 +26,19 @@ void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 	// シーン更新処理
 	SceneManager::Instance().Update(elapsedTime);
 }
+
 void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
-	ID3D11DeviceContext* dc = deviceMgr->GetDeviceContext();
+	ID3D11DeviceContext* dc = graphics->GetDeviceContext();
+
+	graphics->Clear(0.5f, 0.5f, 0.5f, 1);
+
+	graphics->SetRenderTargets();
 
 	// シーン描画処理
 	SceneManager::Instance().Render();
 
-	// バックバッファに描画した画を画面に表示する。
-	deviceMgr->GetSwapChain()->Present(syncInterval, 0);
-
+	graphics->Present(syncInterval);
 }
 
 // フレームレート計算
@@ -42,7 +50,7 @@ void Framework::Calculate_frame_stats()
 		std::wostringstream outs;
 		outs.precision(6);
 		outs << APPLICATION_NAME << L" : FPS : " << fps << L" / " << L"Frame Time : " << 1000.0f / fps << L" (ms)";
-		SetWindowTextW(hwnd, outs.str().c_str());
+		SetWindowTextW(hWnd, outs.str().c_str());
 
 		frames = 0;
 		elapsed_time += 1.0f;
@@ -54,13 +62,13 @@ int Framework::run()
 {
 	MSG msg{};
 
-	ID3D11DeviceContext* dc = deviceMgr->GetDeviceContext();
+	ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 #ifdef USE_IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 14.0f, nullptr, glyphRangesJapanese);
-	ImGui_ImplWin32_Init(hwnd);
-	ImGui_ImplDX11_Init(deviceMgr->GetDevice(), deviceMgr->GetDeviceContext());
+	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplDX11_Init(graphics->GetDevice(), graphics->GetDeviceContext());
 	ImGui::StyleColorsDark();
 #endif
 
@@ -88,10 +96,10 @@ int Framework::run()
 
 #if 1
 	BOOL fullscreen = 0;
-	deviceMgr->GetSwapChain()->GetFullscreenState(&fullscreen, 0);
+	graphics->GetSwapChain()->GetFullscreenState(&fullscreen, 0);
 	if (fullscreen)
 	{
-		deviceMgr->GetSwapChain()->SetFullscreenState(FALSE, 0);
+		graphics->GetSwapChain()->SetFullscreenState(FALSE, 0);
 	}
 #endif
 

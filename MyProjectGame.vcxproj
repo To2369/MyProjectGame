@@ -151,6 +151,7 @@
     <ClInclude Include="Source\Graphics\RenderContext.h" />
     <ClInclude Include="Source\Graphics\Shader.h" />
     <ClInclude Include="Source\Graphics\Sprite.h" />
+    <ClInclude Include="Source\Graphics\Sprite_batch.h" />
     <ClInclude Include="Source\High_resolution_timer.h" />
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="Source\Graphics\RenderState.cpp" />
     <ClCompile Include="Source\Graphics\Shader.cpp" />
     <ClCompile Include="Source\Graphics\Sprite.cpp" />
+    <ClCompile Include="Source\Graphics\Sprite_batch.cpp" />
     <ClCompile Include="Source\Misc.cpp" />
     <ClCompile Include="Source\SceneManeger.cpp" />
     <ClCompile Include="Source\SceneTitle.cpp" />

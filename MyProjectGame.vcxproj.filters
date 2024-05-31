@@ -78,6 +78,9 @@
     <ClInclude Include="Source\Graphics\RenderContext.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Sprite_batch.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -120,6 +123,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Graphics.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Sprite_batch.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,6 +7,8 @@ void SceneTitle::Initialize()
     // シーン定数バッファの作成
     spr[0] = std::make_unique<Sprite>(Graphics::Instance()->GetDevice(), filename[0]);
     spr[1]= std::make_unique<Sprite>(Graphics::Instance()->GetDevice(), filename[1]);
+
+    sprite_batches[1] = std::make_unique<Sprite_batch>(Graphics::Instance()->GetDevice(), filename[1]);
 }
 
 //終了化
@@ -14,7 +16,8 @@ void SceneTitle::Finalize()
 {
 
 }
-int a = 4;
+
+//更新処理
 void SceneTitle::Update(float elapsedTime)
 {
 
@@ -29,10 +32,12 @@ void SceneTitle::Update(float elapsedTime)
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
 
-    ImGui::SliderInt("a", &a, 0, 4);
+    //ImGui::SliderInt("a", &a, 0, 4);
     ImGui::End();
 #endif
 }
+
+//描画
 void SceneTitle::Render()
 {
     Graphics* graphics = Graphics::Instance();
@@ -95,6 +100,9 @@ void SceneTitle::Render()
     {
         spr[0]->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);
         spr[1]->Render(dc, 500, 200, 200, 200, 1, 1, 1, 1, 0, 0, 0, 140, 240);
+
+        float x{ 0 };
+        float y{ 0 };
     }
     // 2DデバッグGUI描画
     {

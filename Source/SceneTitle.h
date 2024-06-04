@@ -1,6 +1,7 @@
 #pragma once
 #include"Scene.h"
 #include"Graphics/Sprite.h"
+#include"Graphics/Sprite_batch.h"
 //タイトルシーン
 class SceneTitle :public Scene
 {
@@ -21,5 +22,6 @@ public:
     void Render()override;
 private:
     std::unique_ptr<Sprite> spr[8];
+    std::unique_ptr<Sprite_batch> sprite_batches[8];
     const wchar_t* filename[8] = { L".\\Data\\Sprite\\cyberpunk.jpg", L".\\Data\\Sprite\\player-sprites.png" };
 };

@@ -40,6 +40,19 @@ public:
         float sx, float sy, float sw, float sh  //左,上,幅,高さ
     );
 private:
+    static void rotate(float& x, float& y, float cx, float cy, float sin, float cos)
+    {
+        x -= cx;
+        y -= cy;
+
+        float tx{ x }, ty{ y };
+        x = cos * tx + -sin * ty;
+        y = sin * tx + cos * ty;
+
+        x += cx;
+        y += cy;
+    }
+private:
     //頂点シェーダー
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
     //ピクセルシェーダー

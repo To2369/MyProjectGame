@@ -45,8 +45,8 @@ Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
     };
     
-    ShaderManager::Instance()->CreateVsFromCso(device,"Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
-    ShaderManager::Instance()->CreatePsFromCso(device, "Sprite_ps.cso", pixel_shader.GetAddressOf());
+    ShaderManager::Instance()->CreateVsFromCso(device,".\\Shader\\Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+    ShaderManager::Instance()->CreatePsFromCso(device, ".\\Shader\\Sprite_ps.cso", pixel_shader.GetAddressOf());
 
     ID3D11Resource* resource{};
     //画像ファイルからリソースとシェーダーリソースビューを生成

@@ -67,14 +67,15 @@ void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context)
     vertices.clear();
     immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
     immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShaderResources(0, 1, &shader_resource_view);
+    immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
 }
 
 void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
 {
     HRESULT hr{ S_OK };
     D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
-    hr = immediate_context->Map(vertex_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
+    hr = immediate_context->Map(vertex_buffer.Get(),
+        0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
     _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
     size_t vertex_count = vertices.size();
@@ -89,7 +90,7 @@ void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
 
     UINT stride{ sizeof(vertex) };
     UINT offset{ 0 };
-    immediate_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+    immediate_context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
     immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     immediate_context->IASetInputLayout(input_layout.Get());
 

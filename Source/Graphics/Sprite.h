@@ -2,7 +2,8 @@
 #include<d3d11.h>
 #include<DirectXMath.h>
 #include <wrl.h>
-
+#include"Shader.h"
+#include<string>
 class Sprite
 {
 public:
@@ -32,6 +33,12 @@ public:
         float angle,             //角度(degree)
         float sx, float sy, float sw, float sh  //左,上,幅,高さ
     );
+
+    //画面に文字を出す
+    void Textout(ID3D11DeviceContext* immediate_context,
+        std::string s,
+        float x, float y, float w, float h,
+        float r, float g, float b, float a);
 private:
     //頂点シェーダー
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
@@ -45,4 +52,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
     //テクスチャ
     D3D11_TEXTURE2D_DESC texture2d_desc;
+
+    ShaderManager* shaderMgr;
 };

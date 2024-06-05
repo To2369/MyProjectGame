@@ -141,5 +141,8 @@
     <FxCompile Include="HLSL\Sprite_ps.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+    <FxCompile Include="HLSL\Effect_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

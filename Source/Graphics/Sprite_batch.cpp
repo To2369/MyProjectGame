@@ -3,9 +3,11 @@
 #include <sstream>
 #include"Shader.h"
 #include<WICTextureLoader.h>
-Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites):max_vertices(max_sprites*6)
+Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites) :max_vertices(max_sprites * 6)
 {
     HRESULT hr{ S_OK };
+
+    shaderMgr = ShaderManager::Instance();
 
     //頂点情報のセット
     std::unique_ptr<vertex[]> vertices{ std::make_unique<vertex[]>(max_vertices) };
@@ -38,22 +40,33 @@ Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
     };
 
-    ShaderManager::Instance()->CreateVsFromCso(device, "Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
-    ShaderManager::Instance()->CreatePsFromCso(device, "Sprite_ps.cso", pixel_shader.GetAddressOf());
+    //頂点シェーダーオブジェクトの生成
+    {
+        shaderMgr->CreateVsFromCso(device, ".\\Data\\Shader\\Sprite_vs.cso",
+            vertex_shader.GetAddressOf(), input_layout.GetAddressOf(),
+            input_element_desc, ARRAYSIZE(input_element_desc));
+    }
 
-    ID3D11Resource* resource{};
-    //画像ファイルからリソースとシェーダーリソースビューを生成
-    hr = DirectX::CreateWICTextureFromFile(device, filename, &resource, shader_resource_view.GetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-    resource->Release();
-
-    ID3D11Texture2D* texture2D{};
-    //リソースからテクスチャを生成
-    hr = resource->QueryInterface<ID3D11Texture2D>(&texture2D);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-    //テクスチャからテクスチャ情報を取り出す
-    texture2D->GetDesc(&texture2d_desc);
-    texture2D->Release();
+    //ピクセルシェーダーオブジェクトの生成
+    {
+        shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso",
+            pixel_shader.GetAddressOf());
+    }
+    {
+        shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Effect_ps.cso",
+            replaced_pixel_shader.GetAddressOf());
+    }
+    //テクスチャの読み込み
+    {
+        shaderMgr->LoadTextureFromFile(device, filename,
+            shader_resource_view.GetAddressOf(),
+            &texture2d_desc);
+    }
+    {
+        shaderMgr->LoadTextureFromFile(device, filename,
+            replaced_shader_resource_view.GetAddressOf(),
+            &replaced_texture2d_desc);
+    }
 }
 
 Sprite_batch::~Sprite_batch()
@@ -62,12 +75,33 @@ Sprite_batch::~Sprite_batch()
 }
 
 //シェーダーとテクスチャの設定
-void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context)
+void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context,
+    ID3D11PixelShader* replaced_pixel_shader,
+    ID3D11ShaderResourceView* replaced_shader_resource_view)
 {
     vertices.clear();
     immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+    replaced_pixel_shader ? immediate_context->PSSetShader(replaced_pixel_shader, nullptr, 0) : 
+        immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+    if (replaced_shader_resource_view)
+    {
+        //texture2d_descにさし変わったテクスチャ情報を設定
+        HRESULT hr{ S_OK };
+        Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+        replaced_shader_resource_view->GetResource(resource.GetAddressOf());
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
+        hr = resource->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
+        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        texture2d->GetDesc(&texture2d_desc);
+
+        //差し変わったテクスチャを設定
+        immediate_context->PSSetShaderResources(0, 1, &replaced_shader_resource_view);
+    }
+    else
+    {
+        //今までのテクスチャを設定
+        immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+    }
 }
 
 void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
@@ -95,6 +129,22 @@ void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
     immediate_context->IASetInputLayout(input_layout.Get());
 
     immediate_context->Draw(static_cast<UINT>(vertex_count), 0);
+}
+
+
+void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
+    float dx, float dy,
+    float dw, float dh
+)
+{
+    //幅高さを0.0からが画像最大にしてオーバーロードしたほうのRenderを呼び出す
+    Render(immediate_context,
+        dx, dy,
+        dw, dh,
+        1, 1, 1, 1,
+        0.0f,
+        0.0f, 0.0f,
+        static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
 }
 
 void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,

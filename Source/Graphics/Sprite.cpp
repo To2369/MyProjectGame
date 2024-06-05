@@ -1,12 +1,11 @@
 #include "Sprite.h"
 #include"../misc.h"
 #include <sstream>
-#include"Shader.h"
 #include<WICTextureLoader.h>
 Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
 {
     HRESULT hr{ S_OK };
-
+    shaderMgr = ShaderManager::Instance();
     //頂点情報のセット
     vertex vertices[]
     {
@@ -45,22 +44,10 @@ Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
     };
     
-    ShaderManager::Instance()->CreateVsFromCso(device,".\\Shader\\Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
-    ShaderManager::Instance()->CreatePsFromCso(device, ".\\Shader\\Sprite_ps.cso", pixel_shader.GetAddressOf());
+    shaderMgr->CreateVsFromCso(device,".\\Data\\Shader\\Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+    shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso", pixel_shader.GetAddressOf());
 
-    ID3D11Resource* resource{};
-    //画像ファイルからリソースとシェーダーリソースビューを生成
-    hr = DirectX::CreateWICTextureFromFile(device, filename, &resource, shader_resource_view.GetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-    resource->Release();
-
-    ID3D11Texture2D* texture2D{};
-    //リソースからテクスチャを生成
-    hr = resource->QueryInterface<ID3D11Texture2D>(&texture2D);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-    //テクスチャからテクスチャ情報を取り出す
-    texture2D->GetDesc(&texture2d_desc);
-    texture2D->Release();
+    shaderMgr->LoadTextureFromFile(device, filename, shader_resource_view.GetAddressOf(), &texture2d_desc);
 }
 
 Sprite::~Sprite()
@@ -198,4 +185,26 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     //プリミティブ描画
     //描画処理
     immediate_context->Draw(4, 0);
+}
+
+//画面に文字を出す
+void Sprite::Textout(ID3D11DeviceContext* immediate_context, std::string s,
+    float x, float y, float w, float h,
+    float r, float g, float b, float a)
+{
+    //一文字分の幅と高さを計算
+    float sw = static_cast<float>(texture2d_desc.Width / 16);
+    float sh = static_cast<float>(texture2d_desc.Height / 16);
+    //現在の文字位置(相対位置)
+    float carriage = 0;
+
+    //文字数分だけrender()を呼び出す
+    for (const char c : s)
+    {
+        LONG sx = c % 0x0F;
+        //文字を表示、アスキーコードの位置にある文字位置を切り抜いて表示
+        Render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), sh * (c >> 4), sw, sh);
+        //文字位置を幅分ずらす
+        carriage += w;
+    }
 }

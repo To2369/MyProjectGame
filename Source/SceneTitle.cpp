@@ -6,9 +6,8 @@ void SceneTitle::Initialize()
 {
     // シーン定数バッファの作成
     spr[0] = std::make_unique<Sprite>(Graphics::Instance()->GetDevice(), filename[0]);
-    spr[1]= std::make_unique<Sprite>(Graphics::Instance()->GetDevice(), filename[1]);
 
-    sprite_batches[0] = std::make_unique<Sprite_batch>(Graphics::Instance()->GetDevice(), filename[1],2048);
+    sprite_batches[0] = std::make_unique<Sprite_batch>(Graphics::Instance()->GetDevice(), filename[2],2048);
 }
 
 //終了化
@@ -93,43 +92,19 @@ void SceneTitle::Render()
     }
     // 2D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // 2D 描画
     {
-        spr[0]->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);
-        //spr[1]->Render(dc, 500, 200, 200, 200, 1, 1, 1, 1, 0, 0, 0, 140, 240);
+       
 
-        float x{ 0 };
-        float y{ 0 };
-#if 0
-        for (size_t i = 0; i < 1092; ++i)
-        {
-            spr[1]->render(dc, x, static_cast<float>(static_cast<int>(y) % 720), 64, 64,
-                1, 1, 1, 1, 0, 140 * 0, 240 * 0, 140, 240);
-            x += 32;
-            if (x > 1280 - 64)
-            {
-                x = 0;
-                y += 24;
-            }
-        }
-#else
-        sprite_batches[0]->Begin(dc);
-        for (size_t i = 0; i < 1092; ++i)
-        {
-            sprite_batches[0]->Render(dc, x, static_cast<float>(static_cast<int>(y) % 720), 64, 64,
-                1, 1, 1, 1, 0, 140 * 0, 240 * 0, 140, 240);
-            x += 32;
-            if (x > 1280 - 64)
-            {
-                x = 0;
-                y += 24;
-            }
-        }
+        sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
+        sprite_batches[0]->Render(dc,0,0,1280,720);
         sprite_batches[0]->End(dc);
-#endif
+
+        dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+        spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
     }
     // 2DデバッグGUI描画
     {

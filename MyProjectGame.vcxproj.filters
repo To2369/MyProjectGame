@@ -16,6 +16,9 @@
     <Filter Include="Sources\Imgui">
       <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Camera">
+      <UniqueIdentifier>{a8756cf2-516a-478b-aaf1-5a0e61636fa7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Imgui\imconfig.h">
@@ -69,9 +72,6 @@
     <ClInclude Include="Source\Misc.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Buffer.h">
-      <Filter>Sources\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Graphics\Graphics.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
@@ -80,6 +80,18 @@
     </ClInclude>
     <ClInclude Include="Source\Graphics\Sprite_batch.h">
       <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\GeometricPrimitive.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\Buffer.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera.h">
+      <Filter>Sources\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CameraController.h">
+      <Filter>Sources\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +140,21 @@
     <ClCompile Include="Source\Graphics\Sprite_batch.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\GeometricPrimitive.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>Sources\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CameraController.cpp">
+      <Filter>Sources\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\GeometricPrimitive.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -142,6 +166,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\Effect_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GeometricPrimitive_vs.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GeometricPrimitive_ps.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

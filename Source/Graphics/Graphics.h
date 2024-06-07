@@ -90,9 +90,9 @@ private:
 	//奥行情報を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth_stencil_view;
 
-	D3D11_VIEWPORT									viewport;
+	D3D11_VIEWPORT viewport;
 
 	std::mutex mutex;
 
-	std::unique_ptr<RenderState>					renderState;
+	std::unique_ptr<RenderState> renderState;
 };

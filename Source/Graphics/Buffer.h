@@ -3,12 +3,9 @@
 #include <d3d11.h>
 #include <wrl.h>
 
-/// <summary>
-/// 定数バッファの作成
-/// </summary>
-/// <param name="buffer">生成する定数バッファ</param>
+//定数バッファの作成
 template<typename Ty>
-inline HRESULT createBuffer(ID3D11Device* device, ID3D11Buffer** buffer)
+inline HRESULT CreateBuffer(ID3D11Device* device, ID3D11Buffer** buffer)
 {
 	// シーン用定数バッファ
 	D3D11_BUFFER_DESC desc;
@@ -23,14 +20,9 @@ inline HRESULT createBuffer(ID3D11Device* device, ID3D11Buffer** buffer)
 	return device->CreateBuffer(&desc, 0, buffer);
 }
 
-/// <summary>
-/// 定数バッファの更新と設定
-/// </summary>
-/// <param name="dc">デバイスコンテキスト</param>
-/// <param name="buffer">更新される定数バッファ</param>
-/// <param name="constants">更新する定数のデータ</param>
+//定数バッファの更新と設定
 template<typename Ty>
-inline void bindBuffer(ID3D11DeviceContext* dc, int slot, ID3D11Buffer** buffer, Ty* constants)
+inline void BindBuffer(ID3D11DeviceContext* dc, int slot, ID3D11Buffer** buffer, Ty* constants)
 {
 	// 定数バッファの登録
 	dc->UpdateSubresource(*buffer, 0, 0, constants, 0, 0);

@@ -31,7 +31,7 @@ void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
 	ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 
-	graphics->Clear(0.5f, 0.5f, 0.5f, 1);
+	graphics->Clear(0, 0, 0, 1);
 
 	graphics->SetRenderTargets();
 

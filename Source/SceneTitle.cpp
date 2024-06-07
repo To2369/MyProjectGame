@@ -4,10 +4,41 @@
 //初期化
 void SceneTitle::Initialize()
 {
-    // シーン定数バッファの作成
-    spr[0] = std::make_unique<Sprite>(Graphics::Instance()->GetDevice(), filename[0]);
+    Graphics* graphics = Graphics::Instance();
 
-    sprite_batches[0] = std::make_unique<Sprite_batch>(Graphics::Instance()->GetDevice(), filename[2],2048);
+    //定数バッファの作成
+    CreateBuffer<SceneTitle::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
+  /*  D3D11_BUFFER_DESC buffer_desc{};
+    buffer_desc.ByteWidth = sizeof(Scene_constants);
+    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+    buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    buffer_desc.CPUAccessFlags = 0;
+    buffer_desc.MiscFlags = 0;
+    buffer_desc.StructureByteStride = 0;
+    graphics->GetDevice()->CreateBuffer(&buffer_desc, nullptr, buffer.GetAddressOf());*/
+
+    camera = Camera::Instance();
+    float x, y;
+    x = static_cast<float>(graphics->GetScreenWidth());
+    y = static_cast<float>(graphics->GetScreenHeight());
+    camera->SetPerspectiveFov(
+        DirectX::XMConvertToRadians(30),
+        x / y,
+        0.1f,
+        100.0f
+    );
+    camera->SetLookAt(
+        DirectX::XMFLOAT3(0, 0, -10),		//カメラの視点(位置)
+        DirectX::XMFLOAT3(0, 0, 0),			//カメラの注視点(ターゲット)
+        DirectX::XMFLOAT3(0, 1, 0)			//カメラの上方向
+    );
+    cameraCtrl = std::make_unique<CameraController>();
+
+    spr[0] = std::make_unique<Sprite>(graphics->GetDevice(), filename[0]);
+
+    sprite_batches[0] = std::make_unique<Sprite_batch>(graphics->GetDevice(), filename[2],2048);
+
+    geometric_primitives[0] = std::make_unique<GeometricPrimitive>(graphics->GetDevice());
 }
 
 //終了化
@@ -19,7 +50,7 @@ int a = 0;
 //更新処理
 void SceneTitle::Update(float elapsedTime)
 {
-
+    cameraCtrl->Update(elapsedTime);
 #ifdef USE_IMGUI
     
     ImGui_ImplDX11_NewFrame();
@@ -30,8 +61,17 @@ void SceneTitle::Update(float elapsedTime)
 
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
+    ImGui::SliderFloat3("cameraPos", &camera_position.x, -100.0f, 100.0f);
 
-    ImGui::SliderInt("a", &a, 0.0f, 1.0f);
+    ImGui::SliderFloat3("light_direction", &light_direction.x, -1.0f, +1.0f);
+
+    ImGui::SliderFloat3("translation", &tramslation.x, -10.0f, 10.0f);
+
+    ImGui::SliderFloat3("scaling.", &scaling.x, -10.0f, 10.0f);
+
+    ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
+
+    ImGui::ColorEdit4("material_color", reinterpret_cast<float*>(&material_color));
     ImGui::End();
 #endif
 }
@@ -40,42 +80,73 @@ void SceneTitle::Update(float elapsedTime)
 void SceneTitle::Render()
 {
     Graphics* graphics = Graphics::Instance();
-    RenderState* renderState = Graphics::Instance()->GetRenderState();
+    RenderState* renderState = graphics->GetRenderState();
 
     ID3D11DeviceContext* dc = graphics->GetDeviceContext();
-
-    RenderContext rc;
-    rc.deviceContext = dc;
-    rc.renderState = renderState;
 
     // 画面クリア＆レンダーターゲット設定
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
 
+    //ビューポート取得
+    D3D11_VIEWPORT viewport;
+    UINT num_viewports{ 1 };
+    dc->RSGetViewports(&num_viewports, &viewport);
 
-    // 3D モデルの描画に必要な情報
-    //SceneConstants sc;
+    //描画コンテキスト
+    RenderContext rc;
+    rc.deviceContext = dc;
+    rc.renderState = renderState;
+    rc.camera = camera;
+    rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
+#if 0
+    //3Dモデルの描画に必要な情報
+    Scene_constants scene_data{};
+    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, DirectX::XMMatrixMultiply(
+        DirectX::XMLoadFloat4x4(rc.camera->GetView()),
+        DirectX::XMLoadFloat4x4(rc.camera->GetProjection())));
+    scene_data.lightDirection = rc.lightDirection;
+#else//ゲーム作成の時消す
+    float aspect_ratio{ viewport.Width / viewport.Height };//視野角計算
+    DirectX::XMMATRIX P{ DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30),aspect_ratio,0.1f,100.0f) };//透視行列（資料確認）
 
-    // 3D 描画設定
-    //graphicsMgr->SettingRenderContext([&](RenderContext& rc) {
-    //    // サンプラーステートの設定（アニソトロピック）
-    //    dc->PSSetSamplers(0, 1, rc.sampler_states[static_cast<uint32_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
-    //    // ブレンドステートの設定（アルファ）
-    //    dc->OMSetBlendState(rc.blendStates[static_cast<uint32_t>(BLEND_STATE::ALPHABLENDING)].Get(), nullptr, 0xFFFFFFFF);
-    //    // 深度ステンシルステートの設定（深度テストオン、深度書き込みオン）
-    //    dc->OMSetDepthStencilState(rc.depth_stencil_states[static_cast<uint32_t>(DEPTH_STENCIL_STATE::ON_ON)].Get(), 0);
-    //    // ラスタライザステートの設定（ソリッド、裏面表示オフ）
-    //    dc->RSSetState(rc.rasterizerStates[static_cast<uint32_t>(RASTERIZER_STATE::SOLID_CULLNONE)].Get());
-    //    });
+    DirectX::XMVECTOR eye{ DirectX::XMLoadFloat4(&camera_position) };
+    DirectX::XMVECTOR focus{ DirectX::XMVectorSet(0.0f,0.0f,0.0f,1.0f) };
+    DirectX::XMVECTOR up{ DirectX::XMVectorSet(0.0f,1.0f,0.0f,0.0f) };
+    DirectX::XMMATRIX V{ DirectX::XMMatrixLookAtLH(eye,focus,up) };
+    Scene_constants scene_data{};
+    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, V * P);
+    scene_data.lightDirection = light_direction;
+#endif
     
+    // 3D 描画設定
+    rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    
+    //拡大縮小行列
+    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+    // 回転行列
+    DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+    // 平行移動行列
+    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x - 1.0f,tramslation.y,tramslation.z) };
+
+    // ワールド変換行列
+    DirectX::XMFLOAT4X4 world;
+    DirectX::XMStoreFloat4x4(&world, S * R * T);
+
     // 3D 描画
     {
-        // 定数バッファの登録
-        //dc->UpdateSubresource(buffer.Get(), 0, 0, &sc, 0, 0);
-        //dc->VSSetConstantBuffers(1, 1, buffer.GetAddressOf());
-        //dc->PSSetConstantBuffers(1, 1, buffer.GetAddressOf());
+        //定数バッファの登録
+        BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
 
+       /* dc->UpdateSubresource(buffer.Get(), 0, 0, &sc, 0, 0);
+        dc->VSSetConstantBuffers(1, 1, buffer.GetAddressOf());
+        dc->PSSetConstantBuffers(1, 1, buffer.GetAddressOf());*/
+
+        geometric_primitives[0]->Render(dc, world, { material_color });
         ////ステージの描画
         //StageManager::Instance()->render(dc);
 
@@ -99,12 +170,12 @@ void SceneTitle::Render()
     {
        
 
-        sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
+       /* sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
         sprite_batches[0]->Render(dc,0,0,1280,720);
-        sprite_batches[0]->End(dc);
+        sprite_batches[0]->End(dc);*/
 
-        dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
-        spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
+        //dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+        //spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
     }
     // 2DデバッグGUI描画
     {

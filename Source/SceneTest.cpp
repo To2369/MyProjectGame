@@ -30,8 +30,10 @@ void SceneTest::Initialize()
 
     sprite_batches[0] = std::make_unique<Sprite_batch>(graphics->GetDevice(), filename[2], 2048);
     DirectX::XMFLOAT3 test = { 0.5f, 0.5f, 0.5f };
-    geometric_primitives[0] = std::make_unique<GeometricCapsule>(graphics->GetDevice(), 0.5f,test,6,3,3);
-    geometric_primitives[1] = std::make_unique<GeometricSphere>(graphics->GetDevice(), 32,32);
+    geometric_primitives[0] = std::make_unique<GeometricCube>(graphics->GetDevice());
+    geometric_primitives[1] = std::make_unique<GeometricCube>(graphics->GetDevice());
+
+    static_mesh[0] = std::make_unique<StaticMesh>(graphics->GetDevice(),modelfilename[0]);
 }
 
 //終了化
@@ -77,11 +79,6 @@ void SceneTest::Render()
 
     ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 
-    // 画面クリア＆レンダーターゲット設定
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-
     //ビューポート取得
     D3D11_VIEWPORT viewport;
     UINT num_viewports{ 1 };
@@ -94,11 +91,12 @@ void SceneTest::Render()
     rc.camera = camera;
     rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
     // 2D 描画設定
-    rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // 2D 描画
     {
-
-
+        rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
         sprite_batches[0]->Begin(dc, sprite_batches[0]->GetReplaced_pixel_shader(), sprite_batches[0]->GetReplaced_Shader_resource_view());
         sprite_batches[0]->Render(dc, 0, 0, 1280, 720);
         sprite_batches[0]->End(dc);
@@ -136,43 +134,61 @@ void SceneTest::Render()
 
     // 3D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLBACK));
-
-    //拡大縮小行列
-    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
-    // 回転行列
-    DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
-    // 平行移動行列
-    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x - 1.0f,tramslation.y,tramslation.z) };
-
-    // ワールド変換行列
-    DirectX::XMFLOAT4X4 world;
-    DirectX::XMStoreFloat4x4(&world, S * R * T);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
 
     // 3D 描画
     {
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
+#if 0
+        //ジオメトリックプリミティブ描画
+        {
 
-        /* dc->UpdateSubresource(buffer.Get(), 0, 0, &sc, 0, 0);
-         dc->VSSetConstantBuffers(1, 1, buffer.GetAddressOf());
-         dc->PSSetConstantBuffers(1, 1, buffer.GetAddressOf());*/
+             //拡大縮小行列
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+            // 回転行列
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+            // 平行移動行列
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x - 1.0f,tramslation.y,tramslation.z) };
 
-        geometric_primitives[0]->Render(dc, world, { material_color });
+            // ワールド変換行列
+            DirectX::XMFLOAT4X4 world;
+            DirectX::XMStoreFloat4x4(&world, S * R * T);
+            geometric_primitives[0]->Render(dc, world, { material_color });
+        }
+        {
+            dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::WIRE_CULLBACK));
+            //拡大縮小行列
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+            // 回転行列
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+            // 平行移動行列
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x + 1.0f,tramslation.y,tramslation.z) };
 
+            // ワールド変換行列
+            DirectX::XMFLOAT4X4 world;
+            DirectX::XMStoreFloat4x4(&world, S * R * T);
 
-        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::WIRE_CULLBACK));
-        //拡大縮小行列
-        DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
-        // 回転行列
-        DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
-        // 平行移動行列
-        DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x + 1.0f,tramslation.y,tramslation.z) };
-    
-        DirectX::XMStoreFloat4x4(&world, S * R * T);
-        geometric_primitives[1]->Render(dc, world, { material_color });
+            DirectX::XMStoreFloat4x4(&world, S * R * T);
+            geometric_primitives[1]->Render(dc, world, { material_color });
+        }
+#endif
+        //スタティックメッシュ描画
+        {
+            //拡大縮小行列
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+            // 回転行列
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+            // 平行移動行列
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x,tramslation.y,tramslation.z) };
+
+            // ワールド変換行列
+            DirectX::XMFLOAT4X4 world;
+            DirectX::XMStoreFloat4x4(&world, S* R* T);
+            static_mesh[0]->Render(dc, world, { 1.0f,1.0f,1.0f,1.0f });
+        }
     }
 
     // 3Dデバッグ描画

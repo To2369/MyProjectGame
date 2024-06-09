@@ -5,7 +5,6 @@
 Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
 {
     HRESULT hr{ S_OK };
-    shaderMgr = ShaderManager::Instance();
     //頂点情報のセット
     vertex vertices[]
     {
@@ -43,13 +42,25 @@ Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
         {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
     };
-    
-    shaderMgr->CreateVsFromCso(device,".\\Data\\Shader\\Sprite_vs.cso", vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
-    shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso", pixel_shader.GetAddressOf());
 
-    shaderMgr->LoadTextureFromFile(device, filename, shader_resource_view.GetAddressOf(), &texture2d_desc);
+    //頂点シェーダーオブジェクトの生成
+    {
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\Sprite_vs.cso",
+            vertex_shader.GetAddressOf(), input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+    }
+
+    //ピクセルシェーダーオブジェクトの生成
+    {
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso",
+            pixel_shader.GetAddressOf());
+    }
+
+    //テクスチャの読み込み
+    {
+        ShaderManager::Instance()->LoadTextureFromFile(device, filename, 
+            shader_resource_view.GetAddressOf(), &texture2d_desc);
+    }
 }
-
 Sprite::~Sprite()
 {
 

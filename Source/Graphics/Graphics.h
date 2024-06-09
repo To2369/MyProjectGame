@@ -70,8 +70,8 @@ public:
 	std::mutex& GetMutex() { return mutex; }
 
 private:
-	float	screenWidth;
-	float	screenHeight;
+	float	screenWidth = 0;
+	float	screenHeight = 0;
 
 	//DirectX11で利用する様々なリソースの作成
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -90,7 +90,7 @@ private:
 	//奥行情報を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth_stencil_view;
 
-	D3D11_VIEWPORT viewport;
+	D3D11_VIEWPORT viewport{};
 
 	std::mutex mutex;
 

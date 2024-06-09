@@ -94,6 +94,4 @@ private:
 private:
     const size_t max_vertices;
     std::vector<vertex> vertices;
-
-    ShaderManager* shaderMgr;
 };

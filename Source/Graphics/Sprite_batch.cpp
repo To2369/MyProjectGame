@@ -1,13 +1,10 @@
 #include "Sprite_batch.h"
 #include"../misc.h"
 #include <sstream>
-#include"Shader.h"
 #include<WICTextureLoader.h>
 Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites) :max_vertices(max_sprites * 6)
 {
     HRESULT hr{ S_OK };
-
-    shaderMgr = ShaderManager::Instance();
 
     //頂点情報のセット
     std::unique_ptr<vertex[]> vertices{ std::make_unique<vertex[]>(max_vertices) };
@@ -42,28 +39,28 @@ Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t
 
     //頂点シェーダーオブジェクトの生成
     {
-        shaderMgr->CreateVsFromCso(device, ".\\Data\\Shader\\Sprite_vs.cso",
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\Sprite_vs.cso",
             vertex_shader.GetAddressOf(), input_layout.GetAddressOf(),
             input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの生成
     {
-        shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso",
             pixel_shader.GetAddressOf());
     }
     {
-        shaderMgr->CreatePsFromCso(device, ".\\Data\\Shader\\Effect_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\Effect_ps.cso",
             replaced_pixel_shader.GetAddressOf());
     }
     //テクスチャの読み込み
     {
-        shaderMgr->LoadTextureFromFile(device, filename,
+        ShaderManager::Instance()->LoadTextureFromFile(device, filename,
             shader_resource_view.GetAddressOf(),
             &texture2d_desc);
     }
     {
-        shaderMgr->LoadTextureFromFile(device, filename,
+        ShaderManager::Instance()->LoadTextureFromFile(device, filename,
             replaced_shader_resource_view.GetAddressOf(),
             &replaced_texture2d_desc);
     }

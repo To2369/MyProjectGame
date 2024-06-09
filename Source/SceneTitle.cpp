@@ -86,6 +86,30 @@ void SceneTitle::Render()
         DirectX::XMLoadFloat4x4(rc.camera->GetProjection())));
     scene_data.lightDirection = rc.lightDirection;
     
+    // 2D •`‰æÝ’è
+    rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    // 2D •`‰æ
+    {
+
+
+        /* sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
+         sprite_batches[0]->Render(dc,0,0,1280,720);
+         sprite_batches[0]->End(dc);*/
+
+         //dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+         //spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
+    }
+    // 2DƒfƒoƒbƒOGUI•`‰æ
+    {
+#ifdef USE_IMGUI
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
+    }
+
     // 3D •`‰æÝ’è
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
@@ -110,28 +134,5 @@ void SceneTitle::Render()
     // 3DƒfƒoƒbƒO•`‰æ
     {
 
-    }
-    // 2D •`‰æÝ’è
-    rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    // 2D •`‰æ
-    {
-       
-
-       /* sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
-        sprite_batches[0]->Render(dc,0,0,1280,720);
-        sprite_batches[0]->End(dc);*/
-
-        //dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
-        //spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
-    }
-    // 2DƒfƒoƒbƒOGUI•`‰æ
-    {
-#ifdef USE_IMGUI
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif
     }
 }

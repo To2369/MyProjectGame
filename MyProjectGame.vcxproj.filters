@@ -96,6 +96,9 @@
     <ClInclude Include="Source\SceneTest.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\StaticMesh.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -155,12 +158,18 @@
     <ClCompile Include="Source\SceneTest.cpp">
       <Filter>Sources\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\StaticMesh.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\GeometricPrimitive.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\StaticMesh.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -178,6 +187,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\GeometricPrimitive_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\StaticMesh_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\StaticMesh_vs.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

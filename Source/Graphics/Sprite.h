@@ -52,6 +52,4 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
     //テクスチャ
     D3D11_TEXTURE2D_DESC texture2d_desc;
-
-    ShaderManager* shaderMgr;
 };

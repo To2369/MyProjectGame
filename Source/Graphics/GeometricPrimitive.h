@@ -46,8 +46,6 @@ protected:
 
     //定数バッファ
     D3D11_BUFFER_DESC buffer_desc{};
-
-    ShaderManager* shaderMgr;
 private:
     //頂点バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;

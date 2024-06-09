@@ -4,6 +4,7 @@
 #include"Graphics/Sprite_batch.h"
 #include"Camera.h"
 #include"Graphics/GeometricPrimitive.h"
+#include"Graphics\StaticMesh.h"
 #include"CameraController.h"
 //タイトルシーン
 class SceneTest :public Scene
@@ -36,10 +37,15 @@ private:
     std::unique_ptr<Sprite> spr[8];
     std::unique_ptr<Sprite_batch> sprite_batches[8];
     std::unique_ptr<GeometricPrimitive> geometric_primitives[8];
+    std::unique_ptr<StaticMesh> static_mesh[8];
     const wchar_t* filename[8] = {
         L".\\Data\\Fonts\\font4.png",
         L".\\Data\\Sprite\\player-sprites.png",
      L".\\Data\\Sprite\\vice.png" };
+
+    const wchar_t* modelfilename[8] = {
+        L".\\Data\\resources\\torus.obj"
+    };
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;
 

@@ -8,14 +8,6 @@ void SceneTitle::Initialize()
 
     //定数バッファの作成
     CreateBuffer<SceneTitle::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
-  /*  D3D11_BUFFER_DESC buffer_desc{};
-    buffer_desc.ByteWidth = sizeof(Scene_constants);
-    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-    buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    buffer_desc.CPUAccessFlags = 0;
-    buffer_desc.MiscFlags = 0;
-    buffer_desc.StructureByteStride = 0;
-    graphics->GetDevice()->CreateBuffer(&buffer_desc, nullptr, buffer.GetAddressOf());*/
 
     camera = Camera::Instance();
     float x, y;
@@ -34,11 +26,7 @@ void SceneTitle::Initialize()
     );
     cameraCtrl = std::make_unique<CameraController>();
 
-    spr[0] = std::make_unique<Sprite>(graphics->GetDevice(), filename[0]);
 
-    sprite_batches[0] = std::make_unique<Sprite_batch>(graphics->GetDevice(), filename[2],2048);
-
-    geometric_primitives[0] = std::make_unique<GeometricPrimitive>(graphics->GetDevice());
 }
 
 //終了化
@@ -46,7 +34,7 @@ void SceneTitle::Finalize()
 {
 
 }
-int a = 0;
+
 //更新処理
 void SceneTitle::Update(float elapsedTime)
 {
@@ -61,17 +49,7 @@ void SceneTitle::Update(float elapsedTime)
 
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
-    ImGui::SliderFloat3("cameraPos", &camera_position.x, -100.0f, 100.0f);
-
-    ImGui::SliderFloat3("light_direction", &light_direction.x, -1.0f, +1.0f);
-
-    ImGui::SliderFloat3("translation", &tramslation.x, -10.0f, 10.0f);
-
-    ImGui::SliderFloat3("scaling.", &scaling.x, -10.0f, 10.0f);
-
-    ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
-
-    ImGui::ColorEdit4("material_color", reinterpret_cast<float*>(&material_color));
+  
     ImGui::End();
 #endif
 }
@@ -100,53 +78,25 @@ void SceneTitle::Render()
     rc.renderState = renderState;
     rc.camera = camera;
     rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
-#if 0
+
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, DirectX::XMMatrixMultiply(
         DirectX::XMLoadFloat4x4(rc.camera->GetView()),
         DirectX::XMLoadFloat4x4(rc.camera->GetProjection())));
     scene_data.lightDirection = rc.lightDirection;
-#else//ゲーム作成の時消す
-    float aspect_ratio{ viewport.Width / viewport.Height };//視野角計算
-    DirectX::XMMATRIX P{ DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30),aspect_ratio,0.1f,100.0f) };//透視行列（資料確認）
-
-    DirectX::XMVECTOR eye{ DirectX::XMLoadFloat4(&camera_position) };
-    DirectX::XMVECTOR focus{ DirectX::XMVectorSet(0.0f,0.0f,0.0f,1.0f) };
-    DirectX::XMVECTOR up{ DirectX::XMVectorSet(0.0f,1.0f,0.0f,0.0f) };
-    DirectX::XMMATRIX V{ DirectX::XMMatrixLookAtLH(eye,focus,up) };
-    Scene_constants scene_data{};
-    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, V * P);
-    scene_data.lightDirection = light_direction;
-#endif
     
     // 3D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 1);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    
-    //拡大縮小行列
-    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
-    // 回転行列
-    DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
-    // 平行移動行列
-    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x - 1.0f,tramslation.y,tramslation.z) };
-
-    // ワールド変換行列
-    DirectX::XMFLOAT4X4 world;
-    DirectX::XMStoreFloat4x4(&world, S * R * T);
 
     // 3D 描画
     {
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
 
-       /* dc->UpdateSubresource(buffer.Get(), 0, 0, &sc, 0, 0);
-        dc->VSSetConstantBuffers(1, 1, buffer.GetAddressOf());
-        dc->PSSetConstantBuffers(1, 1, buffer.GetAddressOf());*/
-
-        geometric_primitives[0]->Render(dc, world, { material_color });
         ////ステージの描画
         //StageManager::Instance()->render(dc);
 

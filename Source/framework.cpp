@@ -1,5 +1,6 @@
 #include "Framework.h"
 #include "SceneTitle.h"
+#include "SceneTest.h"
 #include "SceneManager.h"
 Framework::Framework(HWND hwnd) : hWnd(hwnd)
 {
@@ -10,7 +11,7 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 	graphics->Initialize(hwnd);
 
 	//ƒV[ƒ“‰Šú‰»
-	SceneManager::Instance().ChangeScene(new SceneTitle);
+	SceneManager::Instance().ChangeScene(new SceneTest);
 }
 
 Framework::~Framework()

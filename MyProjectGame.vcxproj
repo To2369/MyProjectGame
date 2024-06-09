@@ -164,6 +164,7 @@
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\SceneTest.h" />
     <ClInclude Include="Source\SceneTitle.h" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +185,7 @@
     <ClCompile Include="Source\Graphics\Sprite_batch.cpp" />
     <ClCompile Include="Source\Misc.cpp" />
     <ClCompile Include="Source\SceneManeger.cpp" />
+    <ClCompile Include="Source\SceneTest.cpp" />
     <ClCompile Include="Source\SceneTitle.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -93,6 +93,9 @@
     <ClInclude Include="Source\CameraController.h">
       <Filter>Sources\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SceneTest.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="Source\CameraController.cpp">
       <Filter>Sources\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneTest.cpp">
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

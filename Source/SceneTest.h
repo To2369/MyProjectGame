@@ -44,7 +44,7 @@ private:
      L".\\Data\\Sprite\\vice.png" };
 
     const wchar_t* modelfilename[8] = {
-        L".\\Data\\resources\\torus.obj"
+        L".\\Data\\resources\\Bison\\Bison.obj"
     };
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;

@@ -2,15 +2,17 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <wrl.h>
-
+#include<string>
 //スタティックメッシュ
 //スタティックメッシュとはスケルトンが入っていない変形させるようなアニメーションができないメッシュの事です。
-//例えば椅子や岩、壁といったメッシュはスタティックメッシュにあたります↓
+//例えば椅子や岩、壁といったメッシュはスタティックメッシュにあたります。（静的オブジェクト）
 //メッシュとはポリゴンの集まりのこと。イメージとしては中身のない表面だけのデータ
 class StaticMesh
 {
 public:
-	StaticMesh(ID3D11Device* device, const wchar_t* obj_filename);
+	//DCCツールに予って上下成分や原点が違う場合があるのでテクスチャが反転している場合
+	//flipping_v_coodinatesをtrueにする
+	StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool flipping_v_coordinates);
 	virtual ~StaticMesh() = default;
 
 	//描画処理
@@ -23,6 +25,7 @@ public:
 	{
 		DirectX::XMFLOAT3 position;	//座標
 		DirectX::XMFLOAT3 normal;	//法線
+		DirectX::XMFLOAT2 texcoord;	//テクスチャ座標
 	};
 
 	//定数バッファ用フォーマット
@@ -31,6 +34,11 @@ public:
 		DirectX::XMFLOAT4X4 world;	//ワールド行列
 		DirectX::XMFLOAT4 material_color;	//マテリアルカラー
 	};
+
+	//テクスチャファイル名
+	std::wstring texture_filename;
+	//テクスチャ情報
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
 protected:
 	//頂点バッファオブジェクトの作成
 	void Create_com_buffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,

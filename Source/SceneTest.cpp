@@ -33,7 +33,7 @@ void SceneTest::Initialize()
     geometric_primitives[0] = std::make_unique<GeometricCube>(graphics->GetDevice());
     geometric_primitives[1] = std::make_unique<GeometricCube>(graphics->GetDevice());
 
-    static_mesh[0] = std::make_unique<StaticMesh>(graphics->GetDevice(),modelfilename[0]);
+    static_mesh[0] = std::make_unique<StaticMesh>(graphics->GetDevice(),modelfilename[0],true);
 }
 
 //èIóπâª

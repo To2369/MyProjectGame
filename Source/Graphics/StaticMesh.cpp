@@ -1,10 +1,8 @@
 #include "StaticMesh.h"
 #include "Shader.h"
 #include "..\misc.h"
-#include <vector>
 #include <fstream>
 #include<filesystem>
-
 StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool flipping_v_coordinates)
 {
     std::vector<vertex> vertices;
@@ -30,7 +28,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             float x, y, z;
             //区切り単位でデータを取得していく
             fin >> x >> y >> z;
-            positions.emplace_back( x,y,z );
+            positions.push_back({ x, y, z });
 
             //１番上にある１行を削除
             fin.ignore(1024, L'\n');
@@ -40,7 +38,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //法線を取得
             float i, j, k;
             fin >> i >> j >> k;
-            normals.emplace_back( i,j,k );
+            normals.push_back({ i, j, k });
 
             //１番上にある１行を削除
             fin.ignore(1024, L'\n');
@@ -50,7 +48,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //テクスチャ座標取得
             float u, v;
             fin >> u >> v;
-            texcoords.emplace_back(u, flipping_v_coordinates ? 1.0f - v : v);
+            texcoords.push_back({ u, flipping_v_coordinates ? 1.0f - v : v });
 
             //１番上にある１行を削除
             fin.ignore(1024, L'\n');
@@ -86,9 +84,9 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
                     }
                 }
                 //頂点データを設定
-                vertices.emplace_back(vertex_);
+                vertices.push_back(vertex_);
                 //頂点インデックスを設定
-                indices.emplace_back(current_index++);
+                indices.push_back(current_index++);
             }
             fin.ignore(1024, L'\n');
         }
@@ -97,7 +95,16 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //マテリアルファイル名を取得
             wchar_t mtllib[256];
             fin >> mtllib;
-            mtl_filenames.emplace_back(mtllib);
+            mtl_filenames.push_back(mtllib);
+        }
+        else if (0 == wcscmp(command, L"usemtl"))
+        {
+            //マテリアル名
+            wchar_t usemtl[MAX_PATH]{ 0 };
+            fin >> usemtl;
+
+            //マテリアル名とインデックス開始番号を保存
+            subsets.push_back({ usemtl, static_cast<uint32_t>(indices.size()), 0 });
         }
         else
         {
@@ -106,6 +113,14 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
         }
     }
     fin.close();
+
+    //それぞれのサブセットのインデックスの数を計算していく
+    std::vector<subset>::reverse_iterator iterator_ = subsets.rbegin();
+    iterator_->index_count = static_cast<uint32_t>(indices.size()) - iterator_->index_start;
+    for (iterator_ = subsets.rbegin() + 1; iterator_ != subsets.rend(); ++iterator_)
+    {
+        iterator_->index_count = (iterator_ - 1)->index_start - iterator_->index_start;
+    }
 
     //MTLファイル名、OBJファイル名を設定
     std::filesystem::path mtl_filename(obj_filename);
@@ -119,7 +134,22 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
         //1番上にある1行を取得
         fin >> command;
 
-        if (0 == wcscmp(command, L"map_Kd"))
+        if (0 == wcscmp(command, L"map_Ka"))
+        {
+            fin.ignore();
+
+            //テクスチャ名を読み込む
+            wchar_t map_Ka[256];
+            fin >> map_Ka;
+
+            //テクスチャファイル名にパスを取り付ける
+            std::filesystem::path path_(obj_filename);
+            path_.replace_filename(std::filesystem::path(map_Ka).filename());
+            materials.rbegin()->texture_filename = path_;
+
+            fin.ignore(1024, L'\n');
+        }
+        else if (0 == wcscmp(command, L"map_Kd"))
         {
             fin.ignore();
 
@@ -130,8 +160,58 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //テクスチャファイル名にパスを取り付ける
             std::filesystem::path path_(obj_filename);
             path_.replace_filename(std::filesystem::path(map_Kd).filename());
-            texture_filename = path_;
+            materials.rbegin()->texture_filename = path_;
 
+            fin.ignore(1024, L'\n');
+        }
+        if (0 == wcscmp(command, L"map_Ks"))
+        {
+            fin.ignore();
+
+            //テクスチャ名を読み込む
+            wchar_t map_Ks[256];
+            fin >> map_Ks;
+
+            //テクスチャファイル名にパスを取り付ける
+            std::filesystem::path path_(obj_filename);
+            path_.replace_filename(std::filesystem::path(map_Ks).filename());
+            materials.rbegin()->texture_filename = path_;
+
+            fin.ignore(1024, L'\n');
+        }
+        else if (0 == wcscmp(command, L"newmtl"))
+        {
+            fin.ignore();
+            wchar_t newmtl[256];
+            //新規でマテリアルを作成
+            material mat;
+            fin >> newmtl;
+            mat.name = newmtl;
+            //マテリアルの取り付け
+            materials.emplace_back(mat);
+        }
+        else if (0 == wcscmp(command, L"Ka"))
+        {
+            //色を取得し生成したマテリアルに設定
+            float r, g, b;
+            fin >> r >> g >> b;
+            materials.rbegin()->Ka = { r,g,b,1 };
+            fin.ignore(1024, L'\n');
+        }
+        else if (0 == wcscmp(command, L"Kd"))
+        {
+            //色を取得し生成したマテリアルに設定
+            float r, g, b;
+            fin >> r >> g >> b;
+            materials.rbegin()->Kd = { r,g,b,1 };
+            fin.ignore(1024, L'\n');
+        }
+        else if (0 == wcscmp(command, L"Ks"))
+        {
+            //色を取得し生成したマテリアルに設定
+            float r, g, b;
+            fin >> r >> g >> b;
+            materials.rbegin()->Ks = { r,g,b,1 };
             fin.ignore(1024, L'\n');
         }
         else
@@ -181,8 +261,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
     //読み込んだテクスチャを生成
     D3D11_TEXTURE2D_DESC texture2d_desc{};
     {
-        ShaderManager::Instance()->LoadTextureFromFile(device, texture_filename.c_str(),
-            shader_resource_view.GetAddressOf(), &texture2d_desc);
+        for (material& mat : materials)
+        {
+            ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filename.c_str(),
+                mat.shader_resource_view.GetAddressOf(), &texture2d_desc);
+
+        }
+
     }
 }
 
@@ -200,18 +285,30 @@ void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
 
     immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
     immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+    for (const material& material_ : materials)
+    {
+        immediate_context->PSSetShaderResources(0, 1, material_.shader_resource_view.GetAddressOf());
 
-    //定数バッファとして、ワールド行列とマテリアルカラーを設定
-    constants data{ world,material_color };
-    immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
-    //定数(コンスタント)バッファオブジェクトの設定
-    immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
-
-    //インデックスを指定して描画
-    D3D11_BUFFER_DESC buffer_desc{};
-    index_buffer->GetDesc(&buffer_desc);
-    immediate_context->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
+        //定数バッファとして、ワールド行列とマテリアルカラーを設定
+        constants data{ world,material_color };
+        //マテリアルカラーは読み込んだ色も反映
+        DirectX::XMStoreFloat4(&data.material_color,DirectX::XMVectorMultiply(
+            DirectX::XMLoadFloat4(&material_color),DirectX::XMLoadFloat4(&material_.Kd)));
+        immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+        //定数(コンスタント)バッファオブジェクトの設定
+        immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+    
+        //サブセットを捜査
+        for (const subset& subset_ : subsets)
+        {
+            //サブセットにあるマテリアル名と一致するものをチェック
+            if (material_.name == subset_.usemtl)
+            {
+                //一致したサブセットのインデックスの数と開始番号を指定
+                immediate_context->DrawIndexed(subset_.index_count, subset_.index_start, 0);
+            }
+        }
+    }
 }
 
 //頂点バッファオブジェクトの作成

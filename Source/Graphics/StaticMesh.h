@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include <wrl.h>
 #include<string>
+#include<vector>
 //スタティックメッシュ
 //スタティックメッシュとはスケルトンが入っていない変形させるようなアニメーションができないメッシュの事です。
 //例えば椅子や岩、壁といったメッシュはスタティックメッシュにあたります。（静的オブジェクト）
@@ -10,7 +11,7 @@
 class StaticMesh
 {
 public:
-	//DCCツールに予って上下成分や原点が違う場合があるのでテクスチャが反転している場合
+	//DCCツールによって上下成分や原点が違う場合があるのでテクスチャが反転している場合
 	//flipping_v_coodinatesをtrueにする
 	StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool flipping_v_coordinates);
 	virtual ~StaticMesh() = default;
@@ -35,10 +36,30 @@ public:
 		DirectX::XMFLOAT4 material_color;	//マテリアルカラー
 	};
 
-	//テクスチャファイル名
-	std::wstring texture_filename;
-	//テクスチャ情報
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
+	//マテリアル名とDrawIndex()に必要な情報部分をサブセット化
+	struct subset
+	{
+		std::wstring usemtl;		//マテリアル名
+		uint32_t index_start{ 0 };	//インデックスの開始位置
+		uint32_t index_count{ 0 };	//インデクスの数（頂点数）
+	};
+	std::vector<subset> subsets;
+
+	//マテリアル
+	struct material
+	{
+		//マテリアル名
+		std::wstring name;
+		DirectX::XMFLOAT4 Ka{ 0.2f,0.2f,0.2f,1.0f };
+		DirectX::XMFLOAT4 Kd{ 0.8f,0.8f,0.8f,1.0f };
+		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
+		//テクスチャファイル名
+		std::wstring texture_filename;
+		//テクスチャ情報
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
+	};
+	//読み込んだマテリアル
+	std::vector<material> materials;
 protected:
 	//頂点バッファオブジェクトの作成
 	void Create_com_buffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,

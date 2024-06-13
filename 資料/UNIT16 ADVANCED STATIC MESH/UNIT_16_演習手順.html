@@ -1,0 +1,936 @@
+<!DOCTYPE html><html><head>
+      <title>UNIT_16_&#x6F14;&#x7FD2;&#x624B;&#x9806;</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\71447\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.6.8\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p,html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  300px/2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="unit16_excercise-advanced-static-mesh-%E6%BC%94%E7%BF%92%E6%89%8B%E9%A0%86">UNIT16_EXCERCISE ADVANCED STATIC MESH &#x6F14;&#x7FD2;&#x624B;&#x9806;</h1>
+
+<ul>
+<li>&#x76EE;&#x6B21;
+<ol>
+<li><a href="#%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84_">&#x93E1;&#x9762;&#x53CD;&#x5C04;(&#x30B9;&#x30DA;&#x30AD;&#x30E5;&#x30E9;&#x30FC;)</a>
+<ol>
+<li><a href="#%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%80%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%82%92%E5%A4%89%E6%9B%B4_">&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;</a></li>
+<li><a href="#%E5%AE%9A%E6%95%B0%E3%83%90%E3%83%83%E3%83%95%E3%82%A1%E3%81%AB%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0_">&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;</a></li>
+<li><a href="#%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89_">&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x30D0;&#x30A4;&#x30F3;&#x30C9;</a></li>
+<li><a href="#%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%83%98%E3%83%83%E3%83%80%E3%81%AB%E4%BD%8D%E7%BD%AE%E3%81%A8%E6%B3%95%E7%B7%9A%E3%81%A8%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0_">&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30D8;&#x30C3;&#x30C0;&#x306B;&#x4F4D;&#x7F6E;&#x3068;&#x6CD5;&#x7DDA;&#x3068;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;</a></li>
+<li><a href="#%E9%A0%82%E7%82%B9%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%82%92%E4%BF%AE%E6%AD%A3_">&#x9802;&#x70B9;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3092;&#x4FEE;&#x6B63;</a></li>
+<li><a href="#%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%82%92%E5%AE%9F%E8%A3%85_">&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x3092;&#x5B9F;&#x88C5;</a></li>
+<li><a href="#%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%81%AE%E7%A2%BA%E8%AA%8D_">&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x78BA;&#x8A8D;</a></li>
+</ol>
+</li>
+<li><a href="#%E3%83%90%E3%83%B3%E3%83%97%E3%83%9E%E3%83%83%E3%83%97_">&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;</a></li>
+<li><a href="#%E3%83%80%E3%83%9F%E3%83%BC%E3%83%86%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3_">&#x30C0;&#x30DF;&#x30FC;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;</a></li>
+<li><a href="#%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9_">&#x30D0;&#x30A6;&#x30F3;&#x30C7;&#x30A3;&#x30F3;&#x30B0;&#x30DC;&#x30C3;&#x30AF;&#x30B9;</a></li>
+</ol>
+</li>
+</ul>
+<hr>
+<h4 class="mume-header" id="span-stylecolor334488%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%82%B9%E3%83%9A%E3%82%AD%E3%83%A5%E3%83%A9%E3%83%BCspana-name%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84_a"><span style="color:#334488;">&#x93E1;&#x9762;&#x53CD;&#x5C04;(&#x30B9;&#x30DA;&#x30AD;&#x30E5;&#x30E9;&#x30FC;)</span><a name="&#x93E1;&#x9762;&#x53CD;&#x5C04;_" href></a></h4>
+
+<hr>
+<h4 class="mume-header" id="span-stylecolor334488%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%80%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%82%92%E5%A4%89%E6%9B%B4spana-name%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%80%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%82%92%E5%A4%89%E6%9B%B4_a"><span style="color:#334488;">&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;</span><a name="&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF11;
+</pre>
+<p>&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3067;<strong>&#x30D5;&#x30A9;&#x30F3;&#x30B7;&#x30A7;&#x30FC;&#x30C7;&#x30A3;&#x30F3;&#x30B0;</strong>&#x306E;<strong>&#x30B9;&#x30DA;&#x30AD;&#x30E5;&#x30E9;&#x30FC;</strong>&#x3092;&#x8868;&#x73FE;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;<br>
+&#x3064;&#x307E;&#x308A;<strong>&#x30D5;&#x30A9;&#x30F3;&#x53CD;&#x5C04;&#x30E2;&#x30C7;&#x30EB;</strong>&#x306E;&#xFF11;&#x3064;&#x3067;&#x3042;&#x308B;<strong>&#x93E1;&#x9762;&#x53CD;&#x5C04;</strong>&#x3092;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3067;&#x5B9F;&#x88C5;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p>&#x307E;&#x305A;&#x306F;&#x30B9;&#x30DA;&#x30AD;&#x30E5;&#x30E9;&#x30FC;&#x3092;&#x5B9F;&#x88C5;&#x3057;&#x305F;&#x969B;&#x306B;&#x9055;&#x3044;&#x304C;&#x308F;&#x304B;&#x308A;&#x3084;&#x3059;&#x3044;&#x30E2;&#x30C7;&#x30EB;&#x306B;&#x5909;&#x66F4;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<p>framework::initialize() &#x306B;&#x3042;&#x308B;&#x4EE5;&#x4E0B;&#x306E; static_mesh &#x306E;&#x751F;&#x6210;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">static_meshes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">make_unique</span><span class="token generic class-name"><span class="token operator">&lt;</span>static_mesh<span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>device<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>L<span class="token string">&quot;.\\resources\\Mr.Incredible\\Mr.Incredible.obj&quot;</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>framework.cpp</strong></td>
+<td><strong>framework::initialize()</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">static_meshes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">make_unique</span><span class="token generic class-name"><span class="token operator">&lt;</span>static_mesh<span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>device<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> L<span class="token string">&quot;.\\resources\\Rock\\Rock.obj&quot;</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E5%AE%9A%E6%95%B0%E3%83%90%E3%83%83%E3%83%95%E3%82%A1%E3%81%AB%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0spana-name%E5%AE%9A%E6%95%B0%E3%83%90%E3%83%83%E3%83%95%E3%82%A1%E3%81%AB%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0_a"><span style="color:#334488;">&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;</span><a name="&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF12;
+</pre>
+<p>&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x8A08;&#x7B97;&#x306B;&#x306F;&#x30AB;&#x30E1;&#x30E9;&#x306E;&#x8A08;&#x7B97;&#x304C;&#x5FC5;&#x8981;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;&#x8A08;&#x7B97;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x308B;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x306E;&#x60C5;&#x5831;&#x3092;&#x9001;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;<br>
+&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x3001;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x306E;&#x60C5;&#x5831;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>framework.h</strong></td>
+<td><strong>framework::scene_constants</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    DirectX<span class="token double-colon punctuation">::</span>XMFLOAT4X4 view_projection<span class="token punctuation">;</span>	<span class="token comment">// &#x30D3;&#x30E5;&#x30FC;&#x30FB;&#x30D7;&#x30ED;&#x30B8;&#x30A7;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x5909;&#x63DB;&#x884C;&#x5217;</span>
+    DirectX<span class="token double-colon punctuation">::</span>XMFLOAT4 light_direction<span class="token punctuation">;</span>		<span class="token comment">// &#x30E9;&#x30A4;&#x30C8;&#x306E;&#x5411;&#x304D;</span>
+<span class="token operator">*</span>   DirectX<span class="token double-colon punctuation">::</span>XMFLOAT4 camera_position<span class="token punctuation">;</span>		<span class="token comment">// &#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89spana-name%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89_a"><span style="color:#334488;">&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x30D0;&#x30A4;&#x30F3;&#x30C9;</span><a name="&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x30D0;&#x30A4;&#x30F3;&#x30C9;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF13;
+</pre>
+<p>&#x5BA3;&#x8A00;&#x3057;&#x305F;&#x5909;&#x6570;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x4EE3;&#x5165;&#x3057;&#x3001;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x306B;&#x8A2D;&#x5B9A;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>framework.cpp</strong></td>
+<td><strong>framework::render(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+
+    scene_constants data<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token comment">// &#x30D3;&#x30E5;&#x30FC;&#x884C;&#x5217;&#x3068;&#x30D7;&#x30ED;&#x30B8;&#x30A7;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x884C;&#x5217;&#x3092;&#x639B;&#x3051;&#x5408;&#x308F;&#x305B;&#x308B;(&#x4E57;&#x7B97;)</span>
+    <span class="token function">XMStoreFloat4x4</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>data<span class="token punctuation">.</span>view_projection<span class="token punctuation">,</span> V <span class="token operator">*</span> P<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// &#x5149;&#x306E;&#x5F53;&#x305F;&#x308B;&#x65B9;&#x5411;&#x3092;&#x8A2D;&#x5B9A;</span>
+    data<span class="token punctuation">.</span>light_direction <span class="token operator">=</span> light_direction<span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token comment">// &#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8A2D;&#x5B9A;</span>
+<span class="token operator">*</span>   data<span class="token punctuation">.</span>camera_position <span class="token operator">=</span> camera_position<span class="token punctuation">;</span>
+    <span class="token comment">// &#x30D3;&#x30E5;&#x30FC;&#x30FB;&#x30D7;&#x30ED;&#x30B8;&#x30A7;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x884C;&#x5217;&#x3068;&#x5149;&#x306E;&#x5F53;&#x305F;&#x308B;&#x65B9;&#x5411;&#x3092;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x3068;&#x3057;&#x3066;&#x8A2D;&#x5B9A;</span>
+    immediate_context<span class="token operator">-&gt;</span><span class="token function">UpdateSubresource</span><span class="token punctuation">(</span>constant_buffers<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>data<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// &#x8A2D;&#x5B9A;&#x3057;&#x305F;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x3092; GPU &#x5074;&#x306B;&#x767B;&#x9332;</span>
+    immediate_context<span class="token operator">-&gt;</span><span class="token function">VSSetConstantBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> constant_buffers<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token comment">// &#x8A2D;&#x5B9A;&#x3057;&#x305F;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x3092;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x306B;&#x767B;&#x9332;</span>
+<span class="token operator">*</span>   immediate_context<span class="token operator">-&gt;</span><span class="token function">PSSetConstantBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> constant_buffers<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%83%98%E3%83%83%E3%83%80%E3%81%AB%E4%BD%8D%E7%BD%AE%E3%81%A8%E6%B3%95%E7%B7%9A%E3%81%A8%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0spana-name%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%83%98%E3%83%83%E3%83%80%E3%81%AB%E4%BD%8D%E7%BD%AE%E3%81%A8%E6%B3%95%E7%B7%9A%E3%81%A8%E3%82%AB%E3%83%A1%E3%83%A9%E4%BD%8D%E7%BD%AE%E3%82%92%E8%BF%BD%E5%8A%A0_a"><span style="color:#334488;">&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30D8;&#x30C3;&#x30C0;&#x306B;&#x4F4D;&#x7F6E;&#x3068;&#x6CD5;&#x7DDA;&#x3068;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;</span><a name="&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30D8;&#x30C3;&#x30C0;&#x306B;&#x4F4D;&#x7F6E;&#x3068;&#x6CD5;&#x7DDA;&#x3068;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF15;
+</pre>
+<p>&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x8A08;&#x7B97;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x3067;&#x884C;&#x3046;&#x306B;&#x3042;&#x305F;&#x3063;&#x3066;&#x9802;&#x70B9;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x304B;&#x3089;<strong>&#x4F4D;&#x7F6E;</strong>&#x3068;<strong>&#x6CD5;&#x7DDA;</strong>&#x304C;&#x5FC5;&#x8981;&#x306B;&#x306A;&#x308B;&#x306E;&#x3067;&#x51FA;&#x529B;&#x306B;&#x4F4D;&#x7F6E;&#x3068;&#x6CD5;&#x7DDA;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x69CB;&#x9020;&#x4F53;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.hlsli</strong></td>
+<td><strong>VS_OUT</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="hlsl" class="language-hlsl">    <span class="token keyword keyword-float4">float4</span> position <span class="token operator">:</span> SV_POSITION<span class="token punctuation">;</span>
+    <span class="token keyword keyword-float4">float4</span> color <span class="token operator">:</span> COLOR<span class="token punctuation">;</span>
+    <span class="token keyword keyword-float2">float2</span> texcoord <span class="token operator">:</span> TEXCOORD<span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token keyword keyword-float4">float4</span> world_position <span class="token operator">:</span> POSITION<span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token keyword keyword-float4">float4</span> world_normal <span class="token operator">:</span> NORMAL<span class="token punctuation">;</span>
+</pre><p>&#x52A0;&#x3048;&#x3066;&#x3001;&#x5148;&#x307B;&#x3069;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x305F;&#x306E;&#x3067;&#x3001;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30D8;&#x30C3;&#x30C0;&#x5074;&#x306E;&#x30B7;&#x30FC;&#x30F3;&#x5B9A;&#x6570;&#x30D0;&#x30C3;&#x30D5;&#x30A1;&#x306B;&#x3082;&#x30AB;&#x30E1;&#x30E9;&#x4F4D;&#x7F6E;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x69CB;&#x9020;&#x4F53;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.hlsli</strong></td>
+<td><strong>SCENE_CONSTANT_BUFFER</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="hlsl" class="language-hlsl">    <span class="token keyword keyword-row_major">row_major</span> <span class="token keyword keyword-float4x4">float4x4</span> view_projection<span class="token punctuation">;</span>
+    <span class="token keyword keyword-float4">float4</span> light_direction<span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token keyword keyword-float4">float4</span> camera_position<span class="token punctuation">;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E9%A0%82%E7%82%B9%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%82%92%E4%BF%AE%E6%AD%A3spana-name%E9%A0%82%E7%82%B9%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%82%92%E4%BF%AE%E6%AD%A3_a"><span style="color:#334488;">&#x9802;&#x70B9;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3092;&#x4FEE;&#x6B63;</span><a name="&#x9802;&#x70B9;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3092;&#x4FEE;&#x6B63;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF16;
+</pre>
+<p>&#x9802;&#x70B9;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x90E8;&#x5206;&#x3092;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x3092;&#x8A08;&#x7B97;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;<br>
+&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x8A08;&#x7B97;&#x306F;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x3067;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;<br>
+&#x5FC5;&#x3088;&#x306A;&#x4F4D;&#x7F6E;&#x3068;&#x6CD5;&#x7DDA;&#x3092;&#x51FA;&#x529B;&#x306B;&#x3044;&#x308C;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x306B;&#x6E21;&#x3057;&#x3066;&#x3042;&#x3052;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p>&#x6CD5;&#x7DDA;&#x8A08;&#x7B97;&#x304C;&#x884C;&#x308F;&#x308C;&#x3066;&#x3044;&#x308B;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">normal<span class="token punctuation">.</span>w <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+float4 N <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">mul</span><span class="token punctuation">(</span>normal<span class="token punctuation">,</span> world<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+float4 L <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token operator">-</span>light_direction<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+vout<span class="token punctuation">.</span>color<span class="token punctuation">.</span>rgb <span class="token operator">=</span> material_color<span class="token punctuation">.</span>rgb <span class="token operator">*</span> <span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">dot</span><span class="token punctuation">(</span>L<span class="token punctuation">,</span> N<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+vout<span class="token punctuation">.</span>color<span class="token punctuation">.</span>a <span class="token operator">=</span> material_color<span class="token punctuation">.</span>a<span class="token punctuation">;</span>
+</pre><p>&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh_vs.hlsl</strong></td>
+<td><strong>main(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">vout<span class="token punctuation">.</span>world_position <span class="token operator">=</span> <span class="token function">mul</span><span class="token punctuation">(</span>position<span class="token punctuation">,</span> world<span class="token punctuation">)</span><span class="token punctuation">;</span>
+normal<span class="token punctuation">.</span>w <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+vout<span class="token punctuation">.</span>world_normal <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">mul</span><span class="token punctuation">(</span>normal<span class="token punctuation">,</span> world<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+vout<span class="token punctuation">.</span>color <span class="token operator">=</span> material_color<span class="token punctuation">;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%82%92%E5%AE%9F%E8%A3%85spana-name%E3%83%94%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%80%E3%83%BC%E3%81%AB%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%82%92%E5%AE%9F%E8%A3%85_a"><span style="color:#334488;">&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x3092;&#x5B9F;&#x88C5;</span><a name="&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306B;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x3092;&#x5B9F;&#x88C5;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF17;
+</pre>
+<p>&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x306E;&#x51E6;&#x7406;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;<br>
+&#x6E96;&#x5099;&#x306F;&#x51FA;&#x6765;&#x3066;&#x3044;&#x308B;&#x306E;&#x3067;&#x3001;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x8A08;&#x7B97;&#x3092;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p>&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x306E;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info="hlsl" class="language-hlsl"><span class="token keyword keyword-return">return</span> color_map<span class="token punctuation">.</span><span class="token function">Sample</span><span class="token punctuation">(</span>anisotropic_sampler_state<span class="token punctuation">,</span> pin<span class="token punctuation">.</span>texcoord<span class="token punctuation">)</span> <span class="token operator">*</span> pin<span class="token punctuation">.</span>color<span class="token punctuation">;</span>
+</pre><p>&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh_ps.mlsl</strong></td>
+<td><strong>main(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="hlsl" class="language-hlsl"><span class="token keyword keyword-float4">float4</span> color <span class="token operator">=</span> color_map<span class="token punctuation">.</span><span class="token function">Sample</span><span class="token punctuation">(</span>anisotropic_sampler_state<span class="token punctuation">,</span> pin<span class="token punctuation">.</span>texcoord<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword keyword-float">float</span> alpha <span class="token operator">=</span> color<span class="token punctuation">.</span>a<span class="token punctuation">;</span>
+<span class="token keyword keyword-float3">float3</span> N <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span>pin<span class="token punctuation">.</span>world_normal<span class="token punctuation">.</span>xyz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-float3">float3</span> L <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token operator">-</span>light_direction<span class="token punctuation">.</span>xyz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword keyword-float3">float3</span> diffuse <span class="token operator">=</span> color<span class="token punctuation">.</span>rgb <span class="token operator">*</span> <span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">dot</span><span class="token punctuation">(</span>N<span class="token punctuation">,</span> L<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-float3">float3</span> V <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span>camera_position<span class="token punctuation">.</span>xyz <span class="token operator">-</span> pin<span class="token punctuation">.</span>world_position<span class="token punctuation">.</span>xyz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword keyword-float3">float3</span> specular <span class="token operator">=</span> <span class="token function">pow</span><span class="token punctuation">(</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">dot</span><span class="token punctuation">(</span>N<span class="token punctuation">,</span> <span class="token function">normalize</span><span class="token punctuation">(</span>V <span class="token operator">+</span> L<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-return">return</span> <span class="token keyword keyword-float4">float4</span><span class="token punctuation">(</span>diffuse <span class="token operator">+</span> specular<span class="token punctuation">,</span> alpha<span class="token punctuation">)</span> <span class="token operator">*</span> pin<span class="token punctuation">.</span>color<span class="token punctuation">;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%81%AE%E7%A2%BA%E8%AA%8Dspana-name%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%81%AE%E7%A2%BA%E8%AA%8D_a"><span style="color:#334488;">&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x78BA;&#x8A8D;</span><a name="&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x78BA;&#x8A8D;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF11;&#xFF0D;&#xFF18;
+</pre>
+<p>&#x30D3;&#x30EB;&#x30C9;&#x3057;&#x3066;&#x78BA;&#x8A8D;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%82%B9%E3%83%9A%E3%82%AD%E3%83%A5%E3%83%A901.png?0.7899455530458714" alt></p>
+<p>&#x78BA;&#x8A8D;&#x3057;&#x7D42;&#x308F;&#x3063;&#x305F;&#x3089;&#x4EE5;&#x4E0B;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306E; <strong>128</strong> &#x3092;&#x5225;&#x306E;&#x5024;&#x306B;&#x5909;&#x66F4;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3057;&#x3001;&#x5909;&#x5316;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">float3 specular <span class="token operator">=</span> <span class="token function">pow</span><span class="token punctuation">(</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token function">dot</span><span class="token punctuation">(</span>N<span class="token punctuation">,</span> <span class="token function">normalize</span><span class="token punctuation">(</span>V <span class="token operator">+</span> L<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><hr>
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%90%E3%83%B3%E3%83%97%E3%83%9E%E3%83%83%E3%83%97spana-name%E3%83%90%E3%83%B3%E3%83%97%E3%83%9E%E3%83%83%E3%83%97_a"><span style="color:#334488;">&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;</span><a name="&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;_" href></a></h4>
+
+<hr>
+<h4 class="mume-header" id="span-stylecolor334488%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84%E3%82%B9%E3%83%9A%E3%82%AD%E3%83%A5%E3%83%A9%E3%83%BCspana-name%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84_a-1"><span style="color:#334488;">&#x93E1;&#x9762;&#x53CD;&#x5C04;(&#x30B9;&#x30DA;&#x30AD;&#x30E5;&#x30E9;&#x30FC;)</span><a name="&#x93E1;&#x9762;&#x53CD;&#x5C04;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF11;
+</pre>
+<p>&#x6B21;&#x306F;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x3092;&#x4F7F;&#x3048;&#x308B;&#x3088;&#x3046;&#x306B;&#x5B9F;&#x88C5;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x304D;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p><strong>static_mesh::material</strong> &#x30AF;&#x30E9;&#x30B9;&#x306E;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info class="language-"><code>// &#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;
+std::wstring texture_filename;
+// &#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;
+Microsoft::WRL::ComPtr&lt;ID3D11ShaderResourceView&gt; shader_resource_view;
+</code></pre><p>&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3082;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x308B;&#x3088;&#x3046;&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x914D;&#x5217;&#x306B;&#x5909;&#x66F4;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.h</strong></td>
+<td><strong>static_mesh::material</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token comment">// &#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;</span>
+std<span class="token double-colon punctuation">::</span>wstring texture_filenames<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;</span>
+Microsoft<span class="token double-colon punctuation">::</span>WRL<span class="token double-colon punctuation">::</span>ComPtr<span class="token operator">&lt;</span>ID3D11ShaderResourceView<span class="token operator">&gt;</span> shader_resource_views<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+</pre><p>&#x5909;&#x6570;&#x540D;&#x3082;&#x5C11;&#x3057;&#x5909;&#x3048;&#x3066;&#x3044;&#x308B;&#x306E;&#x3067;&#x6CE8;&#x610F;&#x3057;&#x3066;&#x4E0B;&#x3055;&#x3044;&#x3002;</p>
+<hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF12;
+</pre>
+<p>&#x8981;&#x7D20;&#x306E;&#xFF10;&#x756A;&#x306B;&#x4ECA;&#x307E;&#x3067;&#x901A;&#x308A;&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;&#x3092;&#x3001;&#x8981;&#x7D20;&#x306E;&#xFF11;&#x756A;&#x306B;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;&#x3092;&#x4EE3;&#x5165;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x5909;&#x6570;&#x540D;&#x3092;&#x5909;&#x66F4;&#x3057;&#x914D;&#x5217;&#x306B;&#x3057;&#x305F;&#x3053;&#x3068;&#x3067; cpp &#x5074;&#x3067;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x51FA;&#x3066;&#x3044;&#x308B;&#x304B;&#x3068;&#x601D;&#x3044;&#x307E;&#x3059;&#x304C;&#x3001;&#x305D;&#x306E;&#x90E8;&#x5206;&#x3082;&#x542B;&#x3081;&#x3066;&#x5909;&#x66F4;&#x3057;&#x3066;&#x884C;&#x304D;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p>static_mesh &#x306E;&#x30B3;&#x30F3;&#x30B9;&#x30C8;&#x30E9;&#x30AF;&#x30BF;&#x306E;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">materials<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span>texture_filename <span class="token operator">=</span> path<span class="token punctuation">;</span>
+</pre><p>&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">materials<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> path<span class="token punctuation">;</span>
+</pre><p>&#x6B21;&#x306B;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x306E;&#x60C5;&#x5831;&#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x90E8;&#x5206;&#x3092;&#x5B9F;&#x88C5;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;<br>
+&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x306E;&#x60C5;&#x5831;&#x304C;&#x8A18;&#x8F09;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x982D;&#x306E;&#x30AD;&#x30FC;&#x30EF;&#x30FC;&#x30C9;&#x306F; <strong>map_bump</strong> &#x3082;&#x3057;&#x304F;&#x306F; <strong>bump</strong> &#x306E;&#x3069;&#x3061;&#x3089;&#x304B;&#x3067;&#x3059;&#x3002;<br>
+&#x306A;&#x306E;&#x3067;&#x3053;&#x306E;&#xFF12;&#x3064;&#x3067;&#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x3092;&#x304B;&#x3051;&#x307E;&#x3059;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">        &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+        materials<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> path<span class="token punctuation">;</span>
+        fin<span class="token punctuation">.</span><span class="token function">ignore</span><span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span> L<span class="token string">&apos;\n&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token operator">*</span>   <span class="token keyword keyword-else">else</span> <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> <span class="token function">wcscmp</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> L<span class="token string">&quot;map_bump&quot;</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token number">0</span> <span class="token operator">==</span> <span class="token function">wcscmp</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> L<span class="token string">&quot;bump&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">*</span>   <span class="token punctuation">{</span>
+<span class="token operator">*</span>       fin<span class="token punctuation">.</span><span class="token function">ignore</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">*</span>       <span class="token comment">// &#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x306E;&#x53D6;&#x5F97;</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-wchar_t">wchar_t</span> map_bump<span class="token punctuation">[</span><span class="token number">256</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       fin <span class="token operator">&gt;&gt;</span> map_bump<span class="token punctuation">;</span>
+<span class="token operator">*</span>       std<span class="token double-colon punctuation">::</span>filesystem<span class="token double-colon punctuation">::</span>path <span class="token function">path</span><span class="token punctuation">(</span>obj_filename<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       path<span class="token punctuation">.</span><span class="token function">replace_filename</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span>filesystem<span class="token double-colon punctuation">::</span><span class="token function">path</span><span class="token punctuation">(</span>map_bump<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filename</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       materials<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span>texture_filenames<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> path<span class="token punctuation">;</span>
+<span class="token operator">*</span>       fin<span class="token punctuation">.</span><span class="token function">ignore</span><span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span> L<span class="token string">&apos;\n&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token punctuation">}</span>
+    <span class="token keyword keyword-else">else</span> <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> <span class="token function">wcscmp</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> L<span class="token string">&quot;newmtl&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        fin<span class="token punctuation">.</span><span class="token function">ignore</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+</pre><hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF13;
+</pre>
+<p>&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3068;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x305F;&#x306E;&#x3067;&#x6B21;&#x306F;&#x3053;&#x308C;&#x3089;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x751F;&#x6210;&#x3092;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3067;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x51FA;&#x3066;&#x3044;&#x308B;&#x3068;&#x601D;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filename<span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    mat<span class="token punctuation">.</span>shader_resource_view<span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>&#x8981;&#x7D20;&#x306E;&#xFF10;&#x756A;&#x306B;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x751F;&#x6210;&#x3092;&#x3001;&#x8981;&#x7D20;&#x306E;&#xFF11;&#x756A;&#x306B;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p>&#x4E0A;&#x306E;&#x90E8;&#x5206;&#x3092;&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x5909;&#x66F4;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p><strong>&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306B;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x304C;&#x8A2D;&#x5B9A;&#x3055;&#x308C;&#x3066;&#x3044;&#x305F;&#x3089;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3059;&#x308B;</strong>&#x3001;&#x3068;&#x3044;&#x3046;&#x4E8B;&#x3092;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x73FE;&#x72B6;&#x3001;&#x8981;&#x7D20;&#x306E;&#xFF10;&#x756A;&#x3067;&#x3042;&#x308B;&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x751F;&#x6210;&#x306E;&#x307F;&#x304C;&#x8A18;&#x8F09;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x8981;&#x7D20;&#x306E;&#xFF11;&#x756A;&#x3067;&#x3042;&#x308B;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3059;&#x308B;&#x306B;&#x306F;&#x3069;&#x306E;&#x3088;&#x3046;&#x306B;&#x3059;&#x308C;&#x3070;&#x826F;&#x3044;&#x3067;&#x3057;&#x3087;&#x3046;&#x304B;&#xFF1F;<br>
+&#x307B;&#x307C;&#x307B;&#x307C;&#x540C;&#x3058;&#x3067;&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x751F;&#x6210;&#x306E;&#x4E0B;&#x306B;&#x305D;&#x306E;&#x307E;&#x307E;&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x3060;&#x3051;&#x306A;&#x306E;&#x3067;&#x5B9F;&#x88C5;&#x3057;&#x3066;&#x307F;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<pre class="language-text">&#x8AB2;&#x984C;&#xFF11;
+    &#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x751F;&#x6210;&#x3092;&#x5B9F;&#x88C5;&#x3057;&#x3066;&#x4E0B;&#x3055;&#x3044;&#x3002;
+</pre>
+<hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF14;
+</pre>
+<p>&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30EA;&#x30BD;&#x30FC;&#x30B9;&#x30D3;&#x30E5;&#x30FC;&#x3082;&#x5909;&#x6570;&#x540D;&#x3092;&#x5909;&#x66F4;&#x3057;&#x914D;&#x5217;&#x306B;&#x3057;&#x305F;&#x306E;&#x3067;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3067;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x51FA;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">immediate_context<span class="token operator">-&gt;</span><span class="token function">PSSetShaderResources</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> mat<span class="token punctuation">.</span>shader_resource_view<span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>&#x3053;&#x306E;&#x90E8;&#x5206;&#x3092;&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092; <strong>t0</strong> &#x306B;&#x767B;&#x9332;&#x3057;&#x3001;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092; <strong>t1</strong> &#x306B;&#x767B;&#x9332;&#x3057;&#x3066;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::render(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    <span class="token comment">// &#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;&#x3092;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x306B;&#x8A2D;&#x5B9A;</span>
+<span class="token operator">*</span>   immediate_context<span class="token operator">-&gt;</span><span class="token function">PSSetShaderResources</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token comment">// &#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x5074;&#x306B;&#x8A2D;&#x5B9A;</span>
+<span class="token operator">*</span>   immediate_context<span class="token operator">-&gt;</span><span class="token function">PSSetShaderResources</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p><strong>PSSetShaderResources(...)</strong> &#x306E;&#x7B2C;&#xFF11;&#x5F15;&#x6570;&#x306B;&#x8A2D;&#x5B9A;&#x3059;&#x308B;&#x5024;&#x306B;&#x6CE8;&#x610F;&#x3057;&#x3066;&#x4E0B;&#x3055;&#x3044;&#x3002;&#x3053;&#x306E;&#x5024;&#x3067; <strong>t0</strong> <strong>t1</strong> &#x3069;&#x3061;&#x3089;&#x306B;&#x767B;&#x9332;&#x3055;&#x308C;&#x308B;&#x304B;&#x304C;&#x6C7A;&#x5B9A;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;</p>
+<hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF15;
+</pre>
+<p>&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF14;&#x3067;&#x767B;&#x9332;&#x3057;&#x305F; <strong>t1</strong> &#x306E;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x306B;&#x5B9A;&#x7FA9;&#x3057;&#x3001;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D4;&#x30F3;&#x30B0;&#x306E;&#x51E6;&#x7406;&#x3092;&#x5B9F;&#x88C5;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh_ps.hlsl</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="hlsl" class="language-hlsl">    <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&quot;static_mesh.hlsli&quot;</span></span>
+    <span class="token class-name">Texture2D</span> color_map <span class="token operator">:</span> <span class="token keyword keyword-register">register</span><span class="token punctuation">(</span>t0<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>   <span class="token class-name">Texture2D</span> normal_map <span class="token operator">:</span> <span class="token keyword keyword-register">register</span><span class="token punctuation">(</span>t1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">SamplerState</span> point_sampler_state <span class="token operator">:</span> <span class="token keyword keyword-register">register</span><span class="token punctuation">(</span>s0<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+
+    <span class="token keyword keyword-float4">float4</span> <span class="token function">main</span><span class="token punctuation">(</span>VS_OUT pin<span class="token punctuation">)</span> <span class="token operator">:</span> SV_TARGET
+    <span class="token punctuation">{</span>
+        &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+        <span class="token keyword keyword-float3">float3</span> N <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span>pin<span class="token punctuation">.</span>world_normal<span class="token punctuation">.</span>xyz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">*</span>       <span class="token keyword keyword-float3">float3</span> T <span class="token operator">=</span> <span class="token keyword keyword-float3">float3</span><span class="token punctuation">(</span><span class="token number">1.0001</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-float3">float3</span> B <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">cross</span><span class="token punctuation">(</span>N<span class="token punctuation">,</span> T<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       T <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token function">cross</span><span class="token punctuation">(</span>B<span class="token punctuation">,</span> N<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">*</span>       <span class="token keyword keyword-float4">float4</span> normal <span class="token operator">=</span> normal_map<span class="token punctuation">.</span><span class="token function">Sample</span><span class="token punctuation">(</span>linear_sampler_state<span class="token punctuation">,</span> pin<span class="token punctuation">.</span>texcoord<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       normal <span class="token operator">=</span> <span class="token punctuation">(</span>normal <span class="token operator">*</span> <span class="token number">2.0</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1.0</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       normal<span class="token punctuation">.</span>w <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       N <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token punctuation">(</span>normal<span class="token punctuation">.</span>x <span class="token operator">*</span> T<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>normal<span class="token punctuation">.</span>y <span class="token operator">*</span> B<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>normal<span class="token punctuation">.</span>z <span class="token operator">*</span> N<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword keyword-float3">float3</span> L <span class="token operator">=</span> <span class="token function">normalize</span><span class="token punctuation">(</span><span class="token operator">-</span>light_direction<span class="token punctuation">.</span>xyz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+</pre><hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF12;&#xFF0D;&#xFF16;
+</pre>
+<p>&#x5B9F;&#x884C;&#x3057;&#x3066;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%90%E3%83%B3%E3%83%97%E3%83%9E%E3%83%83%E3%83%9702.png?0.1949202132051029" alt></p>
+<hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF13;&#xFF0D;&#xFF11;
+</pre>
+<p>&#x73FE;&#x72B6;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x6301;&#x3063;&#x3066;&#x3044;&#x306A;&#x3044; OBJ &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3082;&#x3046;&#x3068;&#x3059;&#x308B;&#x3068;&#x30D7;&#x30ED;&#x30B0;&#x30E9;&#x30E0;&#x304C;&#x505C;&#x6B62;&#x306B;&#x3057;&#x3066;&#x3057;&#x307E;&#x3044;&#x307E;&#x3059;&#x3002;<br>
+&#x3053;&#x308C;&#x3089;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x308B;&#x3088;&#x3046;&#x306B;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x4F5C;&#x308A;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x3066;&#x8D77;&#x52D5;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token operator">*</span>   <span class="token comment">//_ASSERT_EXPR(fin, L&quot;&apos;OBJ file not found.&quot;);</span>
+</pre><hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF13;&#xFF0D;&#xFF12;
+</pre>
+<p>&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x306A;&#x3044;&#x306E;&#x3067;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306E;&#x60C5;&#x5831;&#x304C;&#xFF10;&#x306B;&#x306A;&#x308B;<br>
+&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x306A;&#x3044;&#x3068;&#x3044;&#x3046;&#x3060;&#x3051;&#x3067;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x540D;&#x306F; OBJ &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x5074;&#x306B;&#x8A2D;&#x5B9A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x306E;&#x3067;&#x3001;&#x3072;&#x3068;&#x307E;&#x305A;&#x30B5;&#x30D6;&#x30BB;&#x30C3;&#x30C8;&#x306B;&#x767B;&#x9332;&#x3057;&#x305F;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x540D;&#x3067;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x3092;&#x8A2D;&#x5B9A;&#x3057;&#x3066;&#x304A;&#x304F;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+    hr <span class="token operator">=</span> device<span class="token operator">-&gt;</span><span class="token function">CreateBuffer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buffer_desc<span class="token punctuation">,</span> <span class="token keyword keyword-nullptr">nullptr</span><span class="token punctuation">,</span> constant_buffer<span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">_ASSERT_EXPR</span><span class="token punctuation">(</span><span class="token function">SUCCEEDED</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">hr_trace</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">*</span>   <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>materials<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">*</span>   <span class="token punctuation">{</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-for">for</span> <span class="token punctuation">(</span><span class="token keyword keyword-const">const</span> subset<span class="token operator">&amp;</span> s <span class="token operator">:</span> subsets<span class="token punctuation">)</span>
+<span class="token operator">*</span>       <span class="token punctuation">{</span>
+<span class="token operator">*</span>           materials<span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token punctuation">{</span> s<span class="token punctuation">.</span>usemtl <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token punctuation">}</span>
+<span class="token operator">*</span>   <span class="token punctuation">}</span>
+
+    <span class="token comment">// &#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3060;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3059;&#x308B;</span>
+    D3D11_TEXTURE2D_DESC texture2d_desc<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+</pre><hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF13;&#xFF0D;&#xFF13;
+</pre>
+<p>&#x6B21;&#x306F;&#x3053;&#x306E;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306B;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x767B;&#x9332;&#x3057;&#x307E;&#x3059;&#x3002;<br>
+&#x63CF;&#x753B;&#x306E;&#x969B;&#x306B;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x5074;&#x3067;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30EA;&#x30BD;&#x30FC;&#x30B9;&#x30D3;&#x30E5;&#x30FC;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x3044;&#x308B;&#x306E;&#x3067;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306E;&#x60C5;&#x5831;&#x304C;&#x7121;&#x3044;&#x3068;&#x30A8;&#x30E9;&#x30FC;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;<br>
+&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3066;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x306B;&#x767B;&#x9332;&#x3057;&#x307E;&#x3059;&#x3002;<br>
+&#x307E;&#x305A;&#x306F;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092; texture.h &#x3068; texture.cpp &#x306B;&#x5B9F;&#x88C5;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>texture.h</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    &#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;&#x30FB;&#x30FB;&#x30FB;
+    <span class="token keyword keyword-void">void</span> <span class="token function">release_all_textures</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">*</span>   <span class="token comment">/// &lt;summary&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x4F5C;&#x6210;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;/summary&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;param name=&quot;device&quot;&gt;&#x30C7;&#x30D0;&#x30A4;&#x30B9;&lt;/param&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;param name=&quot;shader_resource_view&quot;&gt;&#x751F;&#x6210;&#x3055;&#x308C;&#x305F;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&lt;/param&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;param name=&quot;value&quot;&gt;&#x8272;&lt;/param&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;param name=&quot;dimension&quot;&gt;&#x30B5;&#x30A4;&#x30BA;&lt;/param&gt;</span>
+<span class="token operator">*</span>   <span class="token comment">/// &lt;returns&gt;&lt;/returns&gt;</span>
+<span class="token operator">*</span>   HRESULT <span class="token function">make_dummy_texture</span><span class="token punctuation">(</span>
+<span class="token operator">*</span>       ID3D11Device<span class="token operator">*</span> device<span class="token punctuation">,</span> 
+<span class="token operator">*</span>       ID3D11ShaderResourceView<span class="token operator">*</span><span class="token operator">*</span> shader_resource_view<span class="token punctuation">,</span> 
+<span class="token operator">*</span>       DWORD value<span class="token punctuation">,</span> 
+<span class="token operator">*</span>       UINT dimension<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>&#x5B9A;&#x7FA9;&#x3092;&#x5B9F;&#x88C5;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>texture.cpp</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">&#x30FB;&#x30FB;&#x30FB;&#x7701;&#x7565;<span class="token punctuation">(</span>&#x4E0A;&#x306B; <span class="token function">release_all_textures</span><span class="token punctuation">(</span><span class="token punctuation">)</span> &#x306E;&#x5B9A;&#x7FA9;<span class="token punctuation">)</span>&#x30FB;&#x30FB;&#x30FB;
+
+<span class="token comment">/// &lt;summary&gt;</span>
+<span class="token comment">/// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x4F5C;&#x6210;</span>
+<span class="token comment">/// &lt;/summary&gt;</span>
+<span class="token comment">/// &lt;param name=&quot;device&quot;&gt;&#x30C7;&#x30D0;&#x30A4;&#x30B9;&lt;/param&gt;</span>
+<span class="token comment">/// &lt;param name=&quot;shader_resource_view&quot;&gt;&#x751F;&#x6210;&#x3055;&#x308C;&#x305F;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&lt;/param&gt;</span>
+<span class="token comment">/// &lt;param name=&quot;value&quot;&gt;&#x8272;&lt;/param&gt;</span>
+<span class="token comment">/// &lt;param name=&quot;dimension&quot;&gt;&#x30B5;&#x30A4;&#x30BA;&lt;/param&gt;</span>
+<span class="token comment">/// &lt;returns&gt;&lt;/returns&gt;</span>
+HRESULT <span class="token function">make_dummy_texture</span><span class="token punctuation">(</span>
+    ID3D11Device<span class="token operator">*</span> device<span class="token punctuation">,</span>
+    ID3D11ShaderResourceView<span class="token operator">*</span><span class="token operator">*</span> shader_resource_view<span class="token punctuation">,</span> 
+    DWORD value<span class="token punctuation">,</span> 
+    UINT dimension<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    HRESULT hr<span class="token punctuation">{</span> S_OK <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x60C5;&#x5831;&#x3092;&#x8A2D;&#x5B9A;</span>
+    D3D11_TEXTURE2D_DESC texture2d_desc<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>Width <span class="token operator">=</span> dimension<span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>Height <span class="token operator">=</span> dimension<span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>MipLevels <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>ArraySize <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>Format <span class="token operator">=</span> DXGI_FORMAT_R8G8B8A8_UNORM<span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>SampleDesc<span class="token punctuation">.</span>Count <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>SampleDesc<span class="token punctuation">.</span>Quality <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>Usage <span class="token operator">=</span> D3D11_USAGE_DEFAULT<span class="token punctuation">;</span>
+    texture2d_desc<span class="token punctuation">.</span>BindFlags <span class="token operator">=</span> D3D11_BIND_SHADER_RESOURCE<span class="token punctuation">;</span>
+
+    <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30BB;&#x30EB;&#x60C5;&#x5831;&#x3092;&#x8A2D;&#x5B9A;</span>
+    size_t texels <span class="token operator">=</span> dimension <span class="token operator">*</span> dimension<span class="token punctuation">;</span>
+    unique_ptr<span class="token operator">&lt;</span>DWORD<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">&gt;</span> sysmem<span class="token punctuation">{</span> <span class="token generic-function"><span class="token function">make_unique</span><span class="token generic class-name"><span class="token operator">&lt;</span>DWORD<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>texels<span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword keyword-for">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> texels<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
+        sysmem<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> value<span class="token punctuation">;</span>
+
+    D3D11_SUBRESOURCE_DATA subresource_data<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    subresource_data<span class="token punctuation">.</span>pSysMem <span class="token operator">=</span> sysmem<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    subresource_data<span class="token punctuation">.</span>SysMemPitch <span class="token operator">=</span> <span class="token keyword keyword-sizeof">sizeof</span><span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span> <span class="token operator">*</span> dimension<span class="token punctuation">;</span>
+
+    <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x60C5;&#x5831;&#x3067;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x4F5C;&#x6210;</span>
+    ComPtr<span class="token operator">&lt;</span>ID3D11Texture2D<span class="token operator">&gt;</span> texture2d<span class="token punctuation">;</span>
+    hr <span class="token operator">=</span> device<span class="token operator">-&gt;</span><span class="token function">CreateTexture2D</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>subresource_data<span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">_ASSERT_EXPR</span><span class="token punctuation">(</span><span class="token function">SUCCEEDED</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">hr_trace</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x60C5;&#x5831;&#x3067;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x30EA;&#x30BD;&#x30FC;&#x30B9;&#x30D3;&#x30E5;&#x30FC;&#x3092;&#x4F5C;&#x6210;</span>
+    D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    shader_resource_view_desc<span class="token punctuation">.</span>Format <span class="token operator">=</span> texture2d_desc<span class="token punctuation">.</span>Format<span class="token punctuation">;</span>
+    shader_resource_view_desc<span class="token punctuation">.</span>ViewDimension <span class="token operator">=</span> D3D11_SRV_DIMENSION_TEXTURE2D<span class="token punctuation">;</span>
+    shader_resource_view_desc<span class="token punctuation">.</span>Texture2D<span class="token punctuation">.</span>MipLevels <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    hr <span class="token operator">=</span> device<span class="token operator">-&gt;</span><span class="token function">CreateShaderResourceView</span><span class="token punctuation">(</span>
+        texture2d<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token operator">&amp;</span>shader_resource_view_desc<span class="token punctuation">,</span>
+        shader_resource_view<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">_ASSERT_EXPR</span><span class="token punctuation">(</span><span class="token function">SUCCEEDED</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">hr_trace</span><span class="token punctuation">(</span>hr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword keyword-return">return</span> hr<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</pre><hr>
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF13;&#xFF0D;&#xFF14;
+</pre>
+<p>&#x4F5C;&#x6210;&#x30C0;&#x30DF;&#x30FC;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x4F5C;&#x6210;&#x95A2;&#x6570;&#x3092;&#x4F7F;&#x3063;&#x3066;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30AB;&#x30E9;&#x30FC;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x5B9F;&#x969B;&#x306B;&#x4F5C;&#x3063;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;<br>
+&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3060;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x304B;&#x3089;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3068;&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x306B;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D7;&#x7528;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3067;&#x3044;&#x308B;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp"><span class="token keyword keyword-for">for</span> <span class="token punctuation">(</span>material<span class="token operator">&amp;</span> mat <span class="token operator">:</span> materials<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</pre><p>&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x304C;&#x7121;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306E;&#x51E6;&#x7406;&#x3068;&#x3057;&#x3066;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3057;&#x3066;&#x3044;&#x304F;&#x3088;&#x3046;&#x306B;&#x5B9F;&#x88C5;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;</th>
+<th>&#x5B9F;&#x88C5;&#x3059;&#x308B;&#x30E1;&#x30F3;&#x30D0;&#x95A2;&#x6570;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static_mesh.cpp</strong></td>
+<td><strong>static_mesh::static_mesh(...)</strong></td>
+</tr>
+</tbody>
+</table>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">    <span class="token keyword keyword-for">for</span> <span class="token punctuation">(</span>material<span class="token operator">&amp;</span> mat <span class="token operator">:</span> mate&#x3057;&#x3066;&#x304A;&#x3053;&#x3046;&#x3002;
+    <span class="token punctuation">{</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">*</span>       <span class="token punctuation">{</span>
+            <span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token punctuation">}</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-else">else</span>
+<span class="token operator">*</span>       <span class="token punctuation">{</span>
+<span class="token operator">*</span>           <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x7528;&#x306E;&#x30AB;&#x30E9;&#x30FC;&#x30DE;&#x30C3;&#x30D7;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3057;&#x8A2D;&#x5B9A;&#x3059;&#x308B;</span>
+<span class="token operator">*</span>           <span class="token function">make_dummy_texture</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token operator">*</span>           <span class="token number">0xFFFFFFFF</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token punctuation">}</span>
+
+<span class="token operator">*</span>       <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">*</span>       <span class="token punctuation">{</span>
+            <span class="token function">load_texture_from_file</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>texture_filenames<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture2d_desc<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token punctuation">}</span>
+<span class="token operator">*</span>       <span class="token keyword keyword-else">else</span>
+<span class="token operator">*</span>       <span class="token punctuation">{</span>
+<span class="token operator">*</span>           <span class="token comment">// &#x30C0;&#x30DF;&#x30FC;&#x7528;&#x306E;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D7;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x751F;&#x6210;&#x3057;&#x8A2D;&#x5B9A;&#x3059;&#x308B;</span>
+<span class="token operator">*</span>           <span class="token function">make_dummy_texture</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> mat<span class="token punctuation">.</span>shader_resource_views<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetAddressOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token operator">*</span>           <span class="token number">0xFFFF7F7F</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">*</span>       <span class="token punctuation">}</span>
+	
+</pre><p>&#x30AB;&#x30E9;&#x30FC;&#x30DE;&#x30C3;&#x30D7;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3068;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D7;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x306B;&#x8A2D;&#x5B9A;&#x3057;&#x3066;&#x3044;&#x308B;&#x8272;&#x304C;&#x9055;&#x3046;&#x306E;&#x3067;&#x6CE8;&#x610F;&#x3057;&#x3066;&#x304A;&#x3053;&#x3046;&#x3002;</p>
+<p>&#x4F55;&#x3082;&#x8868;&#x793A;&#x3055;&#x308C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x4EE5;&#x4E0B;&#x306E;&#x90E8;&#x5206;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x307F;&#x3088;&#x3046;&#x3002;<br>
+framework.cpp &#x306E;&#x30B5;&#x30F3;&#x30D7;&#x30E9;&#x30FC;&#x30B9;&#x30C6;&#x30FC;&#x30C8;&#x306E;&#x90E8;&#x5206;&#x304C; D3D11_TEXTURE_ADDRESS_WRAP &#x306B;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x304A;&#x3053;&#x3046;&#x3002;</p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp">sampler_desc<span class="token punctuation">.</span>AddressU <span class="token operator">=</span> D3D11_TEXTURE_ADDRESS_WRAP<span class="token punctuation">;</span>
+sampler_desc<span class="token punctuation">.</span>AddressV <span class="token operator">=</span> D3D11_TEXTURE_ADDRESS_WRAP<span class="token punctuation">;</span>
+sampler_desc<span class="token punctuation">.</span>AddressW <span class="token operator">=</span> D3D11_TEXTURE_ADDRESS_WRAP<span class="token punctuation">;</span>
+</pre><p>D3D11_TEXTURE_ADDRESS_BORDER &#x306B;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x3068;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x304C;&#x7E70;&#x308A;&#x8FD4;&#x3055;&#x308C;&#x306A;&#x3044;&#x305F;&#x3081;&#x3001;&#x30C0;&#x30DF;&#x30FC;&#x3067;&#x8A2D;&#x5B9A;&#x3057;&#x305F;&#x8272;&#x304C;&#x7E70;&#x308A;&#x8FD4;&#x3055;&#x308C;&#x308B;&#x3053;&#x3068;&#x306A;&#x304F;&#x3001;&#x7D50;&#x679C;&#x8868;&#x793A;&#x304C;&#x884C;&#x308F;&#x308C;&#x3066;&#x3044;&#x306A;&#x3044;&#x3088;&#x3046;&#x306B;&#x898B;&#x3048;&#x3066;&#x3057;&#x307E;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<hr>
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9spana-name%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9_a"><span style="color:#334488;">&#x30D0;&#x30A6;&#x30F3;&#x30C7;&#x30A3;&#x30F3;&#x30B0;&#x30DC;&#x30C3;&#x30AF;&#x30B9;</span><a name="&#x30D0;&#x30A6;&#x30F3;&#x30C7;&#x30A3;&#x30F3;&#x30B0;&#x30DC;&#x30C3;&#x30AF;&#x30B9;_" href></a></h4>
+
+<pre class="language-text">&#x6F14;&#x7FD2;&#x624B;&#x9806;&#xFF14;
+</pre>
+<p>&#x6F14;&#x7FD2;&#x624B;&#x9806;&#x306E;&#x9806;&#x5E8F;&#x306B;&#x5F93;&#x3044;&#x30D0;&#x30A6;&#x30F3;&#x30C7;&#x30A3;&#x30F3;&#x30B0;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x3092;&#x5B8C;&#x6210;&#x3055;&#x305B;&#x3066;&#x307F;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

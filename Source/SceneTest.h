@@ -30,6 +30,7 @@ public:
     {
         DirectX::XMFLOAT4X4		viewProjection;
         DirectX::XMFLOAT4		lightDirection;
+        DirectX::XMFLOAT4		camera_position;
     };
     // シーン定数バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
@@ -44,7 +45,9 @@ private:
      L".\\Data\\Sprite\\vice.png" };
 
     const wchar_t* modelfilename[8] = {
-        L".\\Data\\resources\\Mr.Incredible\\Mr.Incredible.obj"
+        L".\\Data\\resources\\Rock\\Rock.obj",
+        L".\\Data\\resources\\cube.obj",
+           L".\\Data\\resources\\Mr.Incredible\\Mr.Incredible.obj"
     };
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;

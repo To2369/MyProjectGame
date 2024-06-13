@@ -26,4 +26,11 @@ public:
 
 	//全てのテクスチャを解放
 	void release_all_textures(); 
+
+	//ダミーテクスチャを作成(value=色,dimension=サイズ)
+	HRESULT MakeDummyTexture(ID3D11Device* device, ID3D11ShaderResourceView** shader_resource_view, DWORD value,
+		UINT dimension);
+
+	// 定数バッファ作成
+	HRESULT CreateConstantBuffer(ID3D11Device* device, UINT bufferSize, ID3D11Buffer** constantBuffer);
 };

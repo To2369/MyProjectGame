@@ -34,6 +34,8 @@ void SceneTest::Initialize()
     geometric_primitives[1] = std::make_unique<GeometricCube>(graphics->GetDevice());
 
     static_mesh[0] = std::make_unique<StaticMesh>(graphics->GetDevice(),modelfilename[0],true);
+    //バウンディングボックス
+    static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 }
 
 //終了化
@@ -130,11 +132,12 @@ void SceneTest::Render()
     Scene_constants scene_data{};
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, V * P);
     scene_data.lightDirection = light_direction;
+    scene_data.camera_position = camera_position;
 #endif
 
     // 3D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
 
@@ -187,7 +190,34 @@ void SceneTest::Render()
             // ワールド変換行列
             DirectX::XMFLOAT4X4 world;
             DirectX::XMStoreFloat4x4(&world, S* R* T);
-            static_mesh[0]->Render(dc, world, { 1.0f,1.0f,1.0f,1.0f });
+            static_mesh[0]->Render(dc, world, { 1.0f,1.0f,1.0f,1.0f },PIXEL_SHADER_STATE::DEFAULT);
+            {
+                dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::WIRE_CULLNONE));
+                // バウンディングボックスの大きさを更新
+                const DirectX::XMFLOAT3 min[2]{ static_mesh[0]->bounding_box[0], static_mesh[1]->bounding_box[0] };
+                const DirectX::XMFLOAT3 max[2]{ static_mesh[0]->bounding_box[1], static_mesh[1]->bounding_box[1] };
+                DirectX::XMFLOAT3 dimensions[2]
+                {
+                { max[0].x - min[0].x, max[0].y - min[0].y, max[0].z - min[0].z },
+                { max[1].x - min[1].x, max[1].y - min[1].y, max[1].z - min[1].z }
+                };
+                // バウンディングボックスの位置を更新
+                DirectX::XMFLOAT3 barycenters[2]
+                {
+                { (max[0].x + min[0].x) * 0.5f, (max[0].y + min[0].y) * 0.5f, (max[0].z + min[0].z) * 0.5f },
+                { (max[1].x + min[1].x) * 0.5f, (max[1].y + min[1].y) * 0.5f, (max[1].z + min[1].z) * 0.5f }
+                };
+                DirectX::XMFLOAT3 ratio{ dimensions[0].x / dimensions[1].x, dimensions[0].y / dimensions[1].y, dimensions[0].z / dimensions[1].z };
+                DirectX::XMFLOAT3 offset{ barycenters[0].x - barycenters[1].x, barycenters[0].y - barycenters[1].y, barycenters[0].z - barycenters[1].z };
+                DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(ratio.x * scaling.x, ratio.y * scaling.y, ratio.z * scaling.z) };
+                DirectX::XMMATRIX O{ DirectX::XMMatrixTranslation(offset.x, offset.y, offset.z) };
+                DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
+                DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x, tramslation.y, tramslation.z) };
+                DirectX::XMFLOAT4X4 world;
+                DirectX::XMStoreFloat4x4(&world, S* O* R* T);
+                static_mesh[1]->Render(dc, world, { 1, 0, 0, 1 },PIXEL_SHADER_STATE::GEOMETRICPRIMITEVE);
+            }
+            
         }
     }
 

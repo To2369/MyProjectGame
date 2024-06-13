@@ -116,3 +116,51 @@ void ShaderManager::release_all_textures()
 {
     resources.clear();
 }
+
+HRESULT ShaderManager::MakeDummyTexture(ID3D11Device* device, ID3D11ShaderResourceView** shader_resource_view, DWORD value,
+    UINT dimension)
+{
+    HRESULT hr{ S_OK };
+
+    //ダミーのテクスチャ情報
+    D3D11_TEXTURE2D_DESC texture2d_desc{};
+    texture2d_desc.Width = dimension;
+    texture2d_desc.Height = dimension;
+    texture2d_desc.MipLevels = 1;
+    texture2d_desc.ArraySize = 1;
+    texture2d_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texture2d_desc.SampleDesc.Count = 1;
+    texture2d_desc.SampleDesc.Quality = 0;
+    texture2d_desc.Usage = D3D11_USAGE_DEFAULT;
+    texture2d_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    //ダミーのテクセル情報を設定
+    size_t texsels = dimension * dimension;
+    std::unique_ptr<DWORD[]> sysmem{ std::make_unique<DWORD[]>(texsels) };
+    for (size_t i = 0; i < texsels; i++)
+    {
+        sysmem[i] = value;
+    }
+
+    D3D11_SUBRESOURCE_DATA subresource_data{};
+    subresource_data.pSysMem = sysmem.get();
+    subresource_data.SysMemPitch = sizeof(DWORD) * dimension;
+
+    //ダミーの情報でテクスチャを作成
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
+    hr = device->CreateTexture2D(&texture2d_desc, &subresource_data, &texture2d);
+    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+    //ダミーのテクスチャ情報でシェーダーリソースビューを作成
+    D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
+    shader_resource_view_desc.Format = texture2d_desc.Format;
+    shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    shader_resource_view_desc.Texture2D.MipLevels = 1;
+    hr = device->CreateShaderResourceView(
+        texture2d.Get(),
+        &shader_resource_view_desc,
+        shader_resource_view);
+    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+    return hr;
+}

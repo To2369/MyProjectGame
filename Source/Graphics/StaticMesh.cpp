@@ -128,7 +128,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
     mtl_filename.replace_filename(std::filesystem::path(mtl_filenames[0]).filename());
     //マテリアルファイルを開く
     fin.open(mtl_filename);
-    _ASSERT_EXPR(fin, L"MTL file not found.");
+    //_ASSERT_EXPR(fin, L"MTL file not found.");
     while (fin)
     {
         //1番上にある1行を取得
@@ -145,7 +145,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //テクスチャファイル名にパスを取り付ける
             std::filesystem::path path_(obj_filename);
             path_.replace_filename(std::filesystem::path(map_Ka).filename());
-            materials.rbegin()->texture_filename = path_;
+            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
 
             fin.ignore(1024, L'\n');
         }
@@ -160,7 +160,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //テクスチャファイル名にパスを取り付ける
             std::filesystem::path path_(obj_filename);
             path_.replace_filename(std::filesystem::path(map_Kd).filename());
-            materials.rbegin()->texture_filename = path_;
+            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
 
             fin.ignore(1024, L'\n');
         }
@@ -175,8 +175,21 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             //テクスチャファイル名にパスを取り付ける
             std::filesystem::path path_(obj_filename);
             path_.replace_filename(std::filesystem::path(map_Ks).filename());
-            materials.rbegin()->texture_filename = path_;
+            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
 
+            fin.ignore(1024, L'\n');
+        }
+        else if (0 == wcscmp(command, L"map_bump") || 0 == wcscmp(command, L"bump"))
+        {
+            fin.ignore();
+            //パンプマップ用のテクスチャファイル名の取得
+            //パンプマッピングを適用すると凹凸の表現をする
+            wchar_t map_bump[256];
+            fin >> map_bump;
+
+            std::filesystem::path path_(obj_filename);
+            path_.replace_filename(std::filesystem::path(map_bump).filename());
+            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)] = path_;
             fin.ignore(1024, L'\n');
         }
         else if (0 == wcscmp(command, L"newmtl"))
@@ -188,7 +201,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin >> newmtl;
             mat.name = newmtl;
             //マテリアルの取り付け
-            materials.emplace_back(mat);
+            materials.push_back(mat);
         }
         else if (0 == wcscmp(command, L"Ka"))
         {
@@ -219,6 +232,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore(1024, L'\n');
         }
     }
+    fin.close();
 
     //頂点バッファのオブジェクトの作成
     Create_com_buffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
@@ -245,7 +259,11 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
     //ピクセルシェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\StaticMesh_ps.cso",
-            pixel_shader.GetAddressOf());
+            pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::DEFAULT)].GetAddressOf());
+    }
+    {
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_ps.cso",
+            pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::GEOMETRICPRIMITEVE)].GetAddressOf());
     }
 
     //定数バッファの生成
@@ -258,22 +276,60 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
         _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
     }
 
+    if (materials.size() == 0)
+    {
+        for (const subset& subset_ : subsets)
+        {
+            materials.push_back({ subset_.usemtl });
+        }
+    }
+
     //読み込んだテクスチャを生成
     D3D11_TEXTURE2D_DESC texture2d_desc{};
     {
         for (material& mat : materials)
         {
-            ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filename.c_str(),
-                mat.shader_resource_view.GetAddressOf(), &texture2d_desc);
+            if (mat.texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)].size() > 0)
+            {
+                ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)].c_str(),
+                    mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(), &texture2d_desc);
+            }
+            else
+            {
+                //ダミー用のカラーマップテクスチャを生成し設定する
+                ShaderManager::Instance()->MakeDummyTexture(device, mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(),
+                    0xFFFFFFFF, 16);
+            }
 
+            if (mat.texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)].size() > 0)
+            {
+                ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)].c_str(),
+                    mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(), &texture2d_desc);
+            }
+            else
+            {
+                //ダミー用の法線マップテクスチャを生成し設定する
+                ShaderManager::Instance()->MakeDummyTexture(device, mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(),
+                    0xFFFFFFFF, 16);
+            }
         }
-
+        //読み込んだ頂点座標の x y z の最小、最大をそれぞれバウンディングボックスに設定する
+        for (const vertex& v : vertices)
+        {
+            bounding_box[0].x = std::min<float>(bounding_box[0].x, v.position.x);
+            bounding_box[0].y = std::min<float>(bounding_box[0].y, v.position.y);
+            bounding_box[0].z = std::min<float>(bounding_box[0].z, v.position.z);
+            bounding_box[1].x = std::max<float>(bounding_box[1].x, v.position.x);
+            bounding_box[1].y = std::max<float>(bounding_box[1].y, v.position.y);
+            bounding_box[1].z = std::max<float>(bounding_box[1].z, v.position.z);
+        }
     }
 }
 
 //描画処理
 void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
-    const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color)
+    const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color,
+    PIXEL_SHADER_STATE state)
 {
     uint32_t stride{ sizeof(vertex) };
     uint32_t offset{ 0 };
@@ -284,11 +340,14 @@ void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
     immediate_context->IASetInputLayout(input_layout.Get());
 
     immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+    //切替用のピクセルシェーダーがあったらそちらを設定
+    immediate_context->PSSetShader(pixel_shaders[static_cast<int>(state)].Get(), nullptr, 0);
     for (const material& material_ : materials)
     {
-        immediate_context->PSSetShaderResources(0, 1, material_.shader_resource_view.GetAddressOf());
-
+        immediate_context->PSSetShaderResources(0, 1, 
+            material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf());
+        immediate_context->PSSetShaderResources(1, 1,
+            material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf());
         //定数バッファとして、ワールド行列とマテリアルカラーを設定
         constants data{ world,material_color };
         //マテリアルカラーは読み込んだ色も反映

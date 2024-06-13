@@ -1,0 +1,347 @@
+<!DOCTYPE html><html><head>
+      <title>UNIT_16_&#x5B66;&#x7FD2;&#x8981;&#x9805;</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\71447\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.6.8\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p,html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  300px/2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="unit16_learning-advanced-static-mesh-%E5%AD%A6%E7%BF%92%E8%A6%81%E9%A0%85">UNIT16_LEARNING ADVANCED STATIC MESH &#x5B66;&#x7FD2;&#x8981;&#x9805;</h1>
+
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488phong-shadingspan"><span style="color:#334488;">Phong shading</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%95%E3%82%A9%E3%83%B3%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0span"><span style="color:#334488;">&#x30D5;&#x30A9;&#x30F3;&#x30B7;&#x30A7;&#x30FC;&#x30C7;&#x30A3;&#x30F3;&#x30B0;</span></h4>
+
+<p>&#x7269;&#x4F53;&#x306B;&#x76F4;&#x63A5;&#x3042;&#x305F;&#x308B;&#x5149;&#x3092;&#x8A08;&#x7B97;&#x3059;&#x308B;&#x5C40;&#x6240;&#x7167;&#x660E;&#x30E2;&#x30C7;&#x30EB;&#x306E;&#xFF11;&#x3064;&#x3092;<strong>&#x30D5;&#x30A9;&#x30F3;&#x53CD;&#x5C04;&#x30E2;&#x30C7;&#x30EB;</strong>&#x3068;&#x547C;&#x3073;&#x3001;&#x3053;&#x308C;&#x3092;&#x30B7;&#x30A7;&#x30FC;&#x30C0;&#x30FC;&#x3067;&#x8868;&#x73FE;&#x3059;&#x308B;&#x6280;&#x6CD5;&#x3092;<strong>&#x30D5;&#x30A9;&#x30F3;&#x30B7;&#x30A7;&#x30FC;&#x30C7;&#x30A3;&#x30F3;&#x30B0;</strong>&#x3068;&#x547C;&#x3073;&#x307E;&#x3059;&#x3002;</p>
+<p><strong>&#x30D5;&#x30A9;&#x30F3;&#x53CD;&#x5C04;&#x30E2;&#x30C7;&#x30EB;</strong>&#x3067;&#x306F;&#x3001;&#x7269;&#x4F53;&#x306B;&#x76F4;&#x63A5;&#x3042;&#x305F;&#x308B;&#x5149;&#x3092;<strong>&#x62E1;&#x6563;&#x53CD;&#x5C04;&#x30FB;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x30FB;&#x74B0;&#x5883;&#x53CD;&#x5C04;</strong>&#x306E;&#xFF13;&#x3064;&#x306B;&#x5206;&#x3051;&#x3066;&#x8003;&#x3048;&#x307E;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%95%E3%82%A9%E3%83%B3%E5%8F%8D%E5%B0%84%E3%83%A2%E3%83%87%E3%83%AB01.png?0.09942814768078279" alt></p>
+<p>&#x62E1;&#x6563;&#x30FB;&#x93E1;&#x9762;&#x30FB;&#x74B0;&#x5883;&#x306E;&#x305D;&#x308C;&#x305E;&#x308C;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x3069;&#x306E;&#x3088;&#x3046;&#x306B;&#x5149;&#x3092;&#x53CD;&#x5C04;&#x3059;&#x308B;&#x306E;&#x304B;&#x3092;&#x6C7A;&#x3081;&#x3066;&#x3044;&#x304F;&#x3053;&#x3068;&#x3067;&#x3001;&#x7269;&#x4F53;&#x306E;&#x8272;&#x3084;&#x8CEA;&#x611F;&#x3092;&#x8868;&#x73FE;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488specular-reflectionspan"><span style="color:#334488;">Specular reflection</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%84span"><span style="color:#334488;">&#x93E1;&#x9762;&#x53CD;&#x5C04;</span></h4>
+
+<p>&#x30E9;&#x30A4;&#x30C6;&#x30A3;&#x30F3;&#x30B0;&#x306E;&#x624B;&#x6CD5;&#x306E;&#xFF11;&#x3064;&#x3067;&#x91D1;&#x5C5E;&#x306A;&#x3069;&#x30C4;&#x30EB;&#x30C4;&#x30EB;&#x3057;&#x305F;&#x7269;&#x4F53;&#x306B;&#x5149;&#x304C;&#x5F53;&#x305F;&#x308B;&#x3068;&#x93E1;&#x306E;&#x3088;&#x3046;&#x306B;&#x5149;&#x3092;&#x53CD;&#x5C04;&#x3057;&#x307E;&#x3059;&#x3002;&#x6B63;&#x78BA;&#x306B;&#x8868;&#x73FE;&#x3057;&#x3088;&#x3046;&#x3068;&#x3059;&#x308B;&#x3068;&#x8A08;&#x7B97;&#x91CF;&#x304C;&#x81A8;&#x5927;&#x306B;&#x306A;&#x3063;&#x3066;&#x3057;&#x307E;&#x3046;&#x306E;&#x3067;&#x5149;&#x6E90;&#x3092;&#x70B9;&#x3068;&#x8003;&#x3048;&#x30CF;&#x30A4;&#x30E9;&#x30A4;&#x30C8;&#x3092;&#x4ED8;&#x3051;&#x308B;&#x4E8B;&#x3067;&#x4F3C;&#x305F;&#x3088;&#x3046;&#x306A;&#x8868;&#x73FE;&#x3092;&#x518D;&#x73FE;&#x3057;&#x307E;&#x3059;&#x3002;<br>
+&#x3000;&#x53CD;&#x5C04;&#x3059;&#x308B;&#x65B9;&#x5411;&#x306F;&#x5149;&#x306E;&#x5F53;&#x305F;&#x3063;&#x305F;&#x9762;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x53CD;&#x5BFE;&#x65B9;&#x5411;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;&#x3053;&#x306E;&#x53CD;&#x5C04;&#x3057;&#x305F;&#x5149;&#x304C;&#x3069;&#x306E;&#x304F;&#x3089;&#x3044;&#x30AB;&#x30E1;&#x30E9;&#x306B;&#x5411;&#x304B;&#x3063;&#x3066;&#x3044;&#x308B;&#x304B;&#x3092;&#x8A08;&#x7B97;&#x3057;&#x3066;&#x30CF;&#x30A4;&#x30E9;&#x30A4;&#x30C8;&#x3092;&#x52A0;&#x3048;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;<br>
+&#x3000;&#x5B8C;&#x5168;&#x306A;&#x93E1;&#x3067;&#x306F;&#x6B63;&#x53CD;&#x5C04;&#x65B9;&#x5411;&#x306E;&#x307F;&#x3067;&#x3059;&#x304C;&#x3001;&#x30C4;&#x30EB;&#x30C4;&#x30EB;&#x3050;&#x3042;&#x3044;&#x306B;&#x3088;&#x3063;&#x3066;&#x6B63;&#x53CD;&#x5C04;&#x3092;&#x4E2D;&#x5FC3;&#x306B;&#x3057;&#x305F;&#x7BC4;&#x56F2;&#x306B;&#x5E83;&#x304C;&#x3063;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;&#x898B;&#x3066;&#x3044;&#x308B;&#x4EBA;&#x306E;&#x4F4D;&#x7F6E;&#x304C;&#x6B63;&#x53CD;&#x5C04;&#x65B9;&#x5411;&#x306B;&#x3042;&#x308B;&#x5834;&#x5408;&#x5149;&#x304C;&#x3088;&#x304F;&#x898B;&#x3048;&#x3001;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x306E;&#x5834;&#x5408;&#x5149;&#x306F;&#x3042;&#x307E;&#x308A;&#x898B;&#x3048;&#x307E;&#x305B;&#x3093;&#x3002;<strong>&#x3064;&#x307E;&#x308A;&#x93E1;&#x9762;&#x53CD;&#x5C04;&#x306E;&#x8A08;&#x7B97;&#x306B;&#x306F;&#x30AB;&#x30E1;&#x30E9;&#x306E;&#x5EA7;&#x6A19;&#x304C;&#x5FC5;&#x8981;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</strong></p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E9%8F%A1%E9%9D%A2%E5%8F%8D%E5%B0%8401.png?0.595617750095238" alt></p>
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488bump-mapspan"><span style="color:#334488;">Bump map</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%90%E3%83%B3%E3%83%97%E3%83%9E%E3%83%83%E3%83%97span"><span style="color:#334488;">&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;</span></h4>
+
+<p>&#x4E00;&#x8A00;&#x3067;&#x8AAC;&#x660E;&#x3059;&#x308B;&#x3068;&#x300C;&#x51F8;&#x51F9;&#x3092;&#x8868;&#x73FE;&#x3059;&#x308B;&#x300D;&#x6280;&#x8853;&#x3067;&#x3059;&#x3002;</p>
+<p>&#x30EC;&#x30F3;&#x30C0;&#x30EA;&#x30F3;&#x30B0;&#x3059;&#x308B;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306E;&#x9762;&#x306E;&#x6CD5;&#x7DDA;&#x306B;&#x5BFE;&#x3059;&#x308B;&#x63FA;&#x3089;&#x304E;&#x3092;&#x30CF;&#x30A4;&#x30C8;&#x30DE;&#x30C3;&#x30D7;&#xFF08;&#x9AD8;&#x4F4E;&#x30DE;&#x30C3;&#x30D7;&#xFF09;&#x3067;&#x8ABF;&#x3079;&#x3066;&#x3001;&#x5149;&#x6E90;&#x8A08;&#x7B97;&#x306E;&#x5B8C;&#x4E86;&#x524D;&#x306B;&#x5404;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x9069;&#x7528;&#x3059;&#x308B;&#x3001;CG&#x306E;&#x6280;&#x8853;&#x3067;&#x3042;&#x308B;&#x3002;</p>
+<p>&#x30E2;&#x30C7;&#x30EB;&#x306B;&#x901A;&#x5E38;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3068;&#x306F;&#x5225;&#x306B;&#x9AD8;&#x4F4E;&#x306E;&#x60C5;&#x5831;&#x3092;&#x6301;&#x3064;&#x30CF;&#x30A4;&#x30C8;&#x30DE;&#x30C3;&#x30D7;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;&#x7591;&#x4F3C;&#x7684;&#x306B;&#x5F71;&#x3084;&#x30CF;&#x30A4;&#x30E9;&#x30A4;&#x30C8;&#x3092;&#x4F5C;&#x308A;&#x3001;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x3067;&#x51F8;&#x51F9;&#x3092;&#x3064;&#x3051;&#x3066;&#x3044;&#x306A;&#x304F;&#x3066;&#x3082;&#x898B;&#x305F;&#x76EE;&#x4E0A;&#x306E;&#x51F8;&#x51F9;&#x611F;&#x3092;&#x8868;&#x73FE;&#x3067;&#x304D;&#x308B;&#x3001;&#x3068;&#x3044;&#x3046;&#x3082;&#x306E;&#x3067;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%90%E3%82%A4%E3%83%88%E3%83%9E%E3%83%83%E3%83%97%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF01.png?0.8910872214772942" alt></p>
+<p>&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D4;&#x30F3;&#x30B0;&#x306E;&#x30CF;&#x30A4;&#x30C8;&#x30DE;&#x30C3;&#x30D7;&#x306B;&#x306F;&#x30B0;&#x30EC;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30EB;&#x753B;&#x50CF;&#x3092;&#x5229;&#x7528;&#x3057;&#x307E;&#x3059;&#x3002;<br>
+&#x767D;&#x304C;&#x9AD8;&#x3044;&#x90E8;&#x5206;&#x3001;&#x9ED2;&#x304C;&#x4F4E;&#x3044;&#x90E8;&#x5206;&#x3092;&#x8868;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%8F%E3%82%A4%E3%83%88%E3%83%9E%E3%83%83%E3%83%9701.png?0.3040589325589522" alt></p>
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488normal-mappingspan"><span style="color:#334488;">Normal mapping</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E6%B3%95%E7%B7%9A%E3%83%9E%E3%83%83%E3%83%94%E3%83%B3%E3%82%B0span"><span style="color:#334488;">&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D4;&#x30F3;&#x30B0;</span></h4>
+
+<p>&#x6CD5;&#x7DDA;&#x60C5;&#x5831;&#x3092;&#x4F7F;&#x3046;&#x3053;&#x3068;&#x3067;&#x3055;&#x3089;&#x306B;&#x7D30;&#x304B;&#x306A;&#x51F9;&#x51F8;&#x3092;&#x8868;&#x73FE;&#x3059;&#x308B;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;<br>
+&#x30D0;&#x30F3;&#x30D7;&#x30DE;&#x30C3;&#x30D7;&#x3067;&#x3082;&#x9AD8;&#x4F4E;&#x5DEE;&#x306F;&#x8868;&#x73FE;&#x3067;&#x304D;&#x307E;&#x3059;&#x304C;&#x3001;&#x5B9F;&#x969B;&#x306F;&#x6CD5;&#x7DDA;&#x306B;&#x5FDC;&#x3058;&#x3066;&#x30CF;&#x30A4;&#x30E9;&#x30A4;&#x30C8;&#x306A;&#x3069;&#x306E;&#x304B;&#x304B;&#x308A;&#x65B9;&#x304C;&#x5909;&#x308F;&#x3063;&#x3066;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x30CE;&#x30FC;&#x30DE;&#x30EB;&#x30DE;&#x30C3;&#x30D4;&#x30F3;&#x30B0;&#x306B;&#x4F7F;&#x3046;&#x30CE;&#x30FC;&#x30DE;&#x30EB;&#x30DE;&#x30C3;&#x30D7;&#xFF08;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D7;&#xFF09;&#x306B;&#x306F;&#x3001;&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306B;&#x6C34;&#x8272;&#x3001;&#x7D2B;&#x3001;&#x30D4;&#x30F3;&#x30AF;&#x3068;&#x3044;&#x3046;&#x8272;&#x304C;&#x4F7F;&#x308F;&#x308C;&#x3066;&#x3044;&#x308B;&#x3053;&#x3068;&#x304C;&#x591A;&#x3044;&#x3067;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%8E%E3%83%BC%E3%83%9E%E3%83%AB%E3%83%9E%E3%83%83%E3%83%9701.png?0.05550678446412194" alt></p>
+<p>&#x30CF;&#x30A4;&#x30C8;&#x30DE;&#x30C3;&#x30D7;&#x304C;&#x9AD8;&#x3055;&#x306E;&#x60C5;&#x5831;&#x306E;&#x307F;&#x3092;&#x4FDD;&#x6301;&#x3059;&#x308B;&#x306E;&#x306B;&#x5BFE;&#x3057;&#x3001;&#x30CE;&#x30FC;&#x30DE;&#x30EB;&#x30DE;&#x30C3;&#x30D7;&#x306B;&#x306F;&#x30D4;&#x30AF;&#x30BB;&#x30EB;&#x5358;&#x4F4D;&#x3067;&#x9762;&#x306E;&#x5411;&#x304D;&#x304C;&#x3069;&#x3061;&#x3089;&#x3092;&#x5411;&#x3044;&#x3066;&#x3044;&#x308B;&#x304B;&#xFF08;&#x6CD5;&#x7DDA;&#x30D9;&#x30AF;&#x30C8;&#x30EB;&#xFF09;&#x3068;&#x3044;&#x3046;XYZ&#x306E;&#x6570;&#x5024;&#x304C;&#x8272;&#x60C5;&#x5831;&#x3068;&#x3057;&#x3066;&#x683C;&#x7D0D;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p><strong>&#x6CD5;&#x7DDA;&#x30D9;&#x30AF;&#x30C8;&#x30EB;</strong>&#x306E;X&#x6210;&#x5206;&#xFF08;-1.0<sub>1.0&#xFF09;&#x304C;&#x8D64;&#xFF08;0</sub>255&#xFF09;&#x3001;Y&#x6210;&#x5206;&#x304C;&#x7DD1;&#x3001;Z&#x6210;&#x5206;&#x304C;&#x9752;&#x306B;&#x5F53;&#x305F;&#x308A;&#x307E;&#x3059;&#x304C;&#x3001;&#x5E73;&#x9762;&#x306F;&#x5E38;&#x306B;Z+&#x65B9;&#x5411;&#x3092;&#x5411;&#x3044;&#x3066;&#x3044;&#x308B;&#x305F;&#x3081;&#x3001;Z&#x6210;&#x5206;&#x304C;&#x5F37;&#x304F;&#x57FA;&#x672C;&#x7684;&#x306B;&#x9752;&#x8272;&#x306B;&#x8FD1;&#x304F;&#x306A;&#x308B;&#x3068;&#x3044;&#x3046;&#x4ED5;&#x7D44;&#x307F;&#x3067;&#x3059;&#x3002;</p>
+<p>&#x4EE5;&#x4E0B;&#x306E;&#x901A;&#x5E38;&#x306E;&#x58C1;&#x306E;&#x753B;&#x50CF;&#x306B;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E9%80%9A%E5%B8%B8%E3%81%AE%E6%8F%8F%E7%94%BB01.png?0.893800932542018" alt></p>
+<p>&#x4EE5;&#x4E0B;&#x306E;&#x6CD5;&#x7DDA;&#x30DE;&#x30C3;&#x30D7;&#x3092;&#x5408;&#x308F;&#x305B;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%8E%E3%83%BC%E3%83%9E%E3%83%AB%E3%83%9E%E3%83%83%E3%83%9702.png?0.44092066307674194" alt></p>
+<p>&#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306A;&#x51F8;&#x51F9;&#x304C;&#x8868;&#x73FE;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E6%B3%95%E7%B7%9A%E3%83%9E%E3%83%83%E3%83%97%E3%81%AB%E3%82%88%E3%82%8B%E6%8F%8F%E7%94%BB01.png?0.7838788912567192" alt></p>
+<hr>
+<h4 class="mume-header" id="span-stylecolor334488%E6%B3%95%E7%B7%9A%E3%83%99%E3%82%AF%E3%83%88%E3%83%ABspan"><span style="color:#334488;">&#x6CD5;&#x7DDA;&#x30D9;&#x30AF;&#x30C8;&#x30EB;</span></h4>
+
+<p>UNIT &#x306E;&#x59CB;&#x3081;&#x306E;&#x65B9;&#x304B;&#x3089;&#x3061;&#x3089;&#x307B;&#x3089;&#x51FA;&#x3066;&#x304D;&#x3066;&#x3044;&#x308B; normal &#x3068;&#x3044;&#x3046;&#x6210;&#x5206;&#x3067;<strong>&#x9802;&#x70B9;&#x306E;&#x5411;&#x304D;</strong>&#x306E;&#x4E8B;&#x3092;&#x6307;&#x3057;&#x3066;&#x304A;&#x308A;&#x3001;&#x30E9;&#x30A4;&#x30C6;&#x30A3;&#x30F3;&#x30B0;&#x306E;&#x8A08;&#x7B97;&#x306A;&#x3069;&#x306B;&#x7528;&#x3044;&#x3089;&#x308C;&#x307E;&#x3059;&#x3002;</p>
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488dummy-texturespan"><span style="color:#334488;">Dummy texture</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%80%E3%83%9F%E3%83%BC%E3%83%86%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3span"><span style="color:#334488;">&#x30C0;&#x30DF;&#x30FC;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;</span></h4>
+
+<p>&#x73FE;&#x72B6;&#x306E;&#x5B9F;&#x88C5;&#x3067;&#x306F; Cube &#x3084; Torus &#x306A;&#x3069;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x3092;&#x6301;&#x305F;&#x306A;&#x3044;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3082;&#x3046;&#x3068;&#x3059;&#x308B;&#x3068;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x7121;&#x6BB5;&#x968E;&#x3067;&#x843D;&#x3061;&#x3066;&#x3057;&#x307E;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x305D;&#x308C;&#x3092;&#x56DE;&#x907F;&#x3059;&#x308B;&#x305F;&#x3081;&#x306B;&#x30C0;&#x30DF;&#x30FC;&#x306E;&#x30C6;&#x30AF;&#x30B9;&#x30C1;&#x30E3;&#x3092;&#x8A2D;&#x5B9A;&#x3057;&#x3066;&#x30DE;&#x30C6;&#x30EA;&#x30A2;&#x30EB;&#x3092;&#x6301;&#x305F;&#x306A;&#x3044;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x3067;&#x3082;&#x554F;&#x984C;&#x306A;&#x304F;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x308B;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<hr>
+<h2 class="mume-header" id="span-stylecolor334488bounding-boxspan"><span style="color:#334488;">Bounding box</span></h2>
+
+<h4 class="mume-header" id="span-stylecolor334488%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9span"><span style="color:#334488;">&#x30D0;&#x30A6;&#x30F3;&#x30C7;&#x30A3;&#x30F3;&#x30B0;&#x30DC;&#x30C3;&#x30AF;&#x30B9;</span></h4>
+
+<p>&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306E;&#x6700;&#x5927;&#x5BF8;&#x6CD5;&#x307E;&#x305F;&#x306F;&#x7BC4;&#x56F2;&#x3092;&#x56F2;&#x3080;&#x6700;&#x5C11;&#x306E;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x3067;AABB(&#x8EF8;&#x4E26;&#x884C;&#x5883;&#x754C;&#x30DC;&#x30C3;&#x30AF;&#x30B9;)&#x3068;&#x3082;&#x547C;&#x3070;&#x308C;&#x307E;&#x3059;&#x3002;<br>
+&#x885D;&#x7A81;&#x5224;&#x5B9A;&#x3092;&#x884C;&#x3046;&#x969B;&#x306B;&#x7121;&#x99C4;&#x306A;&#x8A08;&#x7B97;&#x3092;&#x524A;&#x6E1B;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x30A2;&#x30EB;&#x30B4;&#x30EA;&#x30BA;&#x30E0;&#x306A;&#x3069;&#x306B;&#x7528;&#x3044;&#x3089;&#x308C;&#x307E;&#x3059;&#x3002;</p>
+<p>AABB&#x306F; xyz &#x306E;&#x5404;&#x8EF8;&#x306B;&#x5E73;&#x884C;&#x306A;&#x76F4;&#x65B9;&#x4F53;&#x3067;&#x3001;&#x8EF8;&#x306B;&#x5E73;&#x884C;&#x3067;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x5F53;&#x305F;&#x308A;&#x5224;&#x5B9A;&#x306E;&#x8A08;&#x7B97;&#x304C;&#x975E;&#x5E38;&#x306B;&#x8EFD;&#x304F;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x3042;&#x308A;&#x304C;&#x3061;&#x306A;&#x885D;&#x7A81;&#x30A2;&#x30EB;&#x30B4;&#x30EA;&#x30BA;&#x30E0;&#x3068;&#x3057;&#x3066;&#x3001;&#x8907;&#x96D1;&#x306A;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x5F62;&#x72B6;&#x306B;&#x5BFE;&#x3059;&#x308B;&#x885D;&#x7A81;&#x5224;&#x5B9A;&#x3092;&#x884C;&#x3046;&#x969B;&#x3001;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x5F62;&#x72B6;&#x3092;&#x5305;&#x542B;&#x3059;&#x308B;AABB&#x3092;&#x4E8B;&#x524D;&#x306B;&#x5B9A;&#x7FA9;&#x3057;&#x3001;&#x307E;&#x305A;AABB&#x3068;&#x306E;&#x885D;&#x7A81;&#x5224;&#x5B9A;&#xFF08;&#x8EFD;&#x3044;&#x8A08;&#x7B97;&#xFF09;&#x3092;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;AABB&#x3068;&#x885D;&#x7A81;&#x3057;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306E;&#x307F;&#x3001;&#x30E1;&#x30C3;&#x30B7;&#x30E5;&#x5F62;&#x72B6;&#x306B;&#x5BFE;&#x3059;&#x308B;&#x885D;&#x7A81;&#x5224;&#x5B9A;&#xFF08;&#x91CD;&#x305F;&#x3044;&#x8A08;&#x7B97;&#xFF09;&#x3092;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;&#x3053;&#x3046;&#x3059;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;AABB&#x306B;&#x885D;&#x7A81;&#x3057;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306F;&#x91CD;&#x305F;&#x3044;&#x8A08;&#x7B97;&#x306F;&#x884C;&#x308F;&#x305A;&#x306B;&#x6E08;&#x307F;&#x307E;&#x3059;&#x3002;</p>
+<p><img src="..\UNIT16%20ADVANCED%20STATIC%20MESH\images\%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B902.png?0.2447407330462945" alt></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

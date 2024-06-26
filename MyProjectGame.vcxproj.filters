@@ -99,6 +99,9 @@
     <ClInclude Include="Source\Graphics\StaticMesh.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Model.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -159,6 +162,9 @@
       <Filter>Sources\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\StaticMesh.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Model.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

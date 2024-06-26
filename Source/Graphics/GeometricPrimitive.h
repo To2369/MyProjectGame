@@ -31,7 +31,7 @@ protected:
     GeometricPrimitive(ID3D11Device* device);
 
     //頂点バッファのオブジェクトの作成
-    void Create_com_buffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,
+    void CreateComBuffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,
         uint32_t* indices, size_t index_count);
 
     //頂点シェーダーオブジェクト

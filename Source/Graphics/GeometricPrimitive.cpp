@@ -151,7 +151,7 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device* device)
     indices[face * 6 + 5] = face * 4 + 3;
 
     //頂点データとインデックスデータを使って頂点バッファオブジェクトを作成
-    Create_com_buffers(device, vertices, VertexPoints, indices, VertexNumber);
+    CreateComBuffers(device, vertices, VertexPoints, indices, VertexNumber);
 
     HRESULT hr{ S_OK };
 
@@ -214,7 +214,7 @@ void GeometricPrimitive::Render(ID3D11DeviceContext* immediate_context,
 }
 
 //頂点バッファオブジェクトの作成
-void GeometricPrimitive::Create_com_buffers(ID3D11Device* device, 
+void GeometricPrimitive::CreateComBuffers(ID3D11Device* device, 
     vertex* vertices, size_t vertex_count,
     uint32_t* indices, size_t index_count)
 {
@@ -393,7 +393,7 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
     indices[face * 6 + 5] = face * 4 + 3;
 
     //頂点データとインデックスデータを使って頂点バッファオブジェクトを作成
-    Create_com_buffers(device, vertices, VertexPoints, indices, VertexNumber);
+    CreateComBuffers(device, vertices, VertexPoints, indices, VertexNumber);
 
     HRESULT hr{ S_OK };
 
@@ -541,7 +541,7 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device,
     indices[slices * 3 * 2 + (slices - 1) * 6 + 5] = slices + 1 + slices + 1 + 1;
 
     //頂点バッファのオブジェクトの作成
-    Create_com_buffers(device, vertices, (slices + 1) * 2 + slices * 2, indices, (slices * 3) * 2 + (3 * 2 * slices));
+    CreateComBuffers(device, vertices, (slices + 1) * 2 + slices * 2, indices, (slices * 3) * 2 + (3 * 2 * slices));
 
     delete[] vertices;
     delete[] indices;
@@ -645,7 +645,7 @@ GeometricSphere::GeometricSphere(
     }
 
     //頂点バッファのオブジェクトの作成
-    Create_com_buffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
+    CreateComBuffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
 }
 
 //カプセル
@@ -812,5 +812,5 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
         }
     }
     //頂点バッファのオブジェクトの作成
-    Create_com_buffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
+    CreateComBuffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
 }

@@ -78,7 +78,7 @@
     <ClInclude Include="Source\Graphics\RenderContext.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\Sprite_batch.h">
+    <ClInclude Include="Source\Graphics\SpriteBatch.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\GeometricPrimitive.h">
@@ -146,7 +146,7 @@
     <ClCompile Include="Source\Graphics\Graphics.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\Sprite_batch.cpp">
+    <ClCompile Include="Source\Graphics\SpriteBatch.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\GeometricPrimitive.cpp">
@@ -178,27 +178,36 @@
     <None Include="HLSL\StaticMesh.hlsli">
       <Filter>HLSL</Filter>
     </None>
+    <None Include="HLSL\Model.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="HLSL\Sprite_vs.hlsl">
+    <FxCompile Include="HLSL\SpriteVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\Sprite_ps.hlsl">
+    <FxCompile Include="HLSL\SpritePS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\Effect_ps.hlsl">
+    <FxCompile Include="HLSL\EffectPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\GeometricPrimitive_vs.hlsl">
+    <FxCompile Include="HLSL\GeometricPrimitiveVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\GeometricPrimitive_ps.hlsl">
+    <FxCompile Include="HLSL\GeometricPrimitivePS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\StaticMesh_ps.hlsl">
+    <FxCompile Include="HLSL\StaticMeshPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\StaticMesh_vs.hlsl">
+    <FxCompile Include="HLSL\StaticMeshVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ModelPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ModelVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

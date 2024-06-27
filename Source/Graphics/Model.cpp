@@ -2,7 +2,7 @@
 #include"Model.h"
 #include<sstream>
 #include<functional>
-
+#include"Shader.h"
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 {
     //fbxマネージャーを生成
@@ -59,7 +59,7 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
     {
         //ノード名でノードを検索し取得
         FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
-        //Display node data in the output window as debug
+        //出力ウィンドウにデバッグデータを表示
         std::string node_name = fbx_node->GetName();
         uint64_t uid = fbx_node->GetUniqueID();
         uint64_t parent_uid = fbx_node->GetParent() ? fbx_node->GetParent()->GetUniqueID() : 0;
@@ -70,5 +70,199 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
         OutputDebugStringA(debug_string.str().c_str());
     }
 #endif
+    traverse(fbx_scene->GetRootNode());
+
+    FetchMeshes(fbx_scene, meshes);
+
     fbx_manager->Destroy();
+
+    CreateComObjects(device, fbx_filename);
+}
+
+//描画処理
+void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
+    const DirectX::XMFLOAT4& material_color)
+{
+    //メッシュごとに描画処理を行う
+    for (const mesh& mesh_ : meshes)
+    {
+        //頂点バッファの設定
+        uint32_t stride{ sizeof(vertex) };
+        uint32_t offset{ 0 };
+        immediate_context->IASetVertexBuffers(0, 1, mesh_.vertex_buffer.GetAddressOf(), &stride, &offset);
+        //インデックスバッファの設定
+        immediate_context->IASetIndexBuffer(mesh_.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+        //プリミティブのトポロジー設定（三角形リスト）
+        immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        //入力レイアウトの設定
+        immediate_context->IASetInputLayout(input_layout.Get());
+
+        //頂点シェーダーの設定
+        immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+        //ピクセルシェーダーの設定
+        immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+
+        //定数バッファの更新（ワールド行列とマテリアルカラーの設定
+        constants data;
+        data.world = world;
+        data.material_color = material_color;
+        immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+        immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+
+        //インデックスを使用して描画
+        D3D11_BUFFER_DESC buffer_desc;
+        mesh_.index_buffer->GetDesc(&buffer_desc);
+        immediate_context->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
+    }
+}
+
+//メッシュ情報の取り出し
+void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
+{
+    //シーンの中にあるノードの情報をすべて検索
+    for (const scene::node& node_ : scene_view.nodes)
+    {
+        //ノードの中からメッシュの属性を持っているノードをチェック
+        if (node_.attribute != FbxNodeAttribute::EType::eMesh)
+        {
+            continue;
+        }
+
+        //シーンから FbxNode を取得
+        FbxNode* fbx_node{ fbx_scene->FindNodeByName(node_.name.c_str()) };
+        //メッシュ情報を取得
+        FbxMesh* fbx_mesh{ fbx_node->GetMesh() };
+
+        //メッシュを新規で作成し取り付け
+        mesh& mesh_{ meshes.emplace_back() };
+        //メッシュの識別IDの設定
+        mesh_.unique_id = fbx_mesh->GetNode()->GetUniqueID();
+        //メッシュ名の設定
+        mesh_.name = fbx_mesh->GetNode()->GetName();
+        //メッシュに対するノードIDの割り振り
+        mesh_.node_index = scene_view.indexof(mesh_.unique_id);
+
+        const int polygon_count{ fbx_mesh->GetPolygonCount() };  //ポリゴン数
+        mesh_.vertices.resize(polygon_count * 3LL);                     //頂点座標数
+        mesh_.indices.resize(polygon_count * 3LL);                      //頂点インデックス数
+
+        //uv名の取得。後々テクスチャ座標の取得に利用。
+        FbxStringList uv_names;
+        fbx_mesh->GetUVSetNames(uv_names);
+
+        //コントロールポイントの取得
+        const FbxVector4* control_points{ fbx_mesh->GetControlPoints() };
+        //ポリゴンの数だけ頂点データを取得
+        for (int polygon_index = 0; polygon_index < polygon_count; ++polygon_index)
+        {
+            //三角形の数分の頂点の情報を取得する
+            for (int position_in_polygon = 0; position_in_polygon < 3; ++position_in_polygon)
+            {
+                //利用するインデックスの配列を計算
+                const int vertex_index{ polygon_index * 3 + position_in_polygon };
+
+                //頂点座標の取得
+                vertex vertex_;
+                const int polygon_vertex{ fbx_mesh->GetPolygonVertex(polygon_index,position_in_polygon) };
+                vertex_.position.x = static_cast<float>(control_points[polygon_vertex][0]);
+                vertex_.position.y = static_cast<float>(control_points[polygon_vertex][1]);
+                vertex_.position.z = static_cast<float>(control_points[polygon_vertex][2]);
+
+                //法線の取得
+                if (fbx_mesh->GetElementNormalCount() > 0)
+                {
+                    FbxVector4 normal;
+                    fbx_mesh->GetPolygonVertexNormal(polygon_index, position_in_polygon, normal);
+                    vertex_.normal.x = static_cast<float>(normal[0]);
+                    vertex_.normal.y = static_cast<float>(normal[1]);
+                    vertex_.normal.z = static_cast<float>(normal[2]);
+                }
+
+                //テクスチャ座標の取得
+                if (fbx_mesh->GetElementUVCount() > 0)
+                {
+                    FbxVector2 uv;
+                    bool unmapped_uv;
+                    fbx_mesh->GetPolygonVertexUV(polygon_index, position_in_polygon,
+                        uv_names[0], uv, unmapped_uv);
+                    vertex_.texcoord.x = static_cast<float>(uv[0]);
+                    vertex_.texcoord.y = 1.0f - static_cast<float>(uv[1]);
+                }
+
+                //現在のインデックス番号部分に頂点データを設定
+                mesh_.vertices.at(vertex_index) = std::move(vertex_);
+                //現在のインデックス番号を設定
+                mesh_.indices.at(vertex_index) = vertex_index;
+            }
+        }
+    }
+}
+
+//バッファの生成
+void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
+{
+    //各メッシュに対してバッファを生成するループ
+    for (mesh& mesh_ : meshes)
+    {
+        HRESULT hr{ S_OK };
+
+        //頂点バッファの生成
+        D3D11_BUFFER_DESC buffer_desc{};
+        D3D11_SUBRESOURCE_DATA subresource_data{};
+        buffer_desc.ByteWidth = static_cast<UINT>(sizeof(vertex) * mesh_.vertices.size());
+        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+        buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        buffer_desc.CPUAccessFlags = 0;
+        buffer_desc.MiscFlags = 0;
+        buffer_desc.StructureByteStride = 0;
+        subresource_data.pSysMem = mesh_.vertices.data();
+        subresource_data.SysMemPitch = 0;
+        subresource_data.SysMemSlicePitch = 0;
+        hr = device->CreateBuffer(&buffer_desc, &subresource_data,
+            mesh_.vertex_buffer.ReleaseAndGetAddressOf());
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+
+        //インデックスバッファの生成
+        buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * mesh_.indices.size());
+        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+        buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        subresource_data.pSysMem = mesh_.indices.data();
+        hr = device->CreateBuffer(&buffer_desc, &subresource_data,
+            mesh_.index_buffer.ReleaseAndGetAddressOf());
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+#if 1
+        //メッシュの頂点とインデックスをクリアする
+        mesh_.vertices.clear();
+        mesh_.indices.clear();
+#endif
+    }
+
+    HRESULT hr = S_OK;
+    //入力レイアウトオブジェクトの生成
+    D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT},
+        { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
+        { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
+    };
+
+    //頂点シェーダーオブジェクトの生成
+    {
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.GetAddressOf(),
+            input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+    }
+
+    //ピクセルシェーダーオブジェクトの生成
+    {
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\ModelPS.cso",
+            pixel_shader.ReleaseAndGetAddressOf());
+    }
+    
+    //定数バッファの生成
+    D3D11_BUFFER_DESC buffer_desc{};
+    buffer_desc.ByteWidth = sizeof(constants);
+    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+    buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.ReleaseAndGetAddressOf());
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }

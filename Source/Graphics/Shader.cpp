@@ -28,7 +28,7 @@ HRESULT ShaderManager::CreateVsFromCso(ID3D11Device* device, const char* cso_nam
 
     HRESULT hr{ S_OK };
     hr = device->CreateVertexShader(cso_data.get(), cso_sz, nullptr, vertex_shader);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     hr = device->CreateInputLayout(
         input_element_desc,                 //入力レイアウトの設定を行うための構造体 
@@ -36,7 +36,7 @@ HRESULT ShaderManager::CreateVsFromCso(ID3D11Device* device, const char* cso_nam
         cso_data.get(),                     //コンパイルされた頂点シェーダー文字列
         cso_sz,                             //コンパイルされた頂点シェーダーのサイズ
         input_layout);                     //成功時の入力レイアウトオブジェクト
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     return hr;
 }
@@ -66,7 +66,7 @@ HRESULT ShaderManager::CreatePsFromCso(ID3D11Device* device, const char* cso_nam
         cso_sz,                 //コンパイルされたピクセルシェーダーのサイズ
         nullptr,                //クラス リンケージ インターフェイスへのポインター,値はNULLにすること可能
         pixel_shader);         //成功時のピクセルシェーダー
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     return hr;
 }
@@ -97,14 +97,14 @@ HRESULT ShaderManager::LoadTextureFromFile(ID3D11Device* device, const wchar_t* 
     {
         //ファイルからテクスチャを作成し、shader_resource_viewに設定
         hr = DirectX::CreateWICTextureFromFile(device, filename, resource.GetAddressOf(), shader_resource_view);
-        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
         resources.insert(std::make_pair(filename, *shader_resource_view));
     }
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
     //リソースからテクスチャを生成
     hr = resource.Get()->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     //テクスチャからテクスチャ情報を取り出す
     texture2d->GetDesc(texture2d_desc);
 
@@ -149,7 +149,7 @@ HRESULT ShaderManager::MakeDummyTexture(ID3D11Device* device, ID3D11ShaderResour
     //ダミーの情報でテクスチャを作成
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
     hr = device->CreateTexture2D(&texture2d_desc, &subresource_data, &texture2d);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     //ダミーのテクスチャ情報でシェーダーリソースビューを作成
     D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
@@ -160,7 +160,7 @@ HRESULT ShaderManager::MakeDummyTexture(ID3D11Device* device, ID3D11ShaderResour
         texture2d.Get(),
         &shader_resource_view_desc,
         shader_resource_view);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     return hr;
 }

@@ -27,7 +27,7 @@ RenderState::RenderState(ID3D11Device* device)
 			//ポイントフィルタとしてサンプラーステートを生成
 			hr = device->CreateSamplerState(&sampler_desc,
 				sampler_states[static_cast<int>(SAMPLER_STATE::POINT)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//ポイントサンプラーステート(滑らか)
@@ -36,7 +36,7 @@ RenderState::RenderState(ID3D11Device* device)
 			//リニアフィルタとしてサンプラーステートを生成
 			hr = device->CreateSamplerState(&sampler_desc,
 				sampler_states[static_cast<int>(SAMPLER_STATE::LINEAR)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//アニソトロピックサンプラーステート(滑らか3D)
@@ -45,7 +45,7 @@ RenderState::RenderState(ID3D11Device* device)
 			//アニソトロピックとしてサンプラーステートを生成
 			hr = device->CreateSamplerState(&sampler_desc,
 				sampler_states[static_cast<int>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 	}
 
@@ -58,7 +58,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 			hr = device->CreateDepthStencilState(&depth_stencil_desc,
 				depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::ON_ON)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//深度テストを ON 深度書き込みを OFF
@@ -68,7 +68,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 			hr = device->CreateDepthStencilState(&depth_stencil_desc,
 				depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::ON_OFF)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//深度テストを OFF 深度書き込みを ON
@@ -78,7 +78,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 			hr = device->CreateDepthStencilState(&depth_stencil_desc,
 				depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::OFF_ON)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//深度テストを OFF 深度書き込みを OFF
@@ -88,7 +88,7 @@ RenderState::RenderState(ID3D11Device* device)
 			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 			hr = device->CreateDepthStencilState(&depth_stencil_desc,
 				depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::OFF_OFF)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 	}
 
@@ -110,7 +110,7 @@ RenderState::RenderState(ID3D11Device* device)
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			hr = device->CreateBlendState(&blend_desc,
 				blend_states[static_cast<int>(BLEND_STATE::NONE)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//通常合成
@@ -127,7 +127,7 @@ RenderState::RenderState(ID3D11Device* device)
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			hr = device->CreateBlendState(&blend_desc,
 				blend_states[static_cast<int>(BLEND_STATE::ALPHABLENDING)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//加算合成
@@ -144,7 +144,7 @@ RenderState::RenderState(ID3D11Device* device)
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			hr = device->CreateBlendState(&blend_desc,
 				blend_states[static_cast<int>(BLEND_STATE::ADD)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//減算合成
@@ -161,7 +161,7 @@ RenderState::RenderState(ID3D11Device* device)
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			hr = device->CreateBlendState(&blend_desc,
 				blend_states[static_cast<int>(BLEND_STATE::SUB)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 
 		//乗算合成
@@ -178,7 +178,7 @@ RenderState::RenderState(ID3D11Device* device)
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			hr = device->CreateBlendState(&blend_desc,
 				blend_states[static_cast<int>(BLEND_STATE::MULTIPLE)].GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 		}
 	}
 

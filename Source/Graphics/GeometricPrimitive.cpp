@@ -166,13 +166,13 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device* device)
 
     //頂点シェーダーオブジェクトの作成(入力レイアウトもこの中で作成しています)
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_vs.cso", vertex_shader.GetAddressOf(),
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVs.cso", vertex_shader.GetAddressOf(),
             input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの作成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePs.cso",
             pixel_shader.GetAddressOf());
     }
     //定数(コンスタント)バッファの作成
@@ -181,7 +181,7 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device* device)
         buffer_desc.Usage = D3D11_USAGE_DEFAULT;
         buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
-        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 }
 
@@ -234,14 +234,14 @@ void GeometricPrimitive::CreateComBuffers(ID3D11Device* device,
     subresource_data.SysMemSlicePitch = 0;
     hr = device->CreateBuffer(&buffer_desc, &subresource_data,
         vertex_buffer.ReleaseAndGetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * index_count);
     buffer_desc.Usage = D3D11_USAGE_DEFAULT;
     buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     subresource_data.pSysMem = indices;
     hr = device->CreateBuffer(&buffer_desc, &subresource_data, index_buffer.ReleaseAndGetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 
 //正方形
@@ -408,13 +408,13 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
 
     //頂点シェーダーオブジェクトの作成(入力レイアウトもこの中で作成しています)
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_vs.cso", vertex_shader.GetAddressOf(),
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVS.cso", vertex_shader.GetAddressOf(),
             input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの作成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePS.cso",
             pixel_shader.GetAddressOf());
     }
 
@@ -424,7 +424,7 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
         buffer_desc.Usage = D3D11_USAGE_DEFAULT;
         buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
-        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 }
 

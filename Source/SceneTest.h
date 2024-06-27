@@ -1,10 +1,10 @@
 #pragma once
 #include"Scene.h"
 #include"Graphics/Sprite.h"
-#include"Graphics/Sprite_batch.h"
+#include"Graphics/SpriteBatch.h"
 #include"Camera.h"
 #include"Graphics/GeometricPrimitive.h"
-#include"Graphics\StaticMesh.h"
+#include"Graphics/StaticMesh.h"
 #include"CameraController.h"
 #include"Graphics/Model.h"
 //タイトルシーン
@@ -37,7 +37,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 private:
     std::unique_ptr<Sprite> spr[8];
-    std::unique_ptr<Sprite_batch> sprite_batches[8];
+    std::unique_ptr<SpriteBatch> sprite_batches[8];
     std::unique_ptr<GeometricPrimitive> geometric_primitives[8];
     std::unique_ptr<StaticMesh> static_mesh[8];
     std::unique_ptr<Model> model[8];

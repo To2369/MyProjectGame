@@ -1,7 +1,7 @@
 #pragma once
 #include"Scene.h"
 #include"Graphics/Sprite.h"
-#include"Graphics/Sprite_batch.h"
+#include"Graphics/SpriteBatch.h"
 #include"Camera.h"
 #include"Graphics/GeometricPrimitive.h"
 #include"CameraController.h"
@@ -34,7 +34,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 private:
     std::unique_ptr<Sprite> spr[8];
-    std::unique_ptr<Sprite_batch> sprite_batches[8];
+    std::unique_ptr<SpriteBatch> sprite_batches[8];
     const wchar_t* filename[8] = { 
         L".\\Data\\Fonts\\font4.png",
         L".\\Data\\Sprite\\player-sprites.png",

@@ -252,17 +252,17 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
 
     //頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\StaticMesh_vs.cso", vertex_shader.GetAddressOf(),
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\StaticMeshVS.cso", vertex_shader.GetAddressOf(),
             input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\StaticMesh_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\StaticMeshPS.cso",
             pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::DEFAULT)].GetAddressOf());
     }
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitive_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePS.cso",
             pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::GEOMETRICPRIMITEVE)].GetAddressOf());
     }
 
@@ -273,7 +273,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
         buffer_desc.Usage = D3D11_USAGE_DEFAULT;
         buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
-        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 
     if (materials.size() == 0)
@@ -391,12 +391,12 @@ void StaticMesh::Create_com_buffers(ID3D11Device* device,
     subresource_data.SysMemSlicePitch = 0;
     hr = device->CreateBuffer(&buffer_desc, &subresource_data,
         vertex_buffer.ReleaseAndGetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * index_count);
     buffer_desc.Usage = D3D11_USAGE_DEFAULT;
     buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     subresource_data.pSysMem = indices;
     hr = device->CreateBuffer(&buffer_desc, &subresource_data, index_buffer.ReleaseAndGetAddressOf());
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }

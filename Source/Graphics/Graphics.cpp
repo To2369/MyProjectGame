@@ -60,7 +60,7 @@ void Graphics::Initialize(HWND hwnd)
 			device.GetAddressOf(),					//関数成功時のDeviceの出力先
 			&featureLevel,							//成功したD3D_FEATURE_LEVELの出力先
 			immediate_context.GetAddressOf());		//関数成功時のContextの出力先
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
 
 	//レンダーターゲットビューの作成
@@ -70,14 +70,14 @@ void Graphics::Initialize(HWND hwnd)
 			0,											//バッファのインデックス(基本は０)
 			__uuidof(ID3D11Texture2D),					//取得するバッファのインターフェースID
 			reinterpret_cast<LPVOID*>(back_buffer.GetAddressOf()));	//バッファの取得先、voidポインタでアドレスで取得する
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
 		//バックバッファを設定してレンダーターゲットビューを作成
 		hr = device->CreateRenderTargetView(
 			back_buffer.Get(),							//作成するバッファのリソース
 			NULL,									//作成するViewの設定内容データの指定(nullptrでデフォルト設定)
 			&render_target_view);					//作成されたRenderTargetViewを格納するためのポインタのアドレス
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
 
 	//深度ステンシルビューの作成
@@ -100,7 +100,7 @@ void Graphics::Initialize(HWND hwnd)
 			&texture2d_desc,							//作成するテクスチャの詳細情報
 			NULL,										//テクスチャの情報に付与するデータを指定する、読み込んだ画像データをせていしたりする
 			depth_stencil_buffer.GetAddressOf());		//作成されたTextureを格納するためのポインタのアドレス
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
 		// ID3D11DepthStencilView の設定を行うための構造体。深度ステンシルビューを作成するために必要な設定を行う
 		D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc{};
@@ -114,7 +114,7 @@ void Graphics::Initialize(HWND hwnd)
 			depth_stencil_buffer.Get(),					//View作成に必要なリソース
 			&depth_stencil_view_desc,					//DSVに関する設定を行ったデータ
 			depth_stencil_view.GetAddressOf());			//ID3D11DepthStencilViewの出力先
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
 
 	//ビューポートの設定

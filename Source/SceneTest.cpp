@@ -28,7 +28,7 @@ void SceneTest::Initialize()
 
     spr[0] = std::make_unique<Sprite>(graphics->GetDevice(), filename[0]);
 
-    sprite_batches[0] = std::make_unique<Sprite_batch>(graphics->GetDevice(), filename[2], 2048);
+    sprite_batches[0] = std::make_unique<SpriteBatch>(graphics->GetDevice(), filename[2], 2048);
     DirectX::XMFLOAT3 test = { 0.5f, 0.5f, 0.5f };
     geometric_primitives[0] = std::make_unique<GeometricCube>(graphics->GetDevice());
     geometric_primitives[1] = std::make_unique<GeometricCube>(graphics->GetDevice());
@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx");
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.000.fbx");
 }
 
 //終了化
@@ -147,6 +147,20 @@ void SceneTest::Render()
     {
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
+#if 1
+        //拡大縮小行列
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+            // 回転行列
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+            // 平行移動行列
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x,tramslation.y,tramslation.z) };
+
+            // ワールド変換行列
+            DirectX::XMFLOAT4X4 world;
+            DirectX::XMStoreFloat4x4(&world, S* R* T);
+
+            model[0]->Render(dc, world, material_color);
+#endif
 #if 0
         //ジオメトリックプリミティブ描画
         {

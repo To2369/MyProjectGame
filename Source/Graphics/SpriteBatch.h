@@ -5,7 +5,7 @@
 #include<vector>
 #include"Shader.h"
 
-class Sprite_batch
+class SpriteBatch
 {
 public:
     //頂点フォーマット
@@ -16,8 +16,8 @@ public:
         DirectX::XMFLOAT2 texcoord;
     };
 
-    Sprite_batch(ID3D11Device* device, const wchar_t* filename,size_t max_sprites);
-    ~Sprite_batch();
+    SpriteBatch(ID3D11Device* device, const wchar_t* filename,size_t max_sprites);
+    ~SpriteBatch();
 
     //シェーダーとテクスチャの設定
     void Begin(ID3D11DeviceContext* immediate_context,

@@ -1,8 +1,8 @@
-#include "Sprite_batch.h"
+#include "SpriteBatch.h"
 #include"../misc.h"
 #include <sstream>
 #include<WICTextureLoader.h>
-Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites) :max_vertices(max_sprites * 6)
+SpriteBatch::SpriteBatch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites) :max_vertices(max_sprites * 6)
 {
     HRESULT hr{ S_OK };
 
@@ -24,7 +24,7 @@ Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t
     subresource_data.SysMemPitch = 0;                                           //テクスチャの１行の先頭から次の行までの距離(バイト単位)。
     subresource_data.SysMemSlicePitch = 0;                                      //ある深度レベルの開始から次の深度レベルまでの距離(バイト単位)
     hr = device->CreateBuffer(&buffer_desc, &subresource_data, vertex_buffer.GetAddressOf()); //デバイスを使って、頂点バッファのサブリソースとして頂点情報を設定して頂点バッファを生成
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     //レイアウトオブジェクトの生成
     D3D11_INPUT_ELEMENT_DESC input_element_desc[]       //入力レイアウトオブジェクトの設定を行うための構造体
@@ -39,18 +39,18 @@ Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t
 
     //頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\Sprite_vs.cso",
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\SpriteVS.cso",
             vertex_shader.GetAddressOf(), input_layout.GetAddressOf(),
             input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\Sprite_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SpritePS.cso",
             pixel_shader.GetAddressOf());
     }
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\Effect_ps.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\EffectPS.cso",
             replaced_pixel_shader.GetAddressOf());
     }
     //テクスチャの読み込み
@@ -66,13 +66,13 @@ Sprite_batch::Sprite_batch(ID3D11Device* device, const wchar_t* filename, size_t
     }
 }
 
-Sprite_batch::~Sprite_batch()
+SpriteBatch::~SpriteBatch()
 {
 
 }
 
 //シェーダーとテクスチャの設定
-void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Begin(ID3D11DeviceContext* immediate_context,
     ID3D11PixelShader* replaced_pixel_shader,
     ID3D11ShaderResourceView* replaced_shader_resource_view)
 {
@@ -88,7 +88,7 @@ void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context,
         replaced_shader_resource_view->GetResource(resource.GetAddressOf());
         Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
         hr = resource->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
-        _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
         texture2d->GetDesc(&texture2d_desc);
 
         //差し変わったテクスチャを設定
@@ -101,13 +101,13 @@ void Sprite_batch::Begin(ID3D11DeviceContext* immediate_context,
     }
 }
 
-void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
+void SpriteBatch::End(ID3D11DeviceContext* immediate_context)
 {
     HRESULT hr{ S_OK };
     D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
     hr = immediate_context->Map(vertex_buffer.Get(),
         0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
-    _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     size_t vertex_count = vertices.size();
     _ASSERT_EXPR(max_vertices >= vertex_count, "Buffer overflow");
@@ -129,7 +129,7 @@ void Sprite_batch::End(ID3D11DeviceContext* immediate_context)
 }
 
 
-void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
     float dx, float dy,
     float dw, float dh
 )
@@ -144,7 +144,7 @@ void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
         static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
 }
 
-void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
     float dx, float dy,
     float dw, float dh,
     float r, float g, float b, float a,
@@ -160,7 +160,7 @@ void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
         static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
 }
 
-void Sprite_batch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
     float dx, float dy,
     float dw, float dh,
     float r, float g, float b, float a,

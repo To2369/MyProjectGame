@@ -47,13 +47,38 @@ public:
 		DirectX::XMFLOAT4X4 world;			//ワールド行列
 		DirectX::XMFLOAT4 material_color;	//マテリアルカラー
 	};
+
+	//メッシュ情報
+	struct mesh
+	{
+		uint64_t unique_id{ 0 };		//識別ID
+		std::string name;				//メッシュ名
+		int64_t node_index{ 0 };		//ノードID
+		std::vector<vertex> vertices;	//頂点座標
+		std::vector<uint32_t> indices;	//頂点インデックス
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	//頂点バッファ
+		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	//インデックスバッファ
+		friend class Model;
+	};
+	std::vector<mesh> meshes;
 public:
 	//"triangulate">true...多角形で作られたポリゴンを三角形化
 	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false);
 	virtual ~Model() = default;
+
+	//描画処理
+	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
+		const DirectX::XMFLOAT4& material_color);
+
+	// メッシュ情報の取り出し
+	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
+
+	//バッファの生成
+	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	//頂点シェーダー
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixsl_shader;		//ピクセルシェーダー
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		//ピクセルシェーダー
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		//入力レイアウト
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		//定数バッファ
 protected:

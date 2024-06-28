@@ -5,7 +5,7 @@
 #include<vector>
 #include<string>
 #include<fbxsdk.h>
-
+#include<unordered_map>
 struct scene
 {
 	struct node
@@ -62,6 +62,24 @@ public:
 		friend class Model;
 	};
 	std::vector<mesh> meshes;
+
+	//マテリアル
+	struct material
+	{
+		uint64_t unique_id{ 0 };	//識別ID
+		std::string name;	//マテリアル名
+
+		DirectX::XMFLOAT4 Ka{ 0.2f,0.2f,0.2f,1.0f };
+		DirectX::XMFLOAT4 Kd{ 0.8f,0.8f,0.8f,1.0f };
+		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
+
+		//テクスチャファイル名
+		std::string texture_filename[4];
+		//テクスチャ情報
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
+	};
+	//読み込んだマテリアル
+	std::unordered_map<uint64_t, material> materials;
 public:
 	//"triangulate">true...多角形で作られたポリゴンを三角形化
 	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false);
@@ -73,6 +91,9 @@ public:
 
 	// メッシュ情報の取り出し
 	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
+
+	//マテリアル情報の取り出し
+	void FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
 
 	//バッファの生成
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);

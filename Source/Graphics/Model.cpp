@@ -2,6 +2,7 @@
 #include"Model.h"
 #include<sstream>
 #include<functional>
+#include<filesystem>
 #include"Shader.h"
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 {
@@ -74,6 +75,8 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 
     FetchMeshes(fbx_scene, meshes);
 
+    FetchMaterials(fbx_scene, materials);
+
     fbx_manager->Destroy();
 
     CreateComObjects(device, fbx_filename);
@@ -108,7 +111,8 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
         data.material_color = material_color;
         immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
         immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
-
+        immediate_context->PSSetShaderResources(0, 1,
+            materials.cbegin()->second.shader_resource_views[0].GetAddressOf());
         //インデックスを使用して描画
         D3D11_BUFFER_DESC buffer_desc;
         mesh_.index_buffer->GetDesc(&buffer_desc);
@@ -198,6 +202,91 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
     }
 }
 
+//マテリアル情報の取り出し
+void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials)
+{
+    //シーンの中にあるノードの情報をすべて検索
+    const size_t node_count{ scene_view.nodes.size() };
+    for (size_t node_index = 0; node_index < node_count; ++node_index)
+    {
+        //ノードの情報１つ１つをチェック
+        const scene::node& node{ scene_view.nodes.at(node_index) };
+        //シーンからFbxNodeを取得
+        const FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
+
+        //ノードの中にあるマテリアルの情報をすべて検索
+        const int material_count{ fbx_node->GetMaterialCount() };
+        for (int material_index = 0; material_index < material_count; ++material_index)
+        {
+            //マテリアルの情報１つ１つをチェック
+            const FbxSurfaceMaterial* fbx_material{ fbx_node->GetMaterial(material_index) };
+
+            // マテリアルの設定
+            material material_;
+            material_.name = fbx_material->GetName();
+            material_.unique_id = fbx_material->GetUniqueID();
+
+            FbxProperty fbx_property;
+            //ディフューズ(拡散反射光)の情報を取得
+            fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+            //ディフューズがあったらディフューズの情報を設定していく
+            if (fbx_property.IsValid())
+            {
+                const FbxDouble3 color{ fbx_property.Get<FbxDouble3>() };
+                material_.Kd.x = static_cast<float>(color[0]);
+                material_.Kd.y = static_cast<float>(color[1]);
+                material_.Kd.z = static_cast<float>(color[2]);
+                material_.Kd.w = 1.0f;
+
+                //テクスチャのファイル名を取得
+                const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
+                //相対パス込みでのファイル名を設定する
+                material_.texture_filename[0] =
+                    fbx_texture ? fbx_texture->GetRelativeFileName() : "";
+            }
+            //アンビエント(環境光)の情報を取得
+            fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sAmbient);
+            if (fbx_property.IsValid())
+            {
+                const FbxDouble3 color{ fbx_property.Get<FbxDouble3>() };
+                material_.Ka.x = static_cast<float>(color[0]);
+                material_.Ka.y = static_cast<float>(color[1]);
+                material_.Ka.z = static_cast<float>(color[2]);
+                material_.Ka.w = 1.0f;
+
+                //テクスチャのファイル名を取得
+                const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
+                //相対パス込みでのファイル名を設定する
+                material_.texture_filename[1] =
+                    fbx_texture ? fbx_texture->GetRelativeFileName() : "";
+            }
+            //スペキュラ(鏡面反射)の情報を取得
+            fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sSpecular);
+            if (fbx_property.IsValid())
+            {
+                const FbxDouble3 color{ fbx_property.Get<FbxDouble3>() };
+                material_.Ks.x = static_cast<float>(color[0]);
+                material_.Ks.y = static_cast<float>(color[1]);
+                material_.Ks.z = static_cast<float>(color[2]);
+                material_.Ks.w = 1.0f;
+
+                //テクスチャのファイル名を取得
+                const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
+                //相対パス込みでのファイル名を設定する
+                material_.texture_filename[2] =
+                    fbx_texture ? fbx_texture->GetRelativeFileName() : "";
+            }
+            //取得したマテリアルの情報を設定する
+            materials.emplace(material_.unique_id, std::move(material_));
+        }
+    }
+#if 1
+    //ダミーのマテリアルを挿入
+    material material_;
+    materials.emplace(material_.unique_id, std::move(material_));
+#endif
+}
+
 //バッファの生成
 void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
 {
@@ -230,13 +319,29 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         hr = device->CreateBuffer(&buffer_desc, &subresource_data,
             mesh_.index_buffer.ReleaseAndGetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
-#if 1
+#if 0
         //メッシュの頂点とインデックスをクリアする
         mesh_.vertices.clear();
         mesh_.indices.clear();
 #endif
     }
-
+    //マテリアルの中にあるテクスチャファイル名の数だけテクスチャを生成する
+    for (std::unordered_map<uint64_t, material>::iterator iterator = materials.begin(); iterator != materials.end(); ++iterator)
+    {
+        if (iterator->second.texture_filename[0].size() > 0)
+        {
+            std::filesystem::path path(fbx_filename);
+            path.replace_filename(iterator->second.texture_filename[0]);
+            D3D11_TEXTURE2D_DESC texture2d_desc;
+            ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(),
+                iterator->second.shader_resource_views[0].GetAddressOf(), &texture2d_desc);
+        }
+        else
+        {
+            ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[0].GetAddressOf(),
+                0xFFFFFFFF, 16);
+        }
+    }
     HRESULT hr = S_OK;
     //入力レイアウトオブジェクトの生成
     D3D11_INPUT_ELEMENT_DESC input_element_desc[]

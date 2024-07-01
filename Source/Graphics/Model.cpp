@@ -108,15 +108,22 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
         //定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
         data.world = world;
-        data.material_color = material_color;
-        immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
-        immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
-        immediate_context->PSSetShaderResources(0, 1,
-            materials.cbegin()->second.shader_resource_views[0].GetAddressOf());
-        //インデックスを使用して描画
-        D3D11_BUFFER_DESC buffer_desc;
-        mesh_.index_buffer->GetDesc(&buffer_desc);
-        immediate_context->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
+        for (const mesh::subset& subset : mesh_.subsets)
+        {
+            //マテリアルの識別ID からマテリアルを取得し参照として設定
+            const material& material_{ materials.at(subset.material_unique_id) };
+
+            DirectX::XMStoreFloat4(&data.material_color,
+                DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&material_color), DirectX::XMLoadFloat4(&material_.Kd)));
+            immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+            immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+            immediate_context->PSSetShaderResources(0, 1,
+                material_.shader_resource_views[0].GetAddressOf());
+            //インデックスを使用して描画
+            //D3D11_BUFFER_DESC buffer_desc;
+            //mesh_.index_buffer->GetDesc(&buffer_desc);
+            immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
+        }
     }
 }
 
@@ -145,8 +152,41 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         mesh_.name = fbx_mesh->GetNode()->GetName();
         //メッシュに対するノードIDの割り振り
         mesh_.node_index = scene_view.indexof(mesh_.unique_id);
+        
+        std::vector<mesh::subset>& subsets{ mesh_.subsets };
+        //マテリアル数を取得
+        const int material_count{ fbx_mesh->GetNode()->GetMaterialCount() };
+        //サブセットの数をリサイズ
+        subsets.resize(material_count > 0 ? material_count : 1);
+        for (int material_index = 0; material_index < material_count; ++material_index)
+        {
+            //マテリアル情報を取得
+            const FbxSurfaceMaterial* fbx_material{ fbx_mesh->GetNode()->GetMaterial(material_index) };
+            subsets.at(material_index).material_name = fbx_material->GetName();
+            subsets.at(material_index).material_unique_id = fbx_material->GetUniqueID();
+        }
 
-        const int polygon_count{ fbx_mesh->GetPolygonCount() };  //ポリゴン数
+        if (material_count > 0)
+        {
+            const int polygon_count{ fbx_mesh->GetPolygonCount() };
+            for (int polygon_index = 0; polygon_index < polygon_count; ++polygon_index)
+            {
+                //メッシュのポリゴンの番号からインデックス番号を取得しマテリアルのインデックスの番号として割り当てる
+                const int material_index{ fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(polygon_index) };
+                //サブセットに対して割り当てられたマテリアルのインデックスの番号にインデックスの数を頂点数分(3)増やしていく
+                subsets.at(material_index).index_count += 3;
+            }
+            //インデックスの数からそれぞれの開始の数を計算して設定していく
+            uint32_t offset{ 0 };
+            for (mesh::subset& subset : subsets)
+            {
+                subset.start_index_location = offset;
+                offset += subset.index_count;
+                subset.index_count = 0;
+            }
+        }
+
+        const int polygon_count{ fbx_mesh->GetPolygonCount() };         //ポリゴン数
         mesh_.vertices.resize(polygon_count * 3LL);                     //頂点座標数
         mesh_.indices.resize(polygon_count * 3LL);                      //頂点インデックス数
 
@@ -159,6 +199,9 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         //ポリゴンの数だけ頂点データを取得
         for (int polygon_index = 0; polygon_index < polygon_count; ++polygon_index)
         {
+            const int material_index{ material_count > 0 ? fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(polygon_index) : 0 };
+            mesh::subset& subset{ subsets.at(material_index) };
+            const uint32_t offset{ subset.start_index_location + subset.index_count };
             //三角形の数分の頂点の情報を取得する
             for (int position_in_polygon = 0; position_in_polygon < 3; ++position_in_polygon)
             {
@@ -196,7 +239,8 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                 //現在のインデックス番号部分に頂点データを設定
                 mesh_.vertices.at(vertex_index) = std::move(vertex_);
                 //現在のインデックス番号を設定
-                mesh_.indices.at(vertex_index) = vertex_index;
+                mesh_.indices.at(static_cast<size_t>(offset)+position_in_polygon) = vertex_index;
+                subset.index_count++;
             }
         }
     }

@@ -56,6 +56,17 @@ public:
 		int64_t node_index{ 0 };		//ノードID
 		std::vector<vertex> vertices;	//頂点座標
 		std::vector<uint32_t> indices;	//頂点インデックス
+
+		//サブセット情報
+		struct subset
+		{
+			uint64_t material_unique_id{ 0 };	//識別ID
+			std::string material_name;			//マテリアル名
+
+			uint32_t start_index_location{ 0 };	//インデックスの開始位置
+			uint32_t index_count{ 0 };			//インデックスの数(頂点)
+		};
+		std::vector<subset> subsets;
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	//頂点バッファ
 		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	//インデックスバッファ

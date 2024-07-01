@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.001.0.fbx");
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.000.fbx",true);
 }
 
 //終了化

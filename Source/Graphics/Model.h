@@ -67,6 +67,9 @@ public:
 			uint32_t index_count{ 0 };			//インデックスの数(頂点)
 		};
 		std::vector<subset> subsets;
+
+		//メッシュごとのワールド行列
+		DirectX::XMFLOAT4X4 default_global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	//頂点バッファ
 		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	//インデックスバッファ

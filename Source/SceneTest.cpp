@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.000.fbx",true);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.003.1.fbx",true);
 }
 
 //終了化
@@ -148,7 +148,18 @@ void SceneTest::Render()
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
 #if 1
-        //拡大縮小行列
+        //座標系変換用の行列
+        const DirectX::XMFLOAT4X4 coordinate_system_transform[]
+        {
+            { -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	//0:右手系 Y-UP
+            { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	    //1:左手系 Y-UP
+            { -1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	//2:右手系 Z-UP
+            { 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	    //3:左手系 Z-UP
+        };
+            //デフォルトのスケールファクタを設定して行列に反映
+        const float scale_factor = 1.0f;
+        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[2]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
+            //拡大縮小行列
             DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
             // 回転行列
             DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
@@ -157,7 +168,7 @@ void SceneTest::Render()
 
             // ワールド変換行列
             DirectX::XMFLOAT4X4 world;
-            DirectX::XMStoreFloat4x4(&world, S* R* T);
+            DirectX::XMStoreFloat4x4(&world, C * S * R * T);
 
             model[0]->Render(dc, world, material_color);
 #endif

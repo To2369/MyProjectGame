@@ -4,6 +4,42 @@
 #include<functional>
 #include<filesystem>
 #include"Shader.h"
+
+//FbxAMatrixからXMFLOAT４X4に変換
+inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
+{
+    DirectX::XMFLOAT4X4 xmfloat4x4;
+    for (int row = 0; row < 4; row++)
+    {
+        for (int column = 0; column < 4; column++)
+        {
+            xmfloat4x4.m[row][column] = static_cast<float>(fbxamatrix[row][column]);
+        }
+    }
+    return xmfloat4x4;
+}
+
+//FbxDouble3からXMFLOAT3に変換
+inline DirectX::XMFLOAT3 ToXmFloat3(const FbxDouble3& fbxdouble3)
+{
+    DirectX::XMFLOAT3 xmfloat3;
+    xmfloat3.x = static_cast<float>(fbxdouble3[0]);
+    xmfloat3.y = static_cast<float>(fbxdouble3[1]);
+    xmfloat3.z = static_cast<float>(fbxdouble3[2]);
+    return xmfloat3;
+}
+
+//FbxDouble4からXMFLOAT4に変換
+inline DirectX::XMFLOAT4 ToXmFloat4(const FbxDouble4& fbxdouble4)
+{
+    DirectX::XMFLOAT4 xmfloat4;
+    xmfloat4.x = static_cast<float>(fbxdouble4[0]);
+    xmfloat4.y = static_cast<float>(fbxdouble4[1]);
+    xmfloat4.z = static_cast<float>(fbxdouble4[2]);
+    xmfloat4.w = static_cast<float>(fbxdouble4[3]);
+    return xmfloat4;
+}
+
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 {
     //fbxマネージャーを生成
@@ -107,7 +143,8 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 
         //定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
-        data.world = world;
+        DirectX::XMStoreFloat4x4(&data.world, 
+            DirectX::XMLoadFloat4x4(&mesh_.default_global_transform) * DirectX::XMLoadFloat4x4(&world));
         for (const mesh::subset& subset : mesh_.subsets)
         {
             //マテリアルの識別ID からマテリアルを取得し参照として設定
@@ -153,6 +190,9 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         //メッシュに対するノードIDの割り振り
         mesh_.node_index = scene_view.indexof(mesh_.unique_id);
         
+        //メッシュのグローバル行列を取得しXMFLOAT4X4に変換して代入
+        mesh_.default_global_transform = ToXmFloat4x4(fbx_mesh->GetNode()->EvaluateGlobalTransform());
+
         std::vector<mesh::subset>& subsets{ mesh_.subsets };
         //マテリアル数を取得
         const int material_count{ fbx_mesh->GetNode()->GetMaterialCount() };
@@ -297,12 +337,6 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Ka.y = static_cast<float>(color[1]);
                 material_.Ka.z = static_cast<float>(color[2]);
                 material_.Ka.w = 1.0f;
-
-                //テクスチャのファイル名を取得
-                const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
-                //相対パス込みでのファイル名を設定する
-                material_.texture_filename[1] =
-                    fbx_texture ? fbx_texture->GetRelativeFileName() : "";
             }
             //スペキュラ(鏡面反射)の情報を取得
             fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sSpecular);
@@ -313,12 +347,6 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Ks.y = static_cast<float>(color[1]);
                 material_.Ks.z = static_cast<float>(color[2]);
                 material_.Ks.w = 1.0f;
-
-                //テクスチャのファイル名を取得
-                const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
-                //相対パス込みでのファイル名を設定する
-                material_.texture_filename[2] =
-                    fbx_texture ? fbx_texture->GetRelativeFileName() : "";
             }
             //取得したマテリアルの情報を設定する
             materials.emplace(material_.unique_id, std::move(material_));

@@ -40,6 +40,57 @@ inline DirectX::XMFLOAT4 ToXmFloat4(const FbxDouble4& fbxdouble4)
     return xmfloat4;
 }
 
+//１つの頂点が影響を受けるボーンの情報
+struct bone_influence
+{
+    uint32_t bone_index;//ボーン番号
+    float bone_weight;  //ウェイト値
+};
+//１つの頂点は複数のボーンから影響を受ける場合があるので可変長配列で表現
+using bone_influences_per_control_point = std::vector<bone_influence>;
+
+void FetchBoneInfluences(const FbxMesh* fbx_mesh,
+    std::vector<bone_influences_per_control_point>& bone_influences)
+{
+    //ボーン影響度の数 = FBX メッシュにあるコントロールポイントの数に設定
+    const int control_points_count{ fbx_mesh->GetControlPointsCount() };
+    bone_influences.resize(control_points_count);
+    //メッシュにあるスキンの数を取得
+    const int skin_count{ fbx_mesh->GetDeformerCount(FbxDeformer::eSkin) };
+    //メッシュにあるすべてのスキンの情報をチェック
+    for (int skin_index = 0; skin_index < skin_count; ++skin_index)
+    {
+        //現在のスキンを取得
+        const FbxSkin* fbx_skin{ static_cast<FbxSkin*>(fbx_mesh->GetDeformer(skin_index,FbxDeformer::eSkin)) };
+
+        //スキンにあるクラスターの数を取得
+        const int cluster_count{ fbx_skin->GetClusterCount() };
+        //スキンにあるすべてのクラスターの情報をチェック
+        for (int cluster_index = 0; cluster_index < cluster_count; ++cluster_index)
+        {
+            //現在のクラスターの情報をチェック
+            const FbxCluster* fbx_cluster{ fbx_skin->GetCluster(cluster_index) };
+
+            //クラスターにあるコントロールポイントの数を取得
+            const int control_point_indices_count{ fbx_cluster->GetControlPointIndicesCount() };
+            //クラスターにあるすべてのコントロールポイントのウェイトの値を取得
+            for (int control_point_indices_index = 0; control_point_indices_index < control_point_indices_count; ++control_point_indices_index)
+            {
+                //現在のコントロールポイントの番号
+                int control_point_index{ fbx_cluster->GetControlPointIndices()[control_point_indices_index] };
+                //コントロールポイントのウェイト値
+                double control_point_weight{ fbx_cluster->GetControlPointWeights()[control_point_indices_index] };
+                //新規にボーン影響度を生成して追加
+                bone_influence& bone_influence_{ bone_influences.at(control_point_index).emplace_back() };
+                //現在のクラスターの番号をボーン番号として設定
+                bone_influence_.bone_index = static_cast<uint32_t>(cluster_index);
+                //コントロールのウェイト値をボーンのウェイト値として設定
+                bone_influence_.bone_weight = static_cast<float>(control_point_weight);
+            }
+        }
+    }
+}
+
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 {
     //fbxマネージャーを生成
@@ -125,6 +176,7 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
     //メッシュごとに描画処理を行う
     for (const mesh& mesh_ : meshes)
     {
+
         //頂点バッファの設定
         uint32_t stride{ sizeof(vertex) };
         uint32_t offset{ 0 };
@@ -193,6 +245,10 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         //メッシュのグローバル行列を取得しXMFLOAT4X4に変換して代入
         mesh_.default_global_transform = ToXmFloat4x4(fbx_mesh->GetNode()->EvaluateGlobalTransform());
 
+        //メッシュからボーン影響度を取得
+        std::vector<bone_influences_per_control_point> bone_influences;
+        FetchBoneInfluences(fbx_mesh, bone_influences);
+
         std::vector<mesh::subset>& subsets{ mesh_.subsets };
         //マテリアル数を取得
         const int material_count{ fbx_mesh->GetNode()->GetMaterialCount() };
@@ -254,6 +310,57 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                 vertex_.position.x = static_cast<float>(control_points[polygon_vertex][0]);
                 vertex_.position.y = static_cast<float>(control_points[polygon_vertex][1]);
                 vertex_.position.z = static_cast<float>(control_points[polygon_vertex][2]);
+
+                //頂点数番目のボーン影響度を取得
+                const bone_influences_per_control_point& influces_per_control_point{ bone_influences.at(polygon_vertex) };
+                for (size_t influence_index = 0; influence_index < influces_per_control_point.size(); ++influence_index)
+                {
+                    //ボーン影響度は最大４つ
+                    if (influence_index < MAX_BONE_INFLUENCES)
+                    {
+                        //取得したボーン影響度を頂点側のボーン影響度に設定していく
+                        vertex_.bone_weights[influence_index] =
+                            influces_per_control_point.at(influence_index).bone_weight;
+                        vertex_.bone_indices[influence_index] =
+                            influces_per_control_point.at(influence_index).bone_index;
+                    }
+                    else
+                    {
+                        //最小の影響度を持つボーンを探す
+                        size_t minimum_value_index = 0;
+                        float minimum_value = FLT_MAX;
+                        for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
+                        {
+                            if (minimum_value > vertex_.bone_weights[i])
+                            {
+                                minimum_value = vertex_.bone_weights[i];
+                                minimum_value_index = i;
+                            }
+                        }
+
+                        //最小の影響度を持つボーンの影響度を加算し、インデックスを更新する
+                        vertex_.bone_weights[minimum_value_index] += influces_per_control_point[influence_index].bone_weight;
+                        vertex_.bone_indices[minimum_value_index] = influces_per_control_point[influence_index].bone_index;
+
+                        //合計の影響度を計算し、全ての影響度を正規化する
+                        float total_weight = 0.0f;
+                        for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
+                        {
+                            total_weight += vertex_.bone_weights[i];
+                        }
+
+                        //影響度を正規化する
+                        for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
+                        {
+                            if (total_weight > 0.0f) {
+                                vertex_.bone_weights[i] /= total_weight;
+                            }
+                            else {
+                                vertex_.bone_weights[i] = 0.0f;
+                            }
+                        }
+                    }
+                }
 
                 //法線の取得
                 if (fbx_mesh->GetElementNormalCount() > 0)
@@ -352,7 +459,7 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
             materials.emplace(material_.unique_id, std::move(material_));
         }
     }
-#if 1
+#if 0
     //ダミーのマテリアルを挿入
     material material_;
     materials.emplace(material_.unique_id, std::move(material_));
@@ -421,12 +528,14 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT},
         { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
         { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
+        { "WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
 
     //頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.GetAddressOf(),
-            input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
+            input_layout.ReleaseAndGetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     //ピクセルシェーダーオブジェクトの生成

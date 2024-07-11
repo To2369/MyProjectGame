@@ -34,11 +34,16 @@ struct scene
 class Model
 {
 public:
+	//最大ボーン影響値
+	static const int MAX_BONE_INFLUENCES{ 4 };
+
 	struct vertex
 	{
 		DirectX::XMFLOAT3 position;			//頂点座標
 		DirectX::XMFLOAT3 normal{ 0,1,0 };	//法線
 		DirectX::XMFLOAT2 texcoord{ 0,0 };	//テクスチャ座標
+		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	//ウェイト値
+		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		//ボーン番号
 	};
 
 	//定数バッファフォーマット

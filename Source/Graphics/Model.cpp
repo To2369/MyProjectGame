@@ -197,6 +197,11 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
         constants data;
         DirectX::XMStoreFloat4x4(&data.world, 
             DirectX::XMLoadFloat4x4(&mesh_.default_global_transform) * DirectX::XMLoadFloat4x4(&world));
+#if 1
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[0], DirectX::XMMatrixIdentity());
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)));
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[2], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)));
+#endif
         for (const mesh::subset& subset : mesh_.subsets)
         {
             //マテリアルの識別ID からマテリアルを取得し参照として設定

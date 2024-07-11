@@ -46,11 +46,13 @@ public:
 		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		//ボーン番号
 	};
 
+	static const int MAX_BONES{ 256 };
 	//定数バッファフォーマット
 	struct constants
 	{
 		DirectX::XMFLOAT4X4 world;			//ワールド行列
 		DirectX::XMFLOAT4 material_color;	//マテリアルカラー
+		DirectX::XMFLOAT4X4 bone_transforms[MAX_BONES]{ {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1} };
 	};
 
 	//メッシュ情報

@@ -6,17 +6,55 @@
 #include<string>
 #include<fbxsdk.h>
 #include<unordered_map>
+
+//スケルトン
+//複数のボーンを管理
+struct skeleton
+{
+	//メッシュのボーン情報
+	struct bone
+	{
+		uint64_t unique_id{ 0 };	//識別ID
+		std::string name;
+		//親ボーンの位置を参照するインデックス	-1...親無し
+		int64_t parent_index{ -1 };
+		//シーンのノード配列を参照するインデックス
+		int64_t node_index{ 0 };
+
+		//モデル(メッシュ)空間からボーン(ノード)に変換するために使用
+		DirectX::XMFLOAT4X4 offset_transform{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+
+		// true...親無しのボーン
+		bool IsOrphans() const { return parent_index < 0; };
+	};
+	std::vector<bone> bones;
+
+	int64_t IndexOf(uint64_t unique_id)const
+	{
+		int64_t index{ 0 };
+		for (const bone& bone_ : bones)
+		{
+			if (bone_.unique_id == unique_id)
+			{
+				return index;
+			}
+			++index;
+		}
+		return -1;
+	}
+};
+
 struct scene
 {
 	struct node
 	{
-		uint64_t unique_id{ 0 };
+		uint64_t unique_id{ 0 };	//識別ID
 		std::string name;
 		FbxNodeAttribute::EType attribute{ FbxNodeAttribute::EType::eUnknown };
 		int64_t parent_index{ -1 };
 	};
 	std::vector<node> nodes;
-	int64_t indexof(uint64_t unique_id)const
+	int64_t IndexOf(uint64_t unique_id)const
 	{
 		int64_t index{ 0 };
 		for (const node& node_ : nodes)
@@ -77,6 +115,9 @@ public:
 
 		//メッシュごとのワールド行列
 		DirectX::XMFLOAT4X4 default_global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+	
+		//バインドポーズ(初期姿勢)
+		skeleton bind_pose;
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	//頂点バッファ
 		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	//インデックスバッファ
@@ -115,6 +156,9 @@ public:
 
 	//マテリアル情報の取り出し
 	void FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
+
+	//バインドポーズ情報の取り出し
+	void FetchSkeleton(FbxMesh* fbx_mesh, skeleton& bind_pose);
 
 	//バッファの生成
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);

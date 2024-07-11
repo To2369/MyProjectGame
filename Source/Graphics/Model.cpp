@@ -129,7 +129,7 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
                 fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
             node_.name = fbx_node->GetName();
             node_.unique_id = fbx_node->GetUniqueID();
-            node_.parent_index = scene_view.indexof(fbx_node->GetParent() ?
+            node_.parent_index = scene_view.IndexOf(fbx_node->GetParent() ?
                 fbx_node->GetParent()->GetUniqueID() : 0);
             //現在解析しているノードに取り付けられているの子ノードを解析していく
             for (int child_index = 0; child_index < fbx_node->GetChildCount(); ++child_index)
@@ -197,10 +197,26 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
         constants data;
         DirectX::XMStoreFloat4x4(&data.world, 
             DirectX::XMLoadFloat4x4(&mesh_.default_global_transform) * DirectX::XMLoadFloat4x4(&world));
-#if 1
+#if 0
         DirectX::XMStoreFloat4x4(&data.bone_transforms[0], DirectX::XMMatrixIdentity());
         DirectX::XMStoreFloat4x4(&data.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)));
         DirectX::XMStoreFloat4x4(&data.bone_transforms[2], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)));
+#endif
+
+#if 0
+        DirectX::XMMATRIX B[3]; //バインドポーズ変換(オフセット行列)：モデル(メッシュ)空間からボーン空間に変換
+        B[0] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(0).offset_transform);
+        B[1] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(1).offset_transform);
+        B[2] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(2).offset_transform);
+
+        DirectX::XMMATRIX A[3]; //アニメーションボーン変換：ボーン空間からモデル(メッシュ)または親ボーン空間に変換
+        A[0] = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(90), 0, 0);	                                //A0 空間からモデル空間へ
+        A[1] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A1スペースから親ボーン(A0)スペースへ
+        A[2] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A2スペースから親ボーン(A1)スペースへ
+
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[0], B[0] * A[0]);
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[1], B[1] * A[1] * A[0]);
+        DirectX::XMStoreFloat4x4(&data.bone_transforms[2], B[1] * A[2] * A[1] * A[0]);
 #endif
         for (const mesh::subset& subset : mesh_.subsets)
         {
@@ -245,7 +261,7 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         //メッシュ名の設定
         mesh_.name = fbx_mesh->GetNode()->GetName();
         //メッシュに対するノードIDの割り振り
-        mesh_.node_index = scene_view.indexof(mesh_.unique_id);
+        mesh_.node_index = scene_view.IndexOf(mesh_.unique_id);
         
         //メッシュのグローバル行列を取得しXMFLOAT4X4に変換して代入
         mesh_.default_global_transform = ToXmFloat4x4(fbx_mesh->GetNode()->EvaluateGlobalTransform());
@@ -253,6 +269,9 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         //メッシュからボーン影響度を取得
         std::vector<bone_influences_per_control_point> bone_influences;
         FetchBoneInfluences(fbx_mesh, bone_influences);
+
+        //メッシュからバインドポーズ(初期姿勢)の情報の取り出し
+        FetchSkeleton(fbx_mesh, mesh_.bind_pose);
 
         std::vector<mesh::subset>& subsets{ mesh_.subsets };
         //マテリアル数を取得
@@ -469,6 +488,48 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
     material material_;
     materials.emplace(material_.unique_id, std::move(material_));
 #endif
+}
+
+//バインドポーズ情報の取り出し
+void Model::FetchSkeleton(FbxMesh* fbx_mesh, skeleton& bind_pose)
+{
+    //メッシュにあるスキンの数を取得
+    const int deformer_count = fbx_mesh->GetDeformerCount(FbxDeformer::eSkin);
+    //メッシュにあるすべてのスキンの情報をチェック
+    for (int deformer_index = 0; deformer_index < deformer_count; ++deformer_index)
+    {
+        //現在のスキンを取得
+        FbxSkin* skin = static_cast<FbxSkin*>(fbx_mesh->GetDeformer(deformer_index, FbxDeformer::eSkin));
+        //スキンにあるクラスターの数を取得
+        const int cluster_count = skin->GetClusterCount();
+        //メッシュのボーンの数 = メッシュのクラスターの数
+        bind_pose.bones.resize(cluster_count);
+        //スキンにあるすべてのクラスターの情報をチェック
+        for (int cluster_index = 0; cluster_index < cluster_count; ++cluster_index)
+        {
+            //現在のクラスターの情報をチェック
+            FbxCluster* cluster = skin->GetCluster(cluster_index);
+
+            skeleton::bone& bone{ bind_pose.bones.at(cluster_index) };
+            bone.name = cluster->GetLink()->GetName();
+            bone.unique_id = cluster->GetLink()->GetUniqueID();
+            bone.parent_index = bind_pose.IndexOf(cluster->GetLink()->GetParent()->GetUniqueID());
+            bone.node_index = scene_view.IndexOf(bone.unique_id);
+
+            //リンクを含むノードに関連付けられた行列を取得
+            //モデル(メッシュ)のローカル空間からシーンのグローバル空間に変換するために使用
+            FbxAMatrix reference_global_init_position;
+            cluster->GetTransformMatrix(reference_global_init_position);
+
+            //リンクノードに関連付けられた行列を取得
+            //ボーンのローカル空間からシーンのグローバル空間に変換するために使用
+            //ローカル座標空間でのボーンの絶対位置
+            FbxAMatrix cluster_global_init_position;
+            cluster->GetTransformLinkMatrix(cluster_global_init_position);
+
+            bone.offset_transform = ToXmFloat4x4(cluster_global_init_position.Inverse() * reference_global_init_position);
+        }
+    }
 }
 
 //バッファの生成

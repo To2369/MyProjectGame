@@ -67,4 +67,6 @@ private:
 
     //マテリアルカラー
     DirectX::XMFLOAT4 material_color{ 1,1,1,1 };
+
+    float elapsedTime_ = 0;
 };

@@ -91,7 +91,7 @@ void FetchBoneInfluences(const FbxMesh* fbx_mesh,
     }
 }
 
-Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
+Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, float sampling_rate)
 {
     //fbxマネージャーを生成
     FbxManager* fbx_manager{ FbxManager::Create() };
@@ -164,6 +164,9 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 
     FetchMaterials(fbx_scene, materials);
 
+    //float sampling_rate{ 0 };
+    FetchAnimations(fbx_scene, animation_clips, sampling_rate);
+
     fbx_manager->Destroy();
 
     CreateComObjects(device, fbx_filename);
@@ -171,7 +174,7 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate)
 
 //描画処理
 void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
-    const DirectX::XMFLOAT4& material_color)
+    const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe)
 {
     //メッシュごとに描画処理を行う
     for (const mesh& mesh_ : meshes)
@@ -218,6 +221,17 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
         DirectX::XMStoreFloat4x4(&data.bone_transforms[1], B[1] * A[1] * A[0]);
         DirectX::XMStoreFloat4x4(&data.bone_transforms[2], B[1] * A[2] * A[1] * A[0]);
 #endif
+        const size_t bone_count{ mesh_.bind_pose.bones.size() };
+        for (int bone_index = 0; bone_index < bone_count; ++bone_index)
+        {
+            const skeleton::bone& bone{ mesh_.bind_pose.bones.at(bone_index) };
+            const animation::keyframe::node& bone_node{ keyframe->nodes.at(bone.node_index) };
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[bone_index],
+                DirectX::XMLoadFloat4x4(&bone.offset_transform)*
+            DirectX::XMLoadFloat4x4(&bone_node.global_transform)*
+                DirectX::XMMatrixInverse(nullptr,DirectX::XMLoadFloat4x4(&mesh_.default_global_transform)));
+        }
+
         for (const mesh::subset& subset : mesh_.subsets)
         {
             //マテリアルの識別ID からマテリアルを取得し参照として設定
@@ -271,7 +285,7 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         FetchBoneInfluences(fbx_mesh, bone_influences);
 
         //メッシュからバインドポーズ(初期姿勢)の情報の取り出し
-        FetchSkeleton(fbx_mesh, mesh_.bind_pose);
+        FetchSkeletons(fbx_mesh, mesh_.bind_pose);
 
         std::vector<mesh::subset>& subsets{ mesh_.subsets };
         //マテリアル数を取得
@@ -491,7 +505,7 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
 }
 
 //バインドポーズ情報の取り出し
-void Model::FetchSkeleton(FbxMesh* fbx_mesh, skeleton& bind_pose)
+void Model::FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose)
 {
     //メッシュにあるスキンの数を取得
     const int deformer_count = fbx_mesh->GetDeformerCount(FbxDeformer::eSkin);
@@ -532,6 +546,64 @@ void Model::FetchSkeleton(FbxMesh* fbx_mesh, skeleton& bind_pose)
     }
 }
 
+//アニメーション情報の取り出し
+void Model::FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animation_clips,
+    float sampling_rate)
+{
+    FbxArray<FbxString*> animation_stack_names;
+    //シーンからアニメーション一覧を取得
+    fbx_scene->FillAnimStackNameArray(animation_stack_names);
+    //アニメーション一覧の数を取得
+    const int animation_stack_count{ animation_stack_names.GetCount() };
+    for (int animation_stack_index = 0; animation_stack_index < animation_stack_count; ++animation_stack_index)
+    {
+        //アニメーションを取得
+        animation& animation_clip{ animation_clips.emplace_back() };
+        animation_clip.name = animation_stack_names[animation_stack_index]->Buffer();
+
+        //取得したアニメーションをアニメーションスタックとして設定
+        FbxAnimStack* animation_stack{ fbx_scene->FindMember<FbxAnimStack>(animation_clip.name.c_str()) };
+        //現在のアニメーションをアニメーションスタックのアニメーションに変更
+        fbx_scene->SetCurrentAnimationStack(animation_stack);
+
+        const FbxTime::EMode time_mode{ fbx_scene->GetGlobalSettings().GetTimeMode() };
+        FbxTime one_second;
+        one_second.SetTime(0, 0, 1, 0, 0, time_mode);
+        animation_clip.sampling_rate = sampling_rate > 0 ?
+            sampling_rate : static_cast<float>(one_second.GetFrameRate(time_mode));
+
+        //サンプリングレートからサンプリングの間隔時間を設定
+        const FbxTime sampling_interval
+        { static_cast<FbxLongLong>(one_second.Get() / animation_clip.sampling_rate) };
+        const FbxTakeInfo* take_info{ fbx_scene->GetTakeInfo(animation_clip.name.c_str()) };
+
+        //アニメーションの開始と終了を取得
+        const FbxTime start_time{ take_info->mLocalTimeSpan.GetStart() };
+        const FbxTime stop_time{ take_info->mLocalTimeSpan.GetStop() };
+        for (FbxTime time = start_time; time < stop_time; time += sampling_interval)
+        {
+            //サンプリング間隔ごとのキーフレームを取得
+            animation::keyframe& keyframe{ animation_clip.sequence.emplace_back() };
+
+            const size_t node_count{ scene_view.nodes.size() };
+            keyframe.nodes.resize(node_count);
+            for (size_t node_index = 0; node_index < node_count; ++node_index)
+            {
+                FbxNode* fbx_node{ fbx_scene->FindNodeByName(scene_view.nodes.at(node_index).name.c_str()) };
+                if (fbx_node)
+                {
+                    animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
+                    //アニメーション時間からアニメーション行列を取得
+                    node.global_transform = ToXmFloat4x4(fbx_node->EvaluateGlobalTransform(time));
+                }
+            }
+        }
+    }
+    for (int animation_stack_index = 0; animation_stack_index < animation_stack_count; ++animation_stack_index)
+    {
+        delete animation_stack_names[animation_stack_index];
+    }
+}
 //バッファの生成
 void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
 {

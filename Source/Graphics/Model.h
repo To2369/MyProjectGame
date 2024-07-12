@@ -44,6 +44,29 @@ struct skeleton
 	}
 };
 
+//アニメーション
+struct animation
+{
+	//アニメーションの名前
+	std::string name;
+	//サンプリングレート
+	float sampling_rate{ 0 };
+
+	//キーフレーム
+	struct keyframe
+	{
+		struct node
+		{
+			//キーフレームに含まれるノードの行列
+			DirectX::XMFLOAT4X4 global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		};
+		//キーフレームに含まれる全てのノードの行列
+		std::vector<node> nodes;
+	};
+	//アニメーション１つ分のデータ
+	std::vector<keyframe> sequence;
+};
+
 struct scene
 {
 	struct node
@@ -142,14 +165,17 @@ public:
 	};
 	//読み込んだマテリアル
 	std::unordered_map<uint64_t, material> materials;
+
+	//全てのアニメーションのデータ
+	std::vector<animation> animation_clips;
 public:
 	//"triangulate">true...多角形で作られたポリゴンを三角形化
-	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false);
+	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
 	virtual ~Model() = default;
 
 	//描画処理
 	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
-		const DirectX::XMFLOAT4& material_color);
+		const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe);
 
 	// メッシュ情報の取り出し
 	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
@@ -158,7 +184,11 @@ public:
 	void FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
 
 	//バインドポーズ情報の取り出し
-	void FetchSkeleton(FbxMesh* fbx_mesh, skeleton& bind_pose);
+	void FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose);
+
+	//アニメーション情報の取り出し
+	void FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animation_clips,
+		float sampling_rate);
 
 	//バッファの生成
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);

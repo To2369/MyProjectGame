@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\cube.004.fbx",true);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx",true);
 }
 
 //終了化
@@ -49,6 +49,7 @@ void SceneTest::Finalize()
 //更新処理
 void SceneTest::Update(float elapsedTime)
 {
+    elapsedTime_ = elapsedTime;
     cameraCtrl->Update(elapsedTime);
 #ifdef USE_IMGUI
 
@@ -157,8 +158,8 @@ void SceneTest::Render()
             { 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	    //3:左手系 Z-UP
         };
             //デフォルトのスケールファクタを設定して行列に反映
-        const float scale_factor = 1.0f;
-        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[2]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
+        const float scale_factor = 0.01f;
+        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[0]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
             //拡大縮小行列
             DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
             // 回転行列
@@ -170,7 +171,23 @@ void SceneTest::Render()
             DirectX::XMFLOAT4X4 world;
             DirectX::XMStoreFloat4x4(&world, C * S * R * T);
 
-            model[0]->Render(dc, world, material_color);
+            int clip_index{ 0 };
+            int frame_index{ 0 };
+            static float animation_tick{ 0 };
+
+            animation& animation{ model[0]->animation_clips.at(clip_index) };
+            frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+            if (frame_index > animation.sequence.size() - 1)
+            {
+                frame_index = 0;
+                animation_tick = 0;
+            }
+            else
+            {
+                animation_tick += elapsedTime_;
+            }
+            animation::keyframe& keyframe{ animation.sequence.at(frame_index) };
+            model[0]->Render(dc, world, material_color, &keyframe);
 #endif
 #if 0
         //ジオメトリックプリミティブ描画

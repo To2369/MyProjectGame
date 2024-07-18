@@ -198,8 +198,11 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 
         //定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
-        DirectX::XMStoreFloat4x4(&data.world, 
-            DirectX::XMLoadFloat4x4(&mesh_.default_global_transform) * DirectX::XMLoadFloat4x4(&world));
+        //メッシュの位置・姿勢行列をキーフレームから取得
+        const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh_.node_index) };
+        //取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
+        DirectX::XMStoreFloat4x4(&data.world,
+            DirectX::XMLoadFloat4x4(&mesh_node.global_transform) * DirectX::XMLoadFloat4x4(&world));
 #if 0
         DirectX::XMStoreFloat4x4(&data.bone_transforms[0], DirectX::XMMatrixIdentity());
         DirectX::XMStoreFloat4x4(&data.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)));

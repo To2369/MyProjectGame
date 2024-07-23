@@ -106,6 +106,7 @@ public:
 	{
 		DirectX::XMFLOAT3 position;			// 頂点座標
 		DirectX::XMFLOAT3 normal{ 0,1,0 };	// 法線
+		DirectX::XMFLOAT4 tangent;			// 接線ベクトル
 		DirectX::XMFLOAT2 texcoord{ 0,0 };	// テクスチャ座標
 		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	// ウェイト値
 		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		// ボーン番号
@@ -145,6 +146,12 @@ public:
 	
 		// バインドポーズ(初期姿勢)
 		skeleton bind_pose;
+
+		DirectX::XMFLOAT3 bounding_box[2]
+		{
+			{D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX},
+			{-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX}
+		};
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	// 頂点バッファ
 		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	// インデックスバッファ

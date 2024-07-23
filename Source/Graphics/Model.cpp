@@ -198,43 +198,53 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 
         // 定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
-        // メッシュの位置・姿勢行列をキーフレームから取得
-        const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh_.node_index) };
-        // 取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
-        DirectX::XMStoreFloat4x4(&data.world,
-            DirectX::XMLoadFloat4x4(&mesh_node.global_transform) * DirectX::XMLoadFloat4x4(&world));
-#if 0
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[0], DirectX::XMMatrixIdentity());
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)));
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[2], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)));
-#endif
-
-#if 0
-        DirectX::XMMATRIX B[3]; // バインドポーズ変換(オフセット行列)：モデル(メッシュ)空間からボーン空間に変換
-        B[0] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(0).offset_transform);
-        B[1] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(1).offset_transform);
-        B[2] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(2).offset_transform);
-
-        DirectX::XMMATRIX A[3]; // アニメーションボーン変換：ボーン空間からモデル(メッシュ)または親ボーン空間に変換
-        A[0] = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(90), 0, 0);	                                //A0 空間からモデル空間へ
-        A[1] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A1スペースから親ボーン(A0)スペースへ
-        A[2] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A2スペースから親ボーン(A1)スペースへ
-
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[0], B[0] * A[0]);
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[1], B[1] * A[1] * A[0]);
-        DirectX::XMStoreFloat4x4(&data.bone_transforms[2], B[1] * A[2] * A[1] * A[0]);
-#endif
-        const size_t bone_count{ mesh_.bind_pose.bones.size() };
-        for (int bone_index = 0; bone_index < bone_count; ++bone_index)
+        if (keyframe && keyframe->nodes.size() > 0)
         {
-            const skeleton::bone& bone{ mesh_.bind_pose.bones.at(bone_index) };
-            const animation::keyframe::node& bone_node{ keyframe->nodes.at(bone.node_index) };
-            DirectX::XMStoreFloat4x4(&data.bone_transforms[bone_index],
-                DirectX::XMLoadFloat4x4(&bone.offset_transform)*
-            DirectX::XMLoadFloat4x4(&bone_node.global_transform)*
-                DirectX::XMMatrixInverse(nullptr,DirectX::XMLoadFloat4x4(&mesh_.default_global_transform)));
-        }
+            // メッシュの位置・姿勢行列をキーフレームから取得
+            const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh_.node_index) };
+            // 取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
+            DirectX::XMStoreFloat4x4(&data.world,
+                DirectX::XMLoadFloat4x4(&mesh_node.global_transform) * DirectX::XMLoadFloat4x4(&world));
+#if 0
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[0], DirectX::XMMatrixIdentity());
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)));
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[2], DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)));
+#endif
 
+#if 0
+            DirectX::XMMATRIX B[3]; // バインドポーズ変換(オフセット行列)：モデル(メッシュ)空間からボーン空間に変換
+            B[0] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(0).offset_transform);
+            B[1] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(1).offset_transform);
+            B[2] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(2).offset_transform);
+
+            DirectX::XMMATRIX A[3]; // アニメーションボーン変換：ボーン空間からモデル(メッシュ)または親ボーン空間に変換
+            A[0] = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(90), 0, 0);	                                //A0 空間からモデル空間へ
+            A[1] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A1スペースから親ボーン(A0)スペースへ
+            A[2] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A2スペースから親ボーン(A1)スペースへ
+
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[0], B[0] * A[0]);
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[1], B[1] * A[1] * A[0]);
+            DirectX::XMStoreFloat4x4(&data.bone_transforms[2], B[1] * A[2] * A[1] * A[0]);
+#endif
+            const size_t bone_count{ mesh_.bind_pose.bones.size() };
+            for (int bone_index = 0; bone_index < bone_count; ++bone_index)
+            {
+                const skeleton::bone& bone{ mesh_.bind_pose.bones.at(bone_index) };
+                const animation::keyframe::node& bone_node{ keyframe->nodes.at(bone.node_index) };
+                DirectX::XMStoreFloat4x4(&data.bone_transforms[bone_index],
+                    DirectX::XMLoadFloat4x4(&bone.offset_transform) *
+                    DirectX::XMLoadFloat4x4(&bone_node.global_transform) *
+                    DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&mesh_.default_global_transform)));
+            }
+        }
+        else
+        {
+            DirectX::XMStoreFloat4x4(&data.world, DirectX::XMLoadFloat4x4(&mesh_.default_global_transform) * DirectX::XMLoadFloat4x4(&world));
+            for (size_t bone_index = 0; bone_index < MAX_BONES; ++bone_index)
+            {
+                data.bone_transforms[bone_index] = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+            }
+        }
         for (const mesh::subset& subset : mesh_.subsets)
         {
             // マテリアルの識別ID からマテリアルを取得し参照として設定
@@ -246,6 +256,8 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
             immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
             immediate_context->PSSetShaderResources(0, 1,
                 material_.shader_resource_views[0].GetAddressOf());
+            immediate_context->PSSetShaderResources(1, 1,
+                material_.shader_resource_views[1].GetAddressOf());
             // インデックスを使用して描画
             //D3D11_BUFFER_DESC buffer_desc;
             //mesh_.index_buffer->GetDesc(&buffer_desc);
@@ -491,12 +503,33 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                     vertex_.texcoord.y = 1.0f - static_cast<float>(uv[1]);
                 }
 
+                // 接線ベクトルの取得
+                if (fbx_mesh->GenerateTangentsData(0, false))
+                {
+                    const FbxGeometryElementTangent* tangent = fbx_mesh->GetElementTangent(0);
+                    vertex_.tangent.x = static_cast<float>(tangent->GetDirectArray().GetAt(vertex_index)[0]);
+                    vertex_.tangent.y = static_cast<float>(tangent->GetDirectArray().GetAt(vertex_index)[1]);
+                    vertex_.tangent.z = static_cast<float>(tangent->GetDirectArray().GetAt(vertex_index)[2]);
+                    vertex_.tangent.w = static_cast<float>(tangent->GetDirectArray().GetAt(vertex_index)[3]);
+                }
+
+
                 // 現在のインデックス番号部分に頂点データを設定
                 mesh_.vertices.at(vertex_index) = std::move(vertex_);
                 // 現在のインデックス番号を設定
                 mesh_.indices.at(static_cast<size_t>(offset)+position_in_polygon) = vertex_index;
                 subset.index_count++;
             }
+        }
+        // メッシュごとのバウンディングボックスの座標を計算
+        for (const vertex& v : mesh_.vertices)
+        {
+            mesh_.bounding_box[0].x = std::min<float>(mesh_.bounding_box[0].x, v.position.x);
+            mesh_.bounding_box[0].y = std::min<float>(mesh_.bounding_box[0].y, v.position.y);
+            mesh_.bounding_box[0].z = std::min<float>(mesh_.bounding_box[0].z, v.position.z);
+            mesh_.bounding_box[1].x = std::max<float>(mesh_.bounding_box[1].x, v.position.x);
+            mesh_.bounding_box[1].y = std::max<float>(mesh_.bounding_box[1].y, v.position.x);
+            mesh_.bounding_box[1].z = std::max<float>(mesh_.bounding_box[1].z, v.position.x);
         }
     }
 }
@@ -563,6 +596,16 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Ks.z = static_cast<float>(color[2]);
                 material_.Ks.w = 1.0f;
             }
+
+            // 法線マップのファイル名
+            fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sNormalMap);
+            if (fbx_property.IsValid())
+            {
+                const FbxFileTexture* file_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
+                // ファイル名が存在したら相対パス込みでのファイル名を取得
+                material_.texture_filename[1] = file_texture ? file_texture->GetRelativeFileName() : "";
+            }
+
             // 取得したマテリアルの情報を設定する
             materials.emplace(material_.unique_id, std::move(material_));
         }
@@ -722,29 +765,33 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
     // マテリアルの中にあるテクスチャファイル名の数だけテクスチャを生成する
     for (std::unordered_map<uint64_t, material>::iterator iterator = materials.begin(); iterator != materials.end(); ++iterator)
     {
-        if (iterator->second.texture_filename[0].size() > 0)
+        for (size_t texture_index = 0; texture_index < 2; ++texture_index)
         {
-            std::filesystem::path path(fbx_filename);
-            path.replace_filename(iterator->second.texture_filename[0]);
-            D3D11_TEXTURE2D_DESC texture2d_desc;
-            ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(),
-                iterator->second.shader_resource_views[0].GetAddressOf(), &texture2d_desc);
-        }
-        else
-        {
-            ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[0].GetAddressOf(),
-                0xFFFFFFFF, 16);
+            if (iterator->second.texture_filename[0].size() > 0)
+            {
+                std::filesystem::path path(fbx_filename);
+                path.replace_filename(iterator->second.texture_filename[texture_index]);
+                D3D11_TEXTURE2D_DESC texture2d_desc;
+                ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(),
+                    iterator->second.shader_resource_views[texture_index].GetAddressOf(), &texture2d_desc);
+            }
+            else
+            {
+                ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[texture_index].GetAddressOf(),
+                    texture_index == 1 ? 0xFFFF7F7F : 0xFFFFFFFF, 16);
+            }
         }
     }
     HRESULT hr = S_OK;
     // 入力レイアウトオブジェクトの生成
     D3D11_INPUT_ELEMENT_DESC input_element_desc[]
     {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT},
-        { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
-        { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+        { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0  },
         { "WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        {"BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        { "BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
 
     // 頂点シェーダーオブジェクトの生成

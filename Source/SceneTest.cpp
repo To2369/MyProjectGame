@@ -37,8 +37,8 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\AimTest\\MNK_Mesh.fbx",true);
-    model[0]->AppendAnimations(".\\Data\\resources\\AimTest\\Aim_Space.fbx", 0);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx",true);
+    //model[0]->AppendAnimations(".\\Data\\resources\\AimTest\\Aim_Space.fbx", 0);
 }
 
 //終了化
@@ -164,7 +164,7 @@ void SceneTest::Render()
         };
             //デフォルトのスケールファクタを設定して行列に反映
         const float scale_factor = 0.01f;
-        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[2]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
+        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[0]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
             //拡大縮小行列
             DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
             // 回転行列

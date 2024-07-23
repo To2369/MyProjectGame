@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\Drone166\\Drone166.1.fbx",true);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx",true);
 }
 
 //終了化
@@ -72,6 +72,9 @@ void SceneTest::Update(float elapsedTime)
     ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
 
     ImGui::ColorEdit4("material_color", reinterpret_cast<float*>(&material_color));
+    
+    ImGui::SliderFloat("neckangle", &factor[0], -1.5f, 1.5f);
+    ImGui::SliderFloat("necklong", &factor[1], 0, 500.0f);
     ImGui::End();
 #endif
 }
@@ -187,6 +190,12 @@ void SceneTest::Render()
                 animation_tick += elapsedTime_;
             }
             animation::keyframe& keyframe{ animation.sequence.at(frame_index) };
+#if 1
+            // デバッグ用(首を高くして左に回転)
+            DirectX::XMStoreFloat4(&keyframe.nodes.at(30).rotation, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1, 0, 0, 0), factor[0]));
+            keyframe.nodes.at(30).translation.x = factor[1];
+            model[0]->UpdateAnimation(keyframe);
+#endif
             model[0]->Render(dc, world, material_color, &keyframe);
 #endif
 #if 0

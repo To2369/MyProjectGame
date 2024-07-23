@@ -7,21 +7,21 @@
 #include<fbxsdk.h>
 #include<unordered_map>
 
-//スケルトン
-//複数のボーンを管理
+// スケルトン
+// 複数のボーンを管理
 struct skeleton
 {
-	//メッシュのボーン情報
+	// メッシュのボーン情報
 	struct bone
 	{
-		uint64_t unique_id{ 0 };	//識別ID
+		uint64_t unique_id{ 0 };	// 識別ID
 		std::string name;
-		//親ボーンの位置を参照するインデックス	-1...親無し
+		// 親ボーンの位置を参照するインデックス	-1...親無し
 		int64_t parent_index{ -1 };
-		//シーンのノード配列を参照するインデックス
+		// シーンのノード配列を参照するインデックス
 		int64_t node_index{ 0 };
 
-		//モデル(メッシュ)空間からボーン(ノード)に変換するために使用
+		// モデル(メッシュ)空間からボーン(ノード)に変換するために使用
 		DirectX::XMFLOAT4X4 offset_transform{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 
 		// true...親無しのボーン
@@ -44,26 +44,30 @@ struct skeleton
 	}
 };
 
-//アニメーション
+// アニメーション
 struct animation
 {
-	//アニメーションの名前
+	// アニメーションの名前
 	std::string name;
-	//サンプリングレート
+	// サンプリングレート
 	float sampling_rate{ 0 };
 
-	//キーフレーム
+	// キーフレーム
 	struct keyframe
 	{
 		struct node
 		{
-			//キーフレームに含まれるノードの行列
+			// キーフレームに含まれるノードの行列
 			DirectX::XMFLOAT4X4 global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		
+			DirectX::XMFLOAT3 scaling{ 1,1,1 };
+			DirectX::XMFLOAT4 rotation{ 0,0,0,1 };
+			DirectX::XMFLOAT3 translation{ 0,0,0 };
 		};
-		//キーフレームに含まれる全てのノードの行列
+		// キーフレームに含まれる全てのノードの行列
 		std::vector<node> nodes;
 	};
-	//アニメーション１つ分のデータ
+	// アニメーション１つ分のデータ
 	std::vector<keyframe> sequence;
 };
 
@@ -71,7 +75,7 @@ struct scene
 {
 	struct node
 	{
-		uint64_t unique_id{ 0 };	//識別ID
+		uint64_t unique_id{ 0 };	// 識別ID
 		std::string name;
 		FbxNodeAttribute::EType attribute{ FbxNodeAttribute::EType::eUnknown };
 		int64_t parent_index{ -1 };
@@ -95,55 +99,55 @@ struct scene
 class Model
 {
 public:
-	//最大ボーン影響値
+	// 最大ボーン影響値
 	static const int MAX_BONE_INFLUENCES{ 4 };
 
 	struct vertex
 	{
-		DirectX::XMFLOAT3 position;			//頂点座標
-		DirectX::XMFLOAT3 normal{ 0,1,0 };	//法線
-		DirectX::XMFLOAT2 texcoord{ 0,0 };	//テクスチャ座標
-		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	//ウェイト値
-		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		//ボーン番号
+		DirectX::XMFLOAT3 position;			// 頂点座標
+		DirectX::XMFLOAT3 normal{ 0,1,0 };	// 法線
+		DirectX::XMFLOAT2 texcoord{ 0,0 };	// テクスチャ座標
+		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	// ウェイト値
+		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		// ボーン番号
 	};
 
 	static const int MAX_BONES{ 256 };
-	//定数バッファフォーマット
+	// 定数バッファフォーマット
 	struct constants
 	{
-		DirectX::XMFLOAT4X4 world;			//ワールド行列
-		DirectX::XMFLOAT4 material_color;	//マテリアルカラー
+		DirectX::XMFLOAT4X4 world;			// ワールド行列
+		DirectX::XMFLOAT4 material_color;	// マテリアルカラー
 		DirectX::XMFLOAT4X4 bone_transforms[MAX_BONES]{ {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1} };
 	};
 
 	//メッシュ情報
 	struct mesh
 	{
-		uint64_t unique_id{ 0 };		//識別ID
-		std::string name;				//メッシュ名
-		int64_t node_index{ 0 };		//ノードID
-		std::vector<vertex> vertices;	//頂点座標
-		std::vector<uint32_t> indices;	//頂点インデックス
+		uint64_t unique_id{ 0 };		// 識別ID
+		std::string name;				// メッシュ名
+		int64_t node_index{ 0 };		// ノードID
+		std::vector<vertex> vertices;	// 頂点座標
+		std::vector<uint32_t> indices;	// 頂点インデックス
 
-		//サブセット情報
+		// サブセット情報
 		struct subset
 		{
-			uint64_t material_unique_id{ 0 };	//識別ID
-			std::string material_name;			//マテリアル名
+			uint64_t material_unique_id{ 0 };	// 識別ID
+			std::string material_name;			// マテリアル名
 
-			uint32_t start_index_location{ 0 };	//インデックスの開始位置
-			uint32_t index_count{ 0 };			//インデックスの数(頂点)
+			uint32_t start_index_location{ 0 };	// インデックスの開始位置
+			uint32_t index_count{ 0 };			// インデックスの数(頂点)
 		};
 		std::vector<subset> subsets;
 
-		//メッシュごとのワールド行列
+		// メッシュごとのワールド行列
 		DirectX::XMFLOAT4X4 default_global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	
-		//バインドポーズ(初期姿勢)
+		// バインドポーズ(初期姿勢)
 		skeleton bind_pose;
 	private:
-		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	//頂点バッファ
-		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	//インデックスバッファ
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	// 頂点バッファ
+		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	// インデックスバッファ
 		friend class Model;
 	};
 	std::vector<mesh> meshes;
@@ -151,53 +155,56 @@ public:
 	//マテリアル
 	struct material
 	{
-		uint64_t unique_id{ 0 };	//識別ID
-		std::string name;	//マテリアル名
+		uint64_t unique_id{ 0 };	// 識別ID
+		std::string name;	// マテリアル名
 
 		DirectX::XMFLOAT4 Ka{ 0.2f,0.2f,0.2f,1.0f };
 		DirectX::XMFLOAT4 Kd{ 0.8f,0.8f,0.8f,1.0f };
 		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
 
-		//テクスチャファイル名
+		// テクスチャファイル名
 		std::string texture_filename[4];
-		//テクスチャ情報
+		// テクスチャ情報
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
 	};
-	//読み込んだマテリアル
+	// 読み込んだマテリアル
 	std::unordered_map<uint64_t, material> materials;
 
-	//全てのアニメーションのデータ
+	// 全てのアニメーションのデータ
 	std::vector<animation> animation_clips;
 public:
-	//"triangulate">true...多角形で作られたポリゴンを三角形化
+	// "triangulate">true...多角形で作られたポリゴンを三角形化
 	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
 	virtual ~Model() = default;
 
-	//描画処理
+	// 描画処理
 	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
 		const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe);
+
+	//	アニメーション更新
+	void UpdateAnimation(animation::keyframe& keyframe);
 
 	// メッシュ情報の取り出し
 	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
 
-	//マテリアル情報の取り出し
+	// マテリアル情報の取り出し
 	void FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
 
-	//バインドポーズ情報の取り出し
+	// バインドポーズ情報の取り出し
 	void FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose);
 
-	//アニメーション情報の取り出し
+	// アニメーション情報の取り出し
 	void FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animation_clips,
 		float sampling_rate);
 
-	//バッファの生成
+	// バッファの生成
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	//頂点シェーダー
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		//ピクセルシェーダー
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		//入力レイアウト
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		// 入力レイアウト
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
 protected:
-	//このfbxの親シーン
+	// このfbxの親シーン
 	scene scene_view;
 };

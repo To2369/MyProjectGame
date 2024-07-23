@@ -13,10 +13,10 @@ enum class SAMPLER_STATE
 
 enum class DEPTH_STENCIL_STATE
 {
-    ON_ON,          //深度テストをON深度書き込みをON
-    ON_OFF,         //深度テストをON深度書き込みをOFF
-    OFF_ON,         //深度テストをOFF深度書き込みをON
-    OFF_OFF,        //深度テストをOFF深度書き込みをOFF
+    ON_ON,          // 深度テストをON深度書き込みをON
+    ON_OFF,         // 深度テストをON深度書き込みをOFF
+    OFF_ON,         // 深度テストをOFF深度書き込みをON
+    OFF_OFF,        // 度テストをOFF深度書き込みをOFF
 
 	Enum_Max,
 };

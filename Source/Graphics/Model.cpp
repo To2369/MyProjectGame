@@ -5,7 +5,7 @@
 #include<filesystem>
 #include"Shader.h"
 
-//FbxAMatrixからXMFLOAT４X4に変換
+// FbxAMatrixからXMFLOAT４X4に変換
 inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
 {
     DirectX::XMFLOAT4X4 xmfloat4x4;
@@ -19,7 +19,7 @@ inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
     return xmfloat4x4;
 }
 
-//FbxDouble3からXMFLOAT3に変換
+// FbxDouble3からXMFLOAT3に変換
 inline DirectX::XMFLOAT3 ToXmFloat3(const FbxDouble3& fbxdouble3)
 {
     DirectX::XMFLOAT3 xmfloat3;
@@ -29,7 +29,7 @@ inline DirectX::XMFLOAT3 ToXmFloat3(const FbxDouble3& fbxdouble3)
     return xmfloat3;
 }
 
-//FbxDouble4からXMFLOAT4に変換
+// FbxDouble4からXMFLOAT4に変換
 inline DirectX::XMFLOAT4 ToXmFloat4(const FbxDouble4& fbxdouble4)
 {
     DirectX::XMFLOAT4 xmfloat4;
@@ -40,51 +40,51 @@ inline DirectX::XMFLOAT4 ToXmFloat4(const FbxDouble4& fbxdouble4)
     return xmfloat4;
 }
 
-//１つの頂点が影響を受けるボーンの情報
+// １つの頂点が影響を受けるボーンの情報
 struct bone_influence
 {
-    uint32_t bone_index;//ボーン番号
-    float bone_weight;  //ウェイト値
+    uint32_t bone_index;// ボーン番号
+    float bone_weight;  // ウェイト値
 };
-//１つの頂点は複数のボーンから影響を受ける場合があるので可変長配列で表現
+// １つの頂点は複数のボーンから影響を受ける場合があるので可変長配列で表現
 using bone_influences_per_control_point = std::vector<bone_influence>;
 
 void FetchBoneInfluences(const FbxMesh* fbx_mesh,
     std::vector<bone_influences_per_control_point>& bone_influences)
 {
-    //ボーン影響度の数 = FBX メッシュにあるコントロールポイントの数に設定
+    // ボーン影響度の数 = FBX メッシュにあるコントロールポイントの数に設定
     const int control_points_count{ fbx_mesh->GetControlPointsCount() };
     bone_influences.resize(control_points_count);
-    //メッシュにあるスキンの数を取得
+    // メッシュにあるスキンの数を取得
     const int skin_count{ fbx_mesh->GetDeformerCount(FbxDeformer::eSkin) };
-    //メッシュにあるすべてのスキンの情報をチェック
+    // メッシュにあるすべてのスキンの情報をチェック
     for (int skin_index = 0; skin_index < skin_count; ++skin_index)
     {
-        //現在のスキンを取得
+        // 現在のスキンを取得
         const FbxSkin* fbx_skin{ static_cast<FbxSkin*>(fbx_mesh->GetDeformer(skin_index,FbxDeformer::eSkin)) };
 
-        //スキンにあるクラスターの数を取得
+        // スキンにあるクラスターの数を取得
         const int cluster_count{ fbx_skin->GetClusterCount() };
-        //スキンにあるすべてのクラスターの情報をチェック
+        // スキンにあるすべてのクラスターの情報をチェック
         for (int cluster_index = 0; cluster_index < cluster_count; ++cluster_index)
         {
-            //現在のクラスターの情報をチェック
+            // 現在のクラスターの情報をチェック
             const FbxCluster* fbx_cluster{ fbx_skin->GetCluster(cluster_index) };
 
-            //クラスターにあるコントロールポイントの数を取得
+            // クラスターにあるコントロールポイントの数を取得
             const int control_point_indices_count{ fbx_cluster->GetControlPointIndicesCount() };
-            //クラスターにあるすべてのコントロールポイントのウェイトの値を取得
+            // クラスターにあるすべてのコントロールポイントのウェイトの値を取得
             for (int control_point_indices_index = 0; control_point_indices_index < control_point_indices_count; ++control_point_indices_index)
             {
-                //現在のコントロールポイントの番号
+                // 現在のコントロールポイントの番号
                 int control_point_index{ fbx_cluster->GetControlPointIndices()[control_point_indices_index] };
-                //コントロールポイントのウェイト値
+                // コントロールポイントのウェイト値
                 double control_point_weight{ fbx_cluster->GetControlPointWeights()[control_point_indices_index] };
-                //新規にボーン影響度を生成して追加
+                // 新規にボーン影響度を生成して追加
                 bone_influence& bone_influence_{ bone_influences.at(control_point_index).emplace_back() };
-                //現在のクラスターの番号をボーン番号として設定
+                // 現在のクラスターの番号をボーン番号として設定
                 bone_influence_.bone_index = static_cast<uint32_t>(cluster_index);
-                //コントロールのウェイト値をボーンのウェイト値として設定
+                // コントロールのウェイト値をボーンのウェイト値として設定
                 bone_influence_.bone_weight = static_cast<float>(control_point_weight);
             }
         }
@@ -93,37 +93,37 @@ void FetchBoneInfluences(const FbxMesh* fbx_mesh,
 
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, float sampling_rate)
 {
-    //fbxマネージャーを生成
+    // fbxマネージャーを生成
     FbxManager* fbx_manager{ FbxManager::Create() };
-    //fbxシーンを生成
+    // fbxシーンを生成
     FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
 
-    //fbxインポーターの生成
+    // fbxインポーターの生成
     FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
     bool import_status{ false };
 
-    //fbxファイルを読み込む
+    // fbxファイルを読み込む
     import_status = fbx_importer->Initialize(fbx_filename);
     _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
 
-    //読み込んだファイルの情報を fbx シーンに流し込む
+    // 読み込んだファイルの情報を fbx シーンに流し込む
     import_status = fbx_importer->Import(fbx_scene);
     _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
 
     FbxGeometryConverter fbx_converter(fbx_manager);
     if (triangulate)
     {
-        //多角形で作られたポリゴンをすべて三角形にする
+        // 多角形で作られたポリゴンをすべて三角形にする
         fbx_converter.Triangulate(fbx_scene, true/*replace*/, false/*legacy*/);
         fbx_converter.RemoveBadPolygonsFromMeshes(fbx_scene);
     }
 
-    //ノードの情報を解析する関数
+    // ノードの情報を解析する関数
     std::function<void(FbxNode*)> traverse
     {
         [&](FbxNode* fbx_node)
         {
-            //scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
+            // scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
             scene::node& node_{scene_view.nodes.emplace_back()};
             node_.attribute = fbx_node->GetNodeAttribute() ?
                 fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
@@ -131,14 +131,14 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, f
             node_.unique_id = fbx_node->GetUniqueID();
             node_.parent_index = scene_view.IndexOf(fbx_node->GetParent() ?
                 fbx_node->GetParent()->GetUniqueID() : 0);
-            //現在解析しているノードに取り付けられているの子ノードを解析していく
+            // 現在解析しているノードに取り付けられているの子ノードを解析していく
             for (int child_index = 0; child_index < fbx_node->GetChildCount(); ++child_index)
             {
                 traverse(fbx_node->GetChild(child_index));
             }
         }
     };
-    //ルートノードから解析開始
+    // ルートノードから解析開始
     traverse(fbx_scene->GetRootNode());
 
 #if 0
@@ -180,27 +180,27 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
     for (const mesh& mesh_ : meshes)
     {
 
-        //頂点バッファの設定
+        // 頂点バッファの設定
         uint32_t stride{ sizeof(vertex) };
         uint32_t offset{ 0 };
         immediate_context->IASetVertexBuffers(0, 1, mesh_.vertex_buffer.GetAddressOf(), &stride, &offset);
-        //インデックスバッファの設定
+        // インデックスバッファの設定
         immediate_context->IASetIndexBuffer(mesh_.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-        //プリミティブのトポロジー設定（三角形リスト）
+        // プリミティブのトポロジー設定（三角形リスト）
         immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        //入力レイアウトの設定
+        // 入力レイアウトの設定
         immediate_context->IASetInputLayout(input_layout.Get());
 
-        //頂点シェーダーの設定
+        // 頂点シェーダーの設定
         immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-        //ピクセルシェーダーの設定
+        // ピクセルシェーダーの設定
         immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
 
-        //定数バッファの更新（ワールド行列とマテリアルカラーの設定
+        // 定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
-        //メッシュの位置・姿勢行列をキーフレームから取得
+        // メッシュの位置・姿勢行列をキーフレームから取得
         const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh_.node_index) };
-        //取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
+        // 取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
         DirectX::XMStoreFloat4x4(&data.world,
             DirectX::XMLoadFloat4x4(&mesh_node.global_transform) * DirectX::XMLoadFloat4x4(&world));
 #if 0
@@ -210,12 +210,12 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 #endif
 
 #if 0
-        DirectX::XMMATRIX B[3]; //バインドポーズ変換(オフセット行列)：モデル(メッシュ)空間からボーン空間に変換
+        DirectX::XMMATRIX B[3]; // バインドポーズ変換(オフセット行列)：モデル(メッシュ)空間からボーン空間に変換
         B[0] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(0).offset_transform);
         B[1] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(1).offset_transform);
         B[2] = DirectX::XMLoadFloat4x4(&mesh_.bind_pose.bones.at(2).offset_transform);
 
-        DirectX::XMMATRIX A[3]; //アニメーションボーン変換：ボーン空間からモデル(メッシュ)または親ボーン空間に変換
+        DirectX::XMMATRIX A[3]; // アニメーションボーン変換：ボーン空間からモデル(メッシュ)または親ボーン空間に変換
         A[0] = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(90), 0, 0);	                                //A0 空間からモデル空間へ
         A[1] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A1スペースから親ボーン(A0)スペースへ
         A[2] = DirectX::XMMatrixRotationRollPitchYaw(0, 0, DirectX::XMConvertToRadians(-45)) * DirectX::XMMatrixTranslation(0, 2, 0);	//A2スペースから親ボーン(A1)スペースへ
@@ -237,7 +237,7 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 
         for (const mesh::subset& subset : mesh_.subsets)
         {
-            //マテリアルの識別ID からマテリアルを取得し参照として設定
+            // マテリアルの識別ID からマテリアルを取得し参照として設定
             const material& material_{ materials.at(subset.material_unique_id) };
 
             DirectX::XMStoreFloat4(&data.material_color,
@@ -246,7 +246,7 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
             immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
             immediate_context->PSSetShaderResources(0, 1,
                 material_.shader_resource_views[0].GetAddressOf());
-            //インデックスを使用して描画
+            // インデックスを使用して描画
             //D3D11_BUFFER_DESC buffer_desc;
             //mesh_.index_buffer->GetDesc(&buffer_desc);
             immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
@@ -254,46 +254,69 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
     }
 }
 
-//メッシュ情報の取り出し
+// アニメーションの更新
+void Model::UpdateAnimation(animation::keyframe& keyframe)
+{
+    // キーフレームに存在するすべてのノードを更新する
+    size_t node_count{ keyframe.nodes.size() };
+    for (size_t node_index = 0; node_index < node_count; ++node_index)
+    {
+        // ローカル行列を設定
+        animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
+        DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scaling.x,node.scaling.y,node.scaling.z) };
+        DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&node.rotation)) };
+        DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
+    
+        // 親のグローバル行列を取得
+        int64_t parent_index{ scene_view.nodes.at(node_index).parent_index };
+        DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() :
+        DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
+
+        // ローカル行列 * 親のグローバル行列
+        DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
+    }
+}
+
+// メッシュ情報の取り出し
 void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
 {
-    //シーンの中にあるノードの情報をすべて検索
+    // シーンの中にあるノードの情報をすべて検索
     for (const scene::node& node_ : scene_view.nodes)
     {
-        //ノードの中からメッシュの属性を持っているノードをチェック
+        // ノードの中からメッシュの属性を持っているノードをチェック
         if (node_.attribute != FbxNodeAttribute::EType::eMesh)
         {
             continue;
         }
 
-        //シーンから FbxNode を取得
+        // シーンから FbxNode を取得
         FbxNode* fbx_node{ fbx_scene->FindNodeByName(node_.name.c_str()) };
-        //メッシュ情報を取得
+        // メッシュ情報を取得
         FbxMesh* fbx_mesh{ fbx_node->GetMesh() };
 
-        //メッシュを新規で作成し取り付け
+        // メッシュを新規で作成し取り付け
         mesh& mesh_{ meshes.emplace_back() };
-        //メッシュの識別IDの設定
+        // メッシュの識別IDの設定
         mesh_.unique_id = fbx_mesh->GetNode()->GetUniqueID();
-        //メッシュ名の設定
+        // メッシュ名の設定
         mesh_.name = fbx_mesh->GetNode()->GetName();
-        //メッシュに対するノードIDの割り振り
+        // メッシュに対するノードIDの割り振り
         mesh_.node_index = scene_view.IndexOf(mesh_.unique_id);
         
-        //メッシュのグローバル行列を取得しXMFLOAT4X4に変換して代入
+        // メッシュのグローバル行列を取得しXMFLOAT4X4に変換して代入
         mesh_.default_global_transform = ToXmFloat4x4(fbx_mesh->GetNode()->EvaluateGlobalTransform());
 
-        //メッシュからボーン影響度を取得
+        // メッシュからボーン影響度を取得
         std::vector<bone_influences_per_control_point> bone_influences;
         FetchBoneInfluences(fbx_mesh, bone_influences);
 
-        //メッシュからバインドポーズ(初期姿勢)の情報の取り出し
+        // メッシュからバインドポーズ(初期姿勢)の情報の取り出し
         FetchSkeletons(fbx_mesh, mesh_.bind_pose);
 
         std::vector<mesh::subset>& subsets{ mesh_.subsets };
-        //マテリアル数を取得
+        // マテリアル数を取得
         const int material_count{ fbx_mesh->GetNode()->GetMaterialCount() };
-        //サブセットの数をリサイズ
+        // サブセットの数をリサイズ
         subsets.resize(material_count > 0 ? material_count : 1);
         for (int material_index = 0; material_index < material_count; ++material_index)
         {
@@ -308,12 +331,12 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
             const int polygon_count{ fbx_mesh->GetPolygonCount() };
             for (int polygon_index = 0; polygon_index < polygon_count; ++polygon_index)
             {
-                //メッシュのポリゴンの番号からインデックス番号を取得しマテリアルのインデックスの番号として割り当てる
+                // メッシュのポリゴンの番号からインデックス番号を取得しマテリアルのインデックスの番号として割り当てる
                 const int material_index{ fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(polygon_index) };
-                //サブセットに対して割り当てられたマテリアルのインデックスの番号にインデックスの数を頂点数分(3)増やしていく
+                // サブセットに対して割り当てられたマテリアルのインデックスの番号にインデックスの数を頂点数分(3)増やしていく
                 subsets.at(material_index).index_count += 3;
             }
-            //インデックスの数からそれぞれの開始の数を計算して設定していく
+            // インデックスの数からそれぞれの開始の数を計算して設定していく
             uint32_t offset{ 0 };
             for (mesh::subset& subset : subsets)
             {
@@ -327,39 +350,39 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
         mesh_.vertices.resize(polygon_count * 3LL);                     //頂点座標数
         mesh_.indices.resize(polygon_count * 3LL);                      //頂点インデックス数
 
-        //uv名の取得。後々テクスチャ座標の取得に利用。
+        // uv名の取得。後々テクスチャ座標の取得に利用。
         FbxStringList uv_names;
         fbx_mesh->GetUVSetNames(uv_names);
 
-        //コントロールポイントの取得
+        // コントロールポイントの取得
         const FbxVector4* control_points{ fbx_mesh->GetControlPoints() };
-        //ポリゴンの数だけ頂点データを取得
+        // ポリゴンの数だけ頂点データを取得
         for (int polygon_index = 0; polygon_index < polygon_count; ++polygon_index)
         {
             const int material_index{ material_count > 0 ? fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(polygon_index) : 0 };
             mesh::subset& subset{ subsets.at(material_index) };
             const uint32_t offset{ subset.start_index_location + subset.index_count };
-            //三角形の数分の頂点の情報を取得する
+            // 三角形の数分の頂点の情報を取得する
             for (int position_in_polygon = 0; position_in_polygon < 3; ++position_in_polygon)
             {
-                //利用するインデックスの配列を計算
+                // 利用するインデックスの配列を計算
                 const int vertex_index{ polygon_index * 3 + position_in_polygon };
 
-                //頂点座標の取得
+                // 頂点座標の取得
                 vertex vertex_;
                 const int polygon_vertex{ fbx_mesh->GetPolygonVertex(polygon_index,position_in_polygon) };
                 vertex_.position.x = static_cast<float>(control_points[polygon_vertex][0]);
                 vertex_.position.y = static_cast<float>(control_points[polygon_vertex][1]);
                 vertex_.position.z = static_cast<float>(control_points[polygon_vertex][2]);
 
-                //頂点数番目のボーン影響度を取得
+                // 頂点数番目のボーン影響度を取得
                 const bone_influences_per_control_point& influces_per_control_point{ bone_influences.at(polygon_vertex) };
                 for (size_t influence_index = 0; influence_index < influces_per_control_point.size(); ++influence_index)
                 {
-                    //ボーン影響度は最大４つ
+                    // ボーン影響度は最大４つ
                     if (influence_index < MAX_BONE_INFLUENCES)
                     {
-                        //取得したボーン影響度を頂点側のボーン影響度に設定していく
+                        // 取得したボーン影響度を頂点側のボーン影響度に設定していく
                         vertex_.bone_weights[influence_index] =
                             influces_per_control_point.at(influence_index).bone_weight;
                         vertex_.bone_indices[influence_index] =
@@ -367,7 +390,7 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                     }
                     else
                     {
-                        //最小の影響度を持つボーンを探す
+                        // 最小の影響度を持つボーンを探す
                         size_t minimum_value_index = 0;
                         float minimum_value = FLT_MAX;
                         for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
@@ -379,18 +402,18 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                             }
                         }
 
-                        //最小の影響度を持つボーンの影響度を加算し、インデックスを更新する
+                        // 最小の影響度を持つボーンの影響度を加算し、インデックスを更新する
                         vertex_.bone_weights[minimum_value_index] += influces_per_control_point[influence_index].bone_weight;
                         vertex_.bone_indices[minimum_value_index] = influces_per_control_point[influence_index].bone_index;
 
-                        //合計の影響度を計算し、全ての影響度を正規化する
+                        // 合計の影響度を計算し、全ての影響度を正規化する
                         float total_weight = 0.0f;
                         for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
                         {
                             total_weight += vertex_.bone_weights[i];
                         }
 
-                        //影響度を正規化する
+                        // 影響度を正規化する
                         for (size_t i = 0; i < MAX_BONE_INFLUENCES; ++i)
                         {
                             if (total_weight > 0.0f) {
@@ -403,7 +426,7 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                     }
                 }
 
-                //法線の取得
+                // 法線の取得
                 if (fbx_mesh->GetElementNormalCount() > 0)
                 {
                     FbxVector4 normal;
@@ -413,7 +436,7 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                     vertex_.normal.z = static_cast<float>(normal[2]);
                 }
 
-                //テクスチャ座標の取得
+                // テクスチャ座標の取得
                 if (fbx_mesh->GetElementUVCount() > 0)
                 {
                     FbxVector2 uv;
@@ -424,9 +447,9 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
                     vertex_.texcoord.y = 1.0f - static_cast<float>(uv[1]);
                 }
 
-                //現在のインデックス番号部分に頂点データを設定
+                // 現在のインデックス番号部分に頂点データを設定
                 mesh_.vertices.at(vertex_index) = std::move(vertex_);
-                //現在のインデックス番号を設定
+                // 現在のインデックス番号を設定
                 mesh_.indices.at(static_cast<size_t>(offset)+position_in_polygon) = vertex_index;
                 subset.index_count++;
             }
@@ -434,23 +457,23 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
     }
 }
 
-//マテリアル情報の取り出し
+// マテリアル情報の取り出し
 void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials)
 {
-    //シーンの中にあるノードの情報をすべて検索
+    // シーンの中にあるノードの情報をすべて検索
     const size_t node_count{ scene_view.nodes.size() };
     for (size_t node_index = 0; node_index < node_count; ++node_index)
     {
-        //ノードの情報１つ１つをチェック
+        // ノードの情報１つ１つをチェック
         const scene::node& node{ scene_view.nodes.at(node_index) };
-        //シーンからFbxNodeを取得
+        // シーンからFbxNodeを取得
         const FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
 
-        //ノードの中にあるマテリアルの情報をすべて検索
+        // ノードの中にあるマテリアルの情報をすべて検索
         const int material_count{ fbx_node->GetMaterialCount() };
         for (int material_index = 0; material_index < material_count; ++material_index)
         {
-            //マテリアルの情報１つ１つをチェック
+            // マテリアルの情報１つ１つをチェック
             const FbxSurfaceMaterial* fbx_material{ fbx_node->GetMaterial(material_index) };
 
             // マテリアルの設定
@@ -459,9 +482,9 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
             material_.unique_id = fbx_material->GetUniqueID();
 
             FbxProperty fbx_property;
-            //ディフューズ(拡散反射光)の情報を取得
+            // ディフューズ(拡散反射光)の情報を取得
             fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-            //ディフューズがあったらディフューズの情報を設定していく
+            // ディフューズがあったらディフューズの情報を設定していく
             if (fbx_property.IsValid())
             {
                 const FbxDouble3 color{ fbx_property.Get<FbxDouble3>() };
@@ -470,13 +493,13 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Kd.z = static_cast<float>(color[2]);
                 material_.Kd.w = 1.0f;
 
-                //テクスチャのファイル名を取得
+                // テクスチャのファイル名を取得
                 const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
-                //相対パス込みでのファイル名を設定する
+                // 相対パス込みでのファイル名を設定する
                 material_.texture_filename[0] =
                     fbx_texture ? fbx_texture->GetRelativeFileName() : "";
             }
-            //アンビエント(環境光)の情報を取得
+            // ンビエント(環境光)の情報を取得
             fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sAmbient);
             if (fbx_property.IsValid())
             {
@@ -486,7 +509,7 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Ka.z = static_cast<float>(color[2]);
                 material_.Ka.w = 1.0f;
             }
-            //スペキュラ(鏡面反射)の情報を取得
+            // スペキュラ(鏡面反射)の情報を取得
             fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sSpecular);
             if (fbx_property.IsValid())
             {
@@ -496,35 +519,35 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 material_.Ks.z = static_cast<float>(color[2]);
                 material_.Ks.w = 1.0f;
             }
-            //取得したマテリアルの情報を設定する
+            // 取得したマテリアルの情報を設定する
             materials.emplace(material_.unique_id, std::move(material_));
         }
     }
 #if 0
-    //ダミーのマテリアルを挿入
+    // ダミーのマテリアルを挿入
     material material_;
     materials.emplace(material_.unique_id, std::move(material_));
 #endif
 }
 
-//バインドポーズ情報の取り出し
+// バインドポーズ情報の取り出し
 void Model::FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose)
 {
-    //メッシュにあるスキンの数を取得
+    // メッシュにあるスキンの数を取得
     const int deformer_count = fbx_mesh->GetDeformerCount(FbxDeformer::eSkin);
-    //メッシュにあるすべてのスキンの情報をチェック
+    // メッシュにあるすべてのスキンの情報をチェック
     for (int deformer_index = 0; deformer_index < deformer_count; ++deformer_index)
     {
-        //現在のスキンを取得
+        // 現在のスキンを取得
         FbxSkin* skin = static_cast<FbxSkin*>(fbx_mesh->GetDeformer(deformer_index, FbxDeformer::eSkin));
-        //スキンにあるクラスターの数を取得
+        // スキンにあるクラスターの数を取得
         const int cluster_count = skin->GetClusterCount();
-        //メッシュのボーンの数 = メッシュのクラスターの数
+        // メッシュのボーンの数 = メッシュのクラスターの数
         bind_pose.bones.resize(cluster_count);
-        //スキンにあるすべてのクラスターの情報をチェック
+        // スキンにあるすべてのクラスターの情報をチェック
         for (int cluster_index = 0; cluster_index < cluster_count; ++cluster_index)
         {
-            //現在のクラスターの情報をチェック
+            // 現在のクラスターの情報をチェック
             FbxCluster* cluster = skin->GetCluster(cluster_index);
 
             skeleton::bone& bone{ bind_pose.bones.at(cluster_index) };
@@ -533,14 +556,14 @@ void Model::FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose)
             bone.parent_index = bind_pose.IndexOf(cluster->GetLink()->GetParent()->GetUniqueID());
             bone.node_index = scene_view.IndexOf(bone.unique_id);
 
-            //リンクを含むノードに関連付けられた行列を取得
-            //モデル(メッシュ)のローカル空間からシーンのグローバル空間に変換するために使用
+            // リンクを含むノードに関連付けられた行列を取得
+            // モデル(メッシュ)のローカル空間からシーンのグローバル空間に変換するために使用
             FbxAMatrix reference_global_init_position;
             cluster->GetTransformMatrix(reference_global_init_position);
 
-            //リンクノードに関連付けられた行列を取得
-            //ボーンのローカル空間からシーンのグローバル空間に変換するために使用
-            //ローカル座標空間でのボーンの絶対位置
+            // リンクノードに関連付けられた行列を取得
+            // ボーンのローカル空間からシーンのグローバル空間に変換するために使用
+            // ローカル座標空間でのボーンの絶対位置
             FbxAMatrix cluster_global_init_position;
             cluster->GetTransformLinkMatrix(cluster_global_init_position);
 
@@ -549,24 +572,24 @@ void Model::FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose)
     }
 }
 
-//アニメーション情報の取り出し
+// アニメーション情報の取り出し
 void Model::FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animation_clips,
     float sampling_rate)
 {
     FbxArray<FbxString*> animation_stack_names;
-    //シーンからアニメーション一覧を取得
+    // シーンからアニメーション一覧を取得
     fbx_scene->FillAnimStackNameArray(animation_stack_names);
-    //アニメーション一覧の数を取得
+    // アニメーション一覧の数を取得
     const int animation_stack_count{ animation_stack_names.GetCount() };
     for (int animation_stack_index = 0; animation_stack_index < animation_stack_count; ++animation_stack_index)
     {
-        //アニメーションを取得
+        // アニメーションを取得
         animation& animation_clip{ animation_clips.emplace_back() };
         animation_clip.name = animation_stack_names[animation_stack_index]->Buffer();
 
-        //取得したアニメーションをアニメーションスタックとして設定
+        // 取得したアニメーションをアニメーションスタックとして設定
         FbxAnimStack* animation_stack{ fbx_scene->FindMember<FbxAnimStack>(animation_clip.name.c_str()) };
-        //現在のアニメーションをアニメーションスタックのアニメーションに変更
+        // 現在のアニメーションをアニメーションスタックのアニメーションに変更
         fbx_scene->SetCurrentAnimationStack(animation_stack);
 
         const FbxTime::EMode time_mode{ fbx_scene->GetGlobalSettings().GetTimeMode() };
@@ -598,6 +621,12 @@ void Model::FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animati
                     animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
                     //アニメーション時間からアニメーション行列を取得
                     node.global_transform = ToXmFloat4x4(fbx_node->EvaluateGlobalTransform(time));
+                
+                    // 'local_transform'は、親のローカル座標系に関するノードの変換行列です
+                    const FbxAMatrix& local_transform{ fbx_node->EvaluateLocalTransform(time) };
+                    node.scaling = ToXmFloat3(local_transform.GetS());
+                    node.rotation = ToXmFloat4(local_transform.GetQ());
+                    node.translation = ToXmFloat3(local_transform.GetT());
                 }
             }
         }
@@ -607,15 +636,16 @@ void Model::FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animati
         delete animation_stack_names[animation_stack_index];
     }
 }
-//バッファの生成
+
+// バッファの生成
 void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
 {
-    //各メッシュに対してバッファを生成するループ
+    // 各メッシュに対してバッファを生成するループ
     for (mesh& mesh_ : meshes)
     {
         HRESULT hr{ S_OK };
 
-        //頂点バッファの生成
+        // 頂点バッファの生成
         D3D11_BUFFER_DESC buffer_desc{};
         D3D11_SUBRESOURCE_DATA subresource_data{};
         buffer_desc.ByteWidth = static_cast<UINT>(sizeof(vertex) * mesh_.vertices.size());
@@ -631,7 +661,7 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
             mesh_.vertex_buffer.ReleaseAndGetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-        //インデックスバッファの生成
+        // インデックスバッファの生成
         buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * mesh_.indices.size());
         buffer_desc.Usage = D3D11_USAGE_DEFAULT;
         buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -640,12 +670,12 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
             mesh_.index_buffer.ReleaseAndGetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 #if 0
-        //メッシュの頂点とインデックスをクリアする
+        // メッシュの頂点とインデックスをクリアする
         mesh_.vertices.clear();
         mesh_.indices.clear();
 #endif
     }
-    //マテリアルの中にあるテクスチャファイル名の数だけテクスチャを生成する
+    // マテリアルの中にあるテクスチャファイル名の数だけテクスチャを生成する
     for (std::unordered_map<uint64_t, material>::iterator iterator = materials.begin(); iterator != materials.end(); ++iterator)
     {
         if (iterator->second.texture_filename[0].size() > 0)
@@ -663,7 +693,7 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         }
     }
     HRESULT hr = S_OK;
-    //入力レイアウトオブジェクトの生成
+    // 入力レイアウトオブジェクトの生成
     D3D11_INPUT_ELEMENT_DESC input_element_desc[]
     {
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT},
@@ -673,19 +703,19 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         {"BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
 
-    //頂点シェーダーオブジェクトの生成
+    // 頂点シェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
             input_layout.ReleaseAndGetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
-    //ピクセルシェーダーオブジェクトの生成
+    // ピクセルシェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\ModelPS.cso",
             pixel_shader.ReleaseAndGetAddressOf());
     }
     
-    //定数バッファの生成
+    // 定数バッファの生成
     D3D11_BUFFER_DESC buffer_desc{};
     buffer_desc.ByteWidth = sizeof(constants);
     buffer_desc.Usage = D3D11_USAGE_DEFAULT;

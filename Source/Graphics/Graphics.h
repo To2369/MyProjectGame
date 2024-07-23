@@ -73,21 +73,21 @@ private:
 	float	screenWidth = 0;
 	float	screenHeight = 0;
 
-	//DirectX11で利用する様々なリソースの作成
+	// DirectX11で利用する様々なリソースの作成
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 
-	//様々な描画命令をGPUに伝える
+	// 様々な描画命令をGPUに伝える
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>	immediate_context;
 
-	//キャンパスに描いた画を額(ウィンドウ)に入れる
+	// キャンパスに描いた画を額(ウィンドウ)に入れる
 	Microsoft::WRL::ComPtr<IDXGISwapChain>	swap_chain;
 
-	//色を書き込みキャンパス
+	// 色を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	render_target_view;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>	depth_stencil_buffer;
 
-	//奥行情報を書き込みキャンパス
+	// 奥行情報を書き込みキャンパス
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth_stencil_view;
 
 	D3D11_VIEWPORT viewport{};

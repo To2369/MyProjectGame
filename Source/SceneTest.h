@@ -69,4 +69,6 @@ private:
     DirectX::XMFLOAT4 material_color{ 1,1,1,1 };
 
     float elapsedTime_ = 0;
+
+    float factor[8] = {1.5f,300};
 };

@@ -70,5 +70,5 @@ private:
 
     float elapsedTime_ = 0;
 
-    float factor[8] = {1.5f,300};
+    float factor[8] = {1.5f,300,0.5f};
 };

@@ -277,6 +277,50 @@ void Model::UpdateAnimation(animation::keyframe& keyframe)
     }
 }
 
+// アニメーションの追加
+bool Model::AppendAnimations(const char* animation_filename, float sampling_rate)
+{
+    FbxManager* fbx_manager{ FbxManager::Create() };
+    FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
+
+    FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
+    bool import_status{ false };
+    import_status = fbx_importer->Initialize(animation_filename);
+    _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+    import_status = fbx_importer->Import(fbx_scene);
+    _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+
+    // 0...デフォルト値を使用します。0 未満...フェッチしません
+    FetchAnimations(fbx_scene, animation_clips, sampling_rate);
+
+    fbx_manager->Destroy();
+
+    return true;
+}
+
+void Model::BlendAnimations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe)
+{
+    size_t node_count{ keyframes[0]->nodes.size() };
+    keyframe.nodes.resize(node_count);
+    for (size_t node_index = 0; node_index < node_count; ++node_index)
+    {
+        DirectX::XMVECTOR S[2]{
+            DirectX::XMLoadFloat3(&keyframes[0]->nodes.at(node_index).scaling),
+            DirectX::XMLoadFloat3(&keyframes[1]->nodes.at(node_index).scaling) };
+        DirectX::XMStoreFloat3(&keyframe.nodes.at(node_index).scaling, DirectX::XMVectorLerp(S[0], S[1], factor));
+
+        DirectX::XMVECTOR R[2]{
+            DirectX::XMLoadFloat4(&keyframes[0]->nodes.at(node_index).rotation),
+            DirectX::XMLoadFloat4(&keyframes[1]->nodes.at(node_index).rotation) };
+        DirectX::XMStoreFloat4(&keyframe.nodes.at(node_index).rotation, DirectX::XMQuaternionSlerp(R[0], R[1], factor));
+
+        DirectX::XMVECTOR T[2]{
+            DirectX::XMLoadFloat3(&keyframes[0]->nodes.at(node_index).translation),
+            DirectX::XMLoadFloat3(&keyframes[1]->nodes.at(node_index).translation) };
+        DirectX::XMStoreFloat3(&keyframe.nodes.at(node_index).translation, DirectX::XMVectorLerp(T[0], T[1], factor));
+    }
+}
+
 // メッシュ情報の取り出し
 void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
 {

@@ -184,6 +184,12 @@ public:
 	//	アニメーション更新
 	void UpdateAnimation(animation::keyframe& keyframe);
 
+	// アニメーションの追加
+	bool AppendAnimations(const char* animation_filename, float sampling_rate);
+
+	// アニメーションの連結
+	void BlendAnimations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe);
+
 	// メッシュ情報の取り出し
 	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
 

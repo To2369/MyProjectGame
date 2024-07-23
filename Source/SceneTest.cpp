@@ -37,7 +37,8 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx",true);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\AimTest\\MNK_Mesh.fbx",true);
+    model[0]->AppendAnimations(".\\Data\\resources\\AimTest\\Aim_Space.fbx", 0);
 }
 
 //終了化
@@ -75,6 +76,7 @@ void SceneTest::Update(float elapsedTime)
     
     ImGui::SliderFloat("neckangle", &factor[0], -1.5f, 1.5f);
     ImGui::SliderFloat("necklong", &factor[1], 0, 500.0f);
+    ImGui::SliderFloat("animation", &factor[2], -1.0f,1.0f);
     ImGui::End();
 #endif
 }
@@ -162,7 +164,7 @@ void SceneTest::Render()
         };
             //デフォルトのスケールファクタを設定して行列に反映
         const float scale_factor = 0.01f;
-        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[0]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
+        DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[2]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
             //拡大縮小行列
             DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
             // 回転行列
@@ -173,7 +175,7 @@ void SceneTest::Render()
             // ワールド変換行列
             DirectX::XMFLOAT4X4 world;
             DirectX::XMStoreFloat4x4(&world, C * S * R * T);
-
+#if 0
             int clip_index{ 0 };
             int frame_index{ 0 };
             static float animation_tick{ 0 };
@@ -196,8 +198,20 @@ void SceneTest::Render()
             keyframe.nodes.at(30).translation.x = factor[1];
             model[0]->UpdateAnimation(keyframe);
 #endif
-            model[0]->Render(dc, world, material_color, &keyframe);
+#else
+            // ５番目と９番目のアニメーションを設定
+            animation::keyframe keyframe;
+            const animation::keyframe* keyframes[2]{
+                &model[0]->animation_clips.at(0).sequence.at(40),
+                &model[0]->animation_clips.at(0).sequence.at(80)
+            };
+            // アニメーションを合成
+            model[0]->BlendAnimations(keyframes, factor[2], keyframe);
+            // 合成したアニメーションでメッシュを更新
+            model[0]->UpdateAnimation(keyframe);
 #endif
+#endif
+            model[0]->Render(dc, world, material_color, &keyframe);
 #if 0
         //ジオメトリックプリミティブ描画
         {

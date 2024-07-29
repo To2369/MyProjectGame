@@ -6,6 +6,56 @@
 #include<string>
 #include<fbxsdk.h>
 #include<unordered_map>
+#include <cereal/archives/binary.hpp>
+#include<cereal/types/memory.hpp>
+#include<cereal/types/vector.hpp>
+#include<cereal/types/set.hpp>
+#include<cereal/types/unordered_map.hpp>
+
+namespace DirectX
+{
+	template<class T>
+	void serialize(T& archive, DirectX::XMFLOAT2& v)
+	{
+		archive(
+			cereal::make_nvp("x", v.x),
+			cereal::make_nvp("y", v.y));
+	}
+
+	template<class T>
+	void serialize(T& archive, DirectX::XMFLOAT3& v)
+	{
+		archive(
+			cereal::make_nvp("x", v.x),
+			cereal::make_nvp("y", v.y),
+			cereal::make_nvp("z", v.z));
+	}
+
+	template<class T>
+	void serialize(T& archive, DirectX::XMFLOAT4& v)
+	{
+		archive(
+			cereal::make_nvp("x", v.x),
+			cereal::make_nvp("y", v.y),
+			cereal::make_nvp("z", v.z),
+			cereal::make_nvp("w", v.w));
+	}
+
+	template<class T>
+	void serialize(T& archive, DirectX::XMFLOAT4X4& m)
+	{
+		archive(
+			cereal::make_nvp("_11", m._11), cereal::make_nvp("_12", m._12),
+			cereal::make_nvp("_13", m._13), cereal::make_nvp("_14", m._14),
+			cereal::make_nvp("_21", m._21), cereal::make_nvp("_22", m._22),
+			cereal::make_nvp("_23", m._23), cereal::make_nvp("_24", m._24),
+			cereal::make_nvp("_31", m._31), cereal::make_nvp("_32", m._32),
+			cereal::make_nvp("_33", m._33), cereal::make_nvp("_34", m._34),
+			cereal::make_nvp("_41", m._41), cereal::make_nvp("_42", m._42),
+			cereal::make_nvp("_43", m._43), cereal::make_nvp("_44", m._44)
+		);
+	}
+}
 
 // スケルトン
 // 複数のボーンを管理
@@ -26,6 +76,12 @@ struct skeleton
 
 		// true...親無しのボーン
 		bool IsOrphans() const { return parent_index < 0; };
+
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(unique_id, name, parent_index, node_index, offset_transform);
+		}
 	};
 	std::vector<bone> bones;
 
@@ -41,6 +97,12 @@ struct skeleton
 			++index;
 		}
 		return -1;
+	}
+
+	template<class T>
+	void serialize(T& archive)
+	{
+		archive(bones);
 	}
 };
 
@@ -63,12 +125,30 @@ struct animation
 			DirectX::XMFLOAT3 scaling{ 1,1,1 };
 			DirectX::XMFLOAT4 rotation{ 0,0,0,1 };
 			DirectX::XMFLOAT3 translation{ 0,0,0 };
+
+			template<class T>
+			void serialize(T& archive)
+			{
+				archive(global_transform, scaling, rotation, translation);
+			}
 		};
 		// キーフレームに含まれる全てのノードの行列
 		std::vector<node> nodes;
+
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(nodes);
+		}
 	};
 	// アニメーション１つ分のデータ
 	std::vector<keyframe> sequence;
+
+	template<class T>
+	void serialize(T& archive)
+	{
+		archive(name, sampling_rate, sequence);
+	}
 };
 
 struct scene
@@ -79,7 +159,14 @@ struct scene
 		std::string name;
 		FbxNodeAttribute::EType attribute{ FbxNodeAttribute::EType::eUnknown };
 		int64_t parent_index{ -1 };
+
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(unique_id, name, attribute, parent_index);
+		}
 	};
+
 	std::vector<node> nodes;
 	int64_t IndexOf(uint64_t unique_id)const
 	{
@@ -93,6 +180,12 @@ struct scene
 			++index;
 		}
 		return -1;
+	}
+
+	template<class T>
+	void serialize(T& archive)
+	{
+		archive(nodes);
 	}
 };
 
@@ -110,6 +203,12 @@ public:
 		DirectX::XMFLOAT2 texcoord{ 0,0 };	// テクスチャ座標
 		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	// ウェイト値
 		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		// ボーン番号
+
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(position, normal, tangent, texcoord, bone_weights, bone_indices);
+		}
 	};
 
 	static const int MAX_BONES{ 256 };
@@ -138,6 +237,12 @@ public:
 
 			uint32_t start_index_location{ 0 };	// インデックスの開始位置
 			uint32_t index_count{ 0 };			// インデックスの数(頂点)
+
+			template<class T>
+			void serialize(T& archive)
+			{
+				archive(material_unique_id, material_name, start_index_location, index_count);
+			}
 		};
 		std::vector<subset> subsets;
 
@@ -152,6 +257,13 @@ public:
 			{D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX},
 			{-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX}
 		};
+
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(unique_id, name, node_index, subsets, default_global_transform,
+				bind_pose, bounding_box, vertices, indices);
+		}
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	// 頂点バッファ
 		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	// インデックスバッファ
@@ -170,9 +282,15 @@ public:
 		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
 
 		// テクスチャファイル名
-		std::string texture_filename[4];
+		std::string texture_filenames[4];
 		// テクスチャ情報
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
+	
+		template<class T>
+		void serialize(T& archive)
+		{
+			archive(unique_id, name, Ka, Kd, Ks, texture_filenames);
+		}
 	};
 	// 読み込んだマテリアル
 	std::unordered_map<uint64_t, material> materials;
@@ -181,7 +299,11 @@ public:
 	std::vector<animation> animation_clips;
 public:
 	// "triangulate">true...多角形で作られたポリゴンを三角形化
-	Model(ID3D11Device* device, const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
+	Model(ID3D11Device* device,
+		const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
+
+	Model(ID3D11Device* device, std::vector<std::string>& animation_filenames,
+		const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
 	virtual ~Model() = default;
 
 	// 描画処理

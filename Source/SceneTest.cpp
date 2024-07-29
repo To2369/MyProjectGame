@@ -37,7 +37,7 @@ void SceneTest::Initialize()
     //バウンディングボックス
     static_mesh[1] = std::make_unique<StaticMesh>(graphics->GetDevice(), modelfilename[1], false);
 
-    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\plantune.fbx",true);
+    model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\nico.fbx",0,true);
     //model[0]->AppendAnimations(".\\Data\\resources\\AimTest\\Aim_Space.fbx", 0);
 }
 
@@ -175,7 +175,7 @@ void SceneTest::Render()
             // ワールド変換行列
             DirectX::XMFLOAT4X4 world;
             DirectX::XMStoreFloat4x4(&world, C * S * R * T);
-#if 0
+#if 1
             int clip_index{ 0 };
             int frame_index{ 0 };
             static float animation_tick{ 0 };

@@ -4,6 +4,7 @@
 #include<functional>
 #include<filesystem>
 #include"Shader.h"
+#include<fstream>
 
 // FbxAMatrixからXMFLOAT４X4に変換
 inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
@@ -93,81 +94,215 @@ void FetchBoneInfluences(const FbxMesh* fbx_mesh,
 
 Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, float sampling_rate)
 {
-    // fbxマネージャーを生成
-    FbxManager* fbx_manager{ FbxManager::Create() };
-    // fbxシーンを生成
-    FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
-
-    // fbxインポーターの生成
-    FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
-    bool import_status{ false };
-
-    // fbxファイルを読み込む
-    import_status = fbx_importer->Initialize(fbx_filename);
-    _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
-
-    // 読み込んだファイルの情報を fbx シーンに流し込む
-    import_status = fbx_importer->Import(fbx_scene);
-    _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
-
-    FbxGeometryConverter fbx_converter(fbx_manager);
-    if (triangulate)
+    // 通常のファイル名の拡張子を .fbx から .cereal に変更する
+    std::filesystem::path cereal_filename(fbx_filename);
+    cereal_filename.replace_extension("cereal");
+    if (std::filesystem::exists(cereal_filename.c_str()))
     {
-        // 多角形で作られたポリゴンをすべて三角形にする
-        fbx_converter.Triangulate(fbx_scene, true/*replace*/, false/*legacy*/);
-        fbx_converter.RemoveBadPolygonsFromMeshes(fbx_scene);
+        // シリアライズされたファイルが存在する場合
+        // シリアライズされているファイルを読み込んで
+        std::ifstream ifs(cereal_filename.c_str(), std::ios::binary);
+        cereal::BinaryInputArchive deserialization(ifs);
+        deserialization(scene_view, meshes, materials, animation_clips);
     }
-
-    // ノードの情報を解析する関数
-    std::function<void(FbxNode*)> traverse
+    else
     {
-        [&](FbxNode* fbx_node)
+        // シリアライズされたファイルが存在しない場合
+        // 通常の FBX ファイル読み込み
+        
+        // fbxマネージャーを生成
+        FbxManager* fbx_manager{ FbxManager::Create() };
+        // fbxシーンを生成
+        FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
+
+        // fbxインポーターの生成
+        FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
+        bool import_status{ false };
+
+        // fbxファイルを読み込む
+        import_status = fbx_importer->Initialize(fbx_filename);
+        _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+
+        // 読み込んだファイルの情報を fbx シーンに流し込む
+        import_status = fbx_importer->Import(fbx_scene);
+        _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+
+        FbxGeometryConverter fbx_converter(fbx_manager);
+        if (triangulate)
         {
-            // scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
-            scene::node& node_{scene_view.nodes.emplace_back()};
-            node_.attribute = fbx_node->GetNodeAttribute() ?
-                fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
-            node_.name = fbx_node->GetName();
-            node_.unique_id = fbx_node->GetUniqueID();
-            node_.parent_index = scene_view.IndexOf(fbx_node->GetParent() ?
-                fbx_node->GetParent()->GetUniqueID() : 0);
-            // 現在解析しているノードに取り付けられているの子ノードを解析していく
-            for (int child_index = 0; child_index < fbx_node->GetChildCount(); ++child_index)
-            {
-                traverse(fbx_node->GetChild(child_index));
-            }
+            // 多角形で作られたポリゴンをすべて三角形にする
+            fbx_converter.Triangulate(fbx_scene, true/*replace*/, false/*legacy*/);
+            fbx_converter.RemoveBadPolygonsFromMeshes(fbx_scene);
         }
-    };
-    // ルートノードから解析開始
-    traverse(fbx_scene->GetRootNode());
+
+        // ノードの情報を解析する関数
+        std::function<void(FbxNode*)> traverse
+        {
+            [&](FbxNode* fbx_node)
+            {
+                // scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
+                scene::node& node_{scene_view.nodes.emplace_back()};
+                node_.attribute = fbx_node->GetNodeAttribute() ?
+                    fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
+                node_.name = fbx_node->GetName();
+                node_.unique_id = fbx_node->GetUniqueID();
+                node_.parent_index = scene_view.IndexOf(fbx_node->GetParent() ?
+                    fbx_node->GetParent()->GetUniqueID() : 0);
+                // 現在解析しているノードに取り付けられているの子ノードを解析していく
+                for (int child_index = 0; child_index < fbx_node->GetChildCount(); ++child_index)
+                {
+                    traverse(fbx_node->GetChild(child_index));
+                }
+            }
+        };
+        // ルートノードから解析開始
+        traverse(fbx_scene->GetRootNode());
 
 #if 0
-    //シーンに取り付けたすべてのノードの情報を表示
-    for (const scene::node& node : scene_view.nodes)
-    {
-        //ノード名でノードを検索し取得
-        FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
-        //出力ウィンドウにデバッグデータを表示
-        std::string node_name = fbx_node->GetName();
-        uint64_t uid = fbx_node->GetUniqueID();
-        uint64_t parent_uid = fbx_node->GetParent() ? fbx_node->GetParent()->GetUniqueID() : 0;
-        int32_t type = fbx_node->GetNodeAttribute() ? fbx_node->GetNodeAttribute()->GetAttributeType() : 0;
-        
-        std::stringstream debug_string;
-        debug_string << node_name << ":" << uid << ":" << parent_uid << ":" << type << '\n';
-        OutputDebugStringA(debug_string.str().c_str());
-    }
+        //シーンに取り付けたすべてのノードの情報を表示
+        for (const scene::node& node : scene_view.nodes)
+        {
+            //ノード名でノードを検索し取得
+            FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
+            //出力ウィンドウにデバッグデータを表示
+            std::string node_name = fbx_node->GetName();
+            uint64_t uid = fbx_node->GetUniqueID();
+            uint64_t parent_uid = fbx_node->GetParent() ? fbx_node->GetParent()->GetUniqueID() : 0;
+            int32_t type = fbx_node->GetNodeAttribute() ? fbx_node->GetNodeAttribute()->GetAttributeType() : 0;
+
+            std::stringstream debug_string;
+            debug_string << node_name << ":" << uid << ":" << parent_uid << ":" << type << '\n';
+            OutputDebugStringA(debug_string.str().c_str());
+        }
 #endif
-    traverse(fbx_scene->GetRootNode());
+        traverse(fbx_scene->GetRootNode());
 
-    FetchMeshes(fbx_scene, meshes);
+        FetchMeshes(fbx_scene, meshes);
 
-    FetchMaterials(fbx_scene, materials);
+        FetchMaterials(fbx_scene, materials);
 
-    //float sampling_rate{ 0 };
-    FetchAnimations(fbx_scene, animation_clips, sampling_rate);
+        //float sampling_rate{ 0 };
+        FetchAnimations(fbx_scene, animation_clips, sampling_rate);
 
-    fbx_manager->Destroy();
+        fbx_manager->Destroy();
+
+        // FBX ファイルを読み込んだら
+        std::ofstream ofs(cereal_filename.c_str(), std::ios::binary);
+        cereal::BinaryOutputArchive serialization(ofs);
+        // 外部ファイルにシリアライズ
+        serialization(scene_view, meshes, materials, animation_clips);
+    }
+
+    CreateComObjects(device, fbx_filename);
+}
+
+Model::Model(ID3D11Device* device, std::vector<std::string>& animation_filenames,
+    const char* fbx_filename, bool triangulate, float sampling_rate)
+{
+    // 通常のファイル名の拡張子を .fbx から .cereal に変更する
+    std::filesystem::path cereal_filename(fbx_filename);
+    cereal_filename.replace_extension("cereal");
+    if (std::filesystem::exists(cereal_filename.c_str()))
+    {
+        // シリアライズされたファイルが存在する場合
+        // シリアライズされているファイルを読み込んで
+        std::ifstream ifs(cereal_filename.c_str(), std::ios::binary);
+        cereal::BinaryInputArchive deserialization(ifs);
+        deserialization(scene_view, meshes, materials, animation_clips);
+    }
+    else
+    {
+        // シリアライズされたファイルが存在しない場合
+        // 通常の FBX ファイル読み込み
+
+        // fbxマネージャーを生成
+        FbxManager* fbx_manager{ FbxManager::Create() };
+        // fbxシーンを生成
+        FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
+
+        // fbxインポーターの生成
+        FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
+        bool import_status{ false };
+
+        // fbxファイルを読み込む
+        import_status = fbx_importer->Initialize(fbx_filename);
+        _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+
+        // 読み込んだファイルの情報を fbx シーンに流し込む
+        import_status = fbx_importer->Import(fbx_scene);
+        _ASSERT_EXPR_A(import_status, fbx_importer->GetStatus().GetErrorString());
+
+        FbxGeometryConverter fbx_converter(fbx_manager);
+        if (triangulate)
+        {
+            // 多角形で作られたポリゴンをすべて三角形にする
+            fbx_converter.Triangulate(fbx_scene, true/*replace*/, false/*legacy*/);
+            fbx_converter.RemoveBadPolygonsFromMeshes(fbx_scene);
+        }
+
+        // ノードの情報を解析する関数
+        std::function<void(FbxNode*)> traverse
+        {
+            [&](FbxNode* fbx_node)
+            {
+                // scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
+                scene::node& node_{scene_view.nodes.emplace_back()};
+                node_.attribute = fbx_node->GetNodeAttribute() ?
+                    fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
+                node_.name = fbx_node->GetName();
+                node_.unique_id = fbx_node->GetUniqueID();
+                node_.parent_index = scene_view.IndexOf(fbx_node->GetParent() ?
+                    fbx_node->GetParent()->GetUniqueID() : 0);
+                // 現在解析しているノードに取り付けられているの子ノードを解析していく
+                for (int child_index = 0; child_index < fbx_node->GetChildCount(); ++child_index)
+                {
+                    traverse(fbx_node->GetChild(child_index));
+                }
+            }
+        };
+        // ルートノードから解析開始
+        traverse(fbx_scene->GetRootNode());
+
+#if 0
+        //シーンに取り付けたすべてのノードの情報を表示
+        for (const scene::node& node : scene_view.nodes)
+        {
+            //ノード名でノードを検索し取得
+            FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
+            //出力ウィンドウにデバッグデータを表示
+            std::string node_name = fbx_node->GetName();
+            uint64_t uid = fbx_node->GetUniqueID();
+            uint64_t parent_uid = fbx_node->GetParent() ? fbx_node->GetParent()->GetUniqueID() : 0;
+            int32_t type = fbx_node->GetNodeAttribute() ? fbx_node->GetNodeAttribute()->GetAttributeType() : 0;
+
+            std::stringstream debug_string;
+            debug_string << node_name << ":" << uid << ":" << parent_uid << ":" << type << '\n';
+            OutputDebugStringA(debug_string.str().c_str());
+        }
+#endif
+        traverse(fbx_scene->GetRootNode());
+
+        FetchMeshes(fbx_scene, meshes);
+
+        FetchMaterials(fbx_scene, materials);
+
+        //float sampling_rate{ 0 };
+        FetchAnimations(fbx_scene, animation_clips, sampling_rate);
+
+        fbx_manager->Destroy();
+
+        // 通常の FBX ファイルの読み込みの後にアニメーション FBX ファイルの読み込みを行うようにする
+        for (const std::string animation_filename : animation_filenames)
+        {
+            AppendAnimations(animation_filename.c_str(), sampling_rate);
+        }
+
+        // FBX ファイルを読み込んだら
+        std::ofstream ofs(cereal_filename.c_str(), std::ios::binary);
+        cereal::BinaryOutputArchive serialization(ofs);
+        // 外部ファイルにシリアライズ
+        serialization(scene_view, meshes, materials, animation_clips);
+    }
 
     CreateComObjects(device, fbx_filename);
 }
@@ -573,7 +708,7 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 // テクスチャのファイル名を取得
                 const FbxFileTexture* fbx_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
                 // 相対パス込みでのファイル名を設定する
-                material_.texture_filename[0] =
+                material_.texture_filenames[0] =
                     fbx_texture ? fbx_texture->GetRelativeFileName() : "";
             }
             // ンビエント(環境光)の情報を取得
@@ -603,7 +738,7 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
             {
                 const FbxFileTexture* file_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
                 // ファイル名が存在したら相対パス込みでのファイル名を取得
-                material_.texture_filename[1] = file_texture ? file_texture->GetRelativeFileName() : "";
+                material_.texture_filenames[1] = file_texture ? file_texture->GetRelativeFileName() : "";
             }
 
             // 取得したマテリアルの情報を設定する
@@ -765,12 +900,13 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
     // マテリアルの中にあるテクスチャファイル名の数だけテクスチャを生成する
     for (std::unordered_map<uint64_t, material>::iterator iterator = materials.begin(); iterator != materials.end(); ++iterator)
     {
+#if 0
         for (size_t texture_index = 0; texture_index < 2; ++texture_index)
         {
-            if (iterator->second.texture_filename[0].size() > 0)
+            if (iterator->second.texture_filenames[0].size() > 0)
             {
                 std::filesystem::path path(fbx_filename);
-                path.replace_filename(iterator->second.texture_filename[texture_index]);
+                path.replace_filename(iterator->second.texture_filenames[texture_index]);
                 D3D11_TEXTURE2D_DESC texture2d_desc;
                 ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(),
                     iterator->second.shader_resource_views[texture_index].GetAddressOf(), &texture2d_desc);
@@ -781,6 +917,43 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
                     texture_index == 1 ? 0xFFFF7F7F : 0xFFFFFFFF, 16);
             }
         }
+#else
+        // EMISSIVE
+        D3D11_TEXTURE2D_DESC texture2d_desc;
+        // Diffuse
+        if (iterator->second.texture_filenames[0].size() > 0)
+        {
+            std::filesystem::path path(fbx_filename);
+            path.replace_filename(iterator->second.texture_filenames[0]);
+            ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(), iterator->second.shader_resource_views[0].GetAddressOf(), &texture2d_desc);
+        }
+        else
+        {
+            ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[0].GetAddressOf(), 0xFFFFFFFF, 4);
+        }
+        // Normal
+        if (iterator->second.texture_filenames[1].size() > 0)
+        {
+            std::filesystem::path path(fbx_filename);
+            path.replace_filename(iterator->second.texture_filenames[1]);
+            ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(), iterator->second.shader_resource_views[1].GetAddressOf(), &texture2d_desc);
+        }
+        else
+        {
+            ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[1].GetAddressOf(), 0xFFFF7F7F, 4);
+        }
+        // Emissive
+        if (iterator->second.texture_filenames[2].size() > 0)
+        {
+            std::filesystem::path path(fbx_filename);
+            path.replace_filename(iterator->second.texture_filenames[2]);
+            ShaderManager::Instance()->LoadTextureFromFile(device, path.c_str(), iterator->second.shader_resource_views[2].GetAddressOf(), &texture2d_desc);
+        }
+        else
+        {
+            ShaderManager::Instance()->MakeDummyTexture(device, iterator->second.shader_resource_views[2].GetAddressOf(), 0xFF000000, 4);
+        }
+#endif
     }
     HRESULT hr = S_OK;
     // 入力レイアウトオブジェクトの生成

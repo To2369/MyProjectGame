@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>;\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>;\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,14 +108,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>USE_IMGUI;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\DirectXTK-main\Inc;%(AdditionalIncludeDirectories);\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DirectXTK-main\Inc;%(AdditionalIncludeDirectories);.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>zlib-md.lib;libxml2-md.lib;libfbxsdk-md.lib;DirectXTK.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\DirectXTK-main\Bin\Desktop_2022\x64\Debug;\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\lib\vs2019\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\DirectXTK-main\Bin\Desktop_2022\x64\Debug;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\lib\vs2019\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
@@ -133,7 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>.\DirectXTK-main\Inc;%(AdditionalIncludeDirectories);\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DirectXTK-main\Inc;%(AdditionalIncludeDirectories);.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +141,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>zlib-md.lib;libxml2-md.lib;libfbxsdk-md.lib;DirectXTK.lib;dxgi.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\DirectXTK-main\Bin\Desktop_2022\x64\Release;\Program Files\Autodesk\FBX\FBX SDK\2020.3.1\lib\vs2019\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\DirectXTK-main\Bin\Desktop_2022\x64\Release;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\lib\vs2019\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

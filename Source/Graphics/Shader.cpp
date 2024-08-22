@@ -4,6 +4,7 @@
 #include<WICTextureLoader.h>
 #include<wrl.h>
 #include<filesystem>
+#include<DDSTextureLoader.h>
 #include<string>
 #include<map>
 
@@ -95,9 +96,22 @@ HRESULT ShaderManager::LoadTextureFromFile(ID3D11Device* device, const wchar_t* 
     // 新しいテクスチャをロードする
     else
     {
-        // ファイルからテクスチャを作成し、shader_resource_viewに設定
-        hr = DirectX::CreateWICTextureFromFile(device, filename, resource.GetAddressOf(), shader_resource_view);
-        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+        // DDSファイルが存在するかどうかチェック
+        std::filesystem::path dds_fileneme(filename);
+        dds_fileneme.replace_extension("dds");
+        // DDSファイルが存在したらDDSテクスチャファイル読み込み
+        if (std::filesystem::exists(dds_fileneme.c_str()))
+        {
+            hr = DirectX::CreateDDSTextureFromFile(device, dds_fileneme.c_str(), resource.GetAddressOf(), shader_resource_view);
+            _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+        }
+        // DDS ファイルが存在しなければ通常のテクスチャ読み込み
+        else
+        {
+            // ファイルからテクスチャを作成し、shader_resource_viewに設定
+            hr = DirectX::CreateWICTextureFromFile(device, filename, resource.GetAddressOf(), shader_resource_view);
+            _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+        }
         resources.insert(std::make_pair(filename, *shader_resource_view));
     }
 

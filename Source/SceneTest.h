@@ -7,6 +7,8 @@
 #include"Graphics/StaticMesh.h"
 #include"CameraController.h"
 #include"Graphics/Model.h"
+#include"Graphics/FrameBuffer.h"
+#include"Graphics/FullScreenQuad.h"
 //タイトルシーン
 class SceneTest :public Scene
 {
@@ -41,6 +43,8 @@ private:
     std::unique_ptr<GeometricPrimitive> geometric_primitives[8];
     std::unique_ptr<StaticMesh> static_mesh[8];
     std::unique_ptr<Model> model[8];
+    std::unique_ptr<FrameBuffer> framebuffers[8];
+    std::unique_ptr<FullScreenQuad> bit_block_transfer;
     const wchar_t* filename[8] = {
         L".\\Data\\Fonts\\font4.png",
         L".\\Data\\Sprite\\player-sprites.png",

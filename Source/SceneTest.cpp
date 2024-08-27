@@ -28,7 +28,7 @@ void SceneTest::Initialize()
 
     spr[0] = std::make_unique<Sprite>(graphics->GetDevice(), filename[0]);
 
-    sprite_batches[0] = std::make_unique<SpriteBatch>(graphics->GetDevice(), filename[2], 2048);
+    sprite_batches[0] = std::make_unique<SpriteBatch>(graphics->GetDevice(), L".\\Data\\resources\\screenshot.jpg", 1);
     DirectX::XMFLOAT3 test = { 0.5f, 0.5f, 0.5f };
     geometric_primitives[0] = std::make_unique<GeometricCube>(graphics->GetDevice());
     geometric_primitives[1] = std::make_unique<GeometricCube>(graphics->GetDevice());
@@ -39,6 +39,10 @@ void SceneTest::Initialize()
 
     model[0] = std::make_unique<Model>(graphics->GetDevice(), ".\\Data\\resources\\nico.fbx",0,true);
     //model[0]->AppendAnimations(".\\Data\\resources\\AimTest\\Aim_Space.fbx", 0);
+
+    framebuffers[0]= std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280,720);
+    // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
+    bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 }
 
 //終了化
@@ -100,6 +104,10 @@ void SceneTest::Render()
     rc.renderState = renderState;
     rc.camera = camera;
     rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
+
+    framebuffers[0]->Clear(dc);
+    framebuffers[0]->Activate(dc);
+
     // 2D 描画設定
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
@@ -212,6 +220,12 @@ void SceneTest::Render()
 #endif
 #endif
             model[0]->Render(dc, world, material_color, &keyframe);
+            framebuffers[0]->Deactivate(dc);
+#if 1
+            dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+            dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+            bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
+#endif
 #if 0
         //ジオメトリックプリミティブ描画
         {

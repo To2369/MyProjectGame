@@ -31,13 +31,16 @@ HRESULT ShaderManager::CreateVsFromCso(ID3D11Device* device, const char* cso_nam
     hr = device->CreateVertexShader(cso_data.get(), cso_sz, nullptr, vertex_shader);
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-    hr = device->CreateInputLayout(
-        input_element_desc,                 // 入力レイアウトの設定を行うための構造体 
-        num_elements,                       // 構造体の配列の数
-        cso_data.get(),                     // コンパイルされた頂点シェーダー文字列
-        cso_sz,                             // コンパイルされた頂点シェーダーのサイズ
-        input_layout);                      // 成功時の入力レイアウトオブジェクト
-    _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+    if (input_layout)
+    {
+        hr = device->CreateInputLayout(
+            input_element_desc,                 // 入力レイアウトの設定を行うための構造体 
+            num_elements,                       // 構造体の配列の数
+            cso_data.get(),                     // コンパイルされた頂点シェーダー文字列
+            cso_sz,                             // コンパイルされた頂点シェーダーのサイズ
+            input_layout);                      // 成功時の入力レイアウトオブジェクト
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+    }
 
     return hr;
 }

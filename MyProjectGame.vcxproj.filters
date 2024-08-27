@@ -102,6 +102,12 @@
     <ClInclude Include="Source\Graphics\Model.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\FrameBuffer.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\FullScreenQuad.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -167,6 +173,12 @@
     <ClCompile Include="Source\Graphics\Model.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\FrameBuffer.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\FullScreenQuad.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -179,6 +191,9 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\Model.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\FullScreenQuad.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -208,6 +223,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\ModelVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\FullScreenQuadPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\FullScreenQuadVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

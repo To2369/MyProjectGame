@@ -108,6 +108,9 @@
     <ClInclude Include="Source\Graphics\FullScreenQuad.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\GltfModel.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -177,6 +180,9 @@
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\FullScreenQuad.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\GltfModel.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

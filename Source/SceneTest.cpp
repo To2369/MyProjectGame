@@ -43,6 +43,8 @@ void SceneTest::Initialize()
     framebuffers[0]= std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280,720);
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
+
+    gltf_models[0] = std::make_unique<GltfModel>(graphics->GetDevice(), ".\\Data\\glTF-Sample-Models-main\\2.0\\2CylinderEngine\\glTF\\2CylinderEngine.gltf");
 }
 
 //終了化

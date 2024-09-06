@@ -9,6 +9,7 @@
 #include"Graphics/Model.h"
 #include"Graphics/FrameBuffer.h"
 #include"Graphics/FullScreenQuad.h"
+#include"Graphics/GltfModel.h"
 //タイトルシーン
 class SceneTest :public Scene
 {
@@ -45,6 +46,7 @@ private:
     std::unique_ptr<Model> model[8];
     std::unique_ptr<FrameBuffer> framebuffers[8];
     std::unique_ptr<FullScreenQuad> bit_block_transfer;
+    std::unique_ptr<GltfModel> gltf_models[8];
     const wchar_t* filename[8] = {
         L".\\Data\\Fonts\\font4.png",
         L".\\Data\\Sprite\\player-sprites.png",

@@ -7,7 +7,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
 #include <tiny_gltf.h>
-
+#include"Shader.h"
 GltfModel::GltfModel(ID3D11Device* device, const std::string& filename) : filename(filename)
 {
 	tinygltf::Model gltf_model;
@@ -35,6 +35,99 @@ GltfModel::GltfModel(ID3D11Device* device, const std::string& filename) : filena
 
 	FetchNodes(gltf_model);
 	FetchMeshes(device, gltf_model);
+
+	// TODO: This is a force-brute programming, may cause bugs
+	const std::map<std::string, buffer_view>& vertex_buffer_views{
+		meshes.at(0).primitives.at(0).vertex_buffer_views
+	};
+	D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+	{
+		{"POSITION",0,vertex_buffer_views.at("POSITION").format,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL",0,vertex_buffer_views.at("NORMAL").format,1,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TANGENT",0,vertex_buffer_views.at("TANGENT").format,2,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD",0,vertex_buffer_views.at("TEXCOORD_0").format,3,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"JOINTS",0,vertex_buffer_views.at("JOINTS_0").format,4,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"WEIGHTS",0,vertex_buffer_views.at("WEIGHTS_0").format,5,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+	};
+
+	// 頂点シェーダーオブジェクトの生成
+	{
+		ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GltfModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
+			input_layout.ReleaseAndGetAddressOf(), input_element_desc, _countof(input_element_desc));
+	}
+
+	// ピクセルシェーダーオブジェクトの生成
+	{
+		ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GltfModelPS.cso",
+			pixel_shader.ReleaseAndGetAddressOf());
+	}
+
+	D3D11_BUFFER_DESC buffer_desc{};
+	buffer_desc.ByteWidth = sizeof(primitive_constants);
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.BindFlags = D3D11_USAGE_DEFAULT;
+	HRESULT hr;
+	hr = device->CreateBuffer(&buffer_desc, nullptr, primitive_cbuffer.ReleaseAndGetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+}
+
+void GltfModel::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world)
+{
+	immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+	immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+	immediate_context->IASetInputLayout(input_layout.Get());
+	immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	std::function<void(int)> traverse{ [&](int node_index)->void {
+		const node& node_{nodes.at(node_index)};
+		if (node_.mesh > -1)
+		{
+			const mesh& mesh_{ meshes.at(node_.mesh) };
+			for (std::vector<mesh::primitive>::const_reference primitive : mesh_.primitives)
+			{
+				ID3D11Buffer* vertex_buffers[]{
+					primitive.vertex_buffer_views.at("POSITION").buffer.Get(),
+					primitive.vertex_buffer_views.at("NORMAL").buffer.Get(),
+					primitive.vertex_buffer_views.at("TANGENT").buffer.Get(),
+					primitive.vertex_buffer_views.at("TEXCOORD_0").buffer.Get(),
+					primitive.vertex_buffer_views.at("JOINTS_0").buffer.Get(),
+					primitive.vertex_buffer_views.at("WEIGHTS_0").buffer.Get(),
+				};
+				UINT strides[]{
+					static_cast<UINT>(primitive.vertex_buffer_views.at("POSITION").stride_in_bytes),
+					static_cast<UINT>(primitive.vertex_buffer_views.at("NORMAL").stride_in_bytes),
+					static_cast<UINT>(primitive.vertex_buffer_views.at("TANGENT").stride_in_bytes),
+					static_cast<UINT>(primitive.vertex_buffer_views.at("TEXCOORD_0").stride_in_bytes),
+					static_cast<UINT>(primitive.vertex_buffer_views.at("JOINTS_0").stride_in_bytes),
+					static_cast<UINT>(primitive.vertex_buffer_views.at("WEIGHTS_0").stride_in_bytes),
+				};
+				UINT offsets[_countof(vertex_buffers)]{ 0 };
+				immediate_context->IASetVertexBuffers(0, _countof(vertex_buffers), vertex_buffers, strides, offsets);
+				immediate_context->IASetIndexBuffer(primitive.index_buffer_view.buffer.Get(),
+					primitive.index_buffer_view.format, 0);
+
+				primitive_constants primitive_data{};
+				primitive_data.material = primitive.material;
+				primitive_data.has_tangent = primitive.vertex_buffer_views.at("TANGENT").buffer != NULL;
+				primitive_data.skin = node_.skin;
+				DirectX::XMStoreFloat4x4(&primitive_data.world,
+					DirectX::XMLoadFloat4x4(&node_.global_transform) * DirectX::XMLoadFloat4x4(&world));
+				immediate_context->UpdateSubresource(primitive_cbuffer.Get(), 0, 0, &primitive_data, 0, 0);
+				immediate_context->VSSetConstantBuffers(0, 1, primitive_cbuffer.GetAddressOf());
+				immediate_context->PSSetConstantBuffers(0, 1, primitive_cbuffer.GetAddressOf());
+
+				immediate_context->DrawIndexed(static_cast<UINT>(primitive.index_buffer_view.count()), 0, 0);
+			}
+		}
+		for (std::vector<int>::value_type child_index : node_.children)
+		{
+			traverse(child_index);
+		}
+		} };
+	for (std::vector<int>::value_type node_index : scenes.at(0).nodes)
+	{
+		traverse(node_index);
+	}
 }
 
 void GltfModel::CumulateTransforms(std::vector<node>& nodes)

@@ -61,6 +61,8 @@ public:
 	GltfModel(ID3D11Device* device, const std::string& filename);
 	virtual ~GltfModel() = default;
 
+	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world);
+
 	void CumulateTransforms(std::vector<node>& nodes);
 
 	// ÉmÅ[ÉhèÓïÒÇÃéÊÇËèoÇµ
@@ -71,4 +73,16 @@ public:
 	buffer_view MakeBufferView(const tinygltf::Accessor& accessor);
 private:
 	std::string filename;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+	struct primitive_constants
+	{
+		DirectX::XMFLOAT4X4 world;
+		int material{ -1 };
+		int has_tangent{ 0 };
+		int skin{ -1 };
+		int pad;
+	};
+	Microsoft::WRL::ComPtr<ID3D11Buffer> primitive_cbuffer;
 };

@@ -202,6 +202,9 @@
     <None Include="HLSL\FullScreenQuad.hlsli">
       <Filter>HLSL</Filter>
     </None>
+    <None Include="HLSL\GltfModel.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\SpriteVS.hlsl">
@@ -235,6 +238,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\FullScreenQuadVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GltfModelVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GltfModelPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

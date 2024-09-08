@@ -221,7 +221,8 @@ void SceneTest::Render()
             model[0]->UpdateAnimation(keyframe);
 #endif
 #endif
-            model[0]->Render(dc, world, material_color, &keyframe);
+            //model[0]->Render(dc, world, material_color, &keyframe);
+            gltf_models[0]->Render(dc, world);
             framebuffers[0]->Deactivate(dc);
 #if 1
             dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);

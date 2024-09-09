@@ -117,9 +117,9 @@ void SceneTest::Render()
     // 2D •`‰æ
     {
         rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
-        sprite_batches[0]->Begin(dc, sprite_batches[0]->GetReplaced_pixel_shader(), sprite_batches[0]->GetReplaced_Shader_resource_view());
+      /*  sprite_batches[0]->Begin(dc, sprite_batches[0]->GetReplaced_pixel_shader(), sprite_batches[0]->GetReplaced_Shader_resource_view());
         sprite_batches[0]->Render(dc, 0, 0, 1280, 720);
-        sprite_batches[0]->End(dc);
+        sprite_batches[0]->End(dc);*/
 
         dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
         spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
@@ -221,7 +221,7 @@ void SceneTest::Render()
             model[0]->UpdateAnimation(keyframe);
 #endif
 #endif
-            //model[0]->Render(dc, world, material_color, &keyframe);
+            ////model[0]->Render(dc, world, material_color, &keyframe);
             gltf_models[0]->Render(dc, world);
             framebuffers[0]->Deactivate(dc);
 #if 1

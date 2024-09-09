@@ -57,6 +57,55 @@ public:
 		std::vector<primitive> primitives;
 	};
 	std::vector<mesh> meshes;
+
+	struct texture_info
+	{
+		int index = -1;
+		int texcoord = 0;
+	};
+
+	struct normal_texture_info
+	{
+		int index = -1;
+		int texcoord = 0;
+		float scale = 1;
+	};
+
+	struct occlusion_texture_info
+	{
+		int index = -1;
+		int texcoord = 0;
+		float strength = 1;
+	};
+
+	struct pbr_metalic_roughness
+	{
+		float basecolor_factor[4] = { 1,1,1,1 };
+		texture_info basecolor_texture;
+		float metallic_factor = 1;
+		float roughness_factor = 1;
+		texture_info metalic_roughness_texture;
+	};
+
+	struct material {
+		std::string name;
+		struct cbuffer
+		{
+			float emissive_factor[3] = { 0,0,0 };
+			int alpha_mode = 0;	// "OPAQUE":0,"MASK":1,"BLEND":2
+			float alpha_cutoff = 0.5f;
+			bool double_sided = false;
+
+			pbr_metalic_roughness pbr_metallic_rougness_;
+
+			normal_texture_info normal_texture;
+			occlusion_texture_info occlusion_texture;
+			texture_info emissive_texture;
+		};
+		cbuffer data;
+	};
+	std::vector<material> materials;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> material_resource_view;
 public:
 	GltfModel(ID3D11Device* device, const std::string& filename);
 	virtual ~GltfModel() = default;
@@ -70,6 +119,10 @@ public:
 
 	// メッシュ情報の取り出し
 	void FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltf_model);
+
+	// マテリアル情報の取り出し
+	void FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltf_model);
+
 	buffer_view MakeBufferView(const tinygltf::Accessor& accessor);
 private:
 	std::string filename;

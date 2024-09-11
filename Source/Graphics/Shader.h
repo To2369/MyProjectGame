@@ -24,8 +24,10 @@ public:
 	HRESULT LoadTextureFromFile(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** shader_resource_view,
 		D3D11_TEXTURE2D_DESC* texture2d_desc);
 
+	HRESULT LoadTextureFromMemory(ID3D11Device* device, const void* data, size_t sizse, ID3D11ShaderResourceView** shader_resource_view);
+
 	// 全てのテクスチャを解放
-	void release_all_textures(); 
+	void ReleaseAllTextures(); 
 
 	// ダミーテクスチャを作成(value=色,dimension=サイズ)
 	HRESULT MakeDummyTexture(ID3D11Device* device, ID3D11ShaderResourceView** shader_resource_view, DWORD value,

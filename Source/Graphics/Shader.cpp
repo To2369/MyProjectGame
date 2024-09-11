@@ -128,8 +128,25 @@ HRESULT ShaderManager::LoadTextureFromFile(ID3D11Device* device, const wchar_t* 
     return hr;
 }
 
+HRESULT ShaderManager::LoadTextureFromMemory(ID3D11Device* device, const void* data, size_t size, ID3D11ShaderResourceView** shader_resource_view)
+{
+    HRESULT hr{ S_OK };
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+
+    hr = DirectX::CreateDDSTextureFromMemory(device, reinterpret_cast<const uint8_t*>(data),
+        size, resource.GetAddressOf(), shader_resource_view);
+    if (hr != S_OK)
+    {
+        hr = DirectX::CreateWICTextureFromMemory(device, reinterpret_cast<const uint8_t*>(data),
+            size, resource.GetAddressOf(), shader_resource_view);
+        _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+    }
+
+    return hr;
+}
+
 // 全てのテクスチャを解放
-void ShaderManager::release_all_textures()
+void ShaderManager::ReleaseAllTextures()
 {
     resources.clear();
 }

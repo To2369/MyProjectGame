@@ -106,6 +106,29 @@ public:
 	};
 	std::vector<material> materials;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> material_resource_view;
+
+	struct texture
+	{
+		std::string name;
+		int source{ -1 };
+	};
+	std::vector<texture> textures;
+
+	struct image
+	{
+		std::string name;
+		int width{ -1 };
+		int height{ -1 };
+		int component{ -1 };
+		int bits{ -1 };
+		int pixel_type{ -1 };
+		int buffer_view;
+		std::string mime_type;
+		std::string uri;
+		bool as_is{ false };
+	};
+	std::vector<image> images;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> texture_resource_views;
 public:
 	GltfModel(ID3D11Device* device, const std::string& filename);
 	virtual ~GltfModel() = default;
@@ -122,6 +145,9 @@ public:
 
 	// マテリアル情報の取り出し
 	void FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltf_model);
+
+	//テクスチャ情報取り出し
+	void FetchTextures(ID3D11Device* device, const tinygltf::Model& gltf_model);
 
 	buffer_view MakeBufferView(const tinygltf::Accessor& accessor);
 private:

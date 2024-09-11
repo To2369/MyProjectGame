@@ -36,7 +36,7 @@ GltfModel::GltfModel(ID3D11Device* device, const std::string& filename) : filena
 	FetchNodes(gltf_model);
 	FetchMeshes(device, gltf_model);
 	FetchMaterials(device, gltf_model);
-
+	FetchTextures(device, gltf_model);
 	// TODO: This is a force-brute programming, may cause bugs
 	const std::map<std::string, buffer_view>& vertex_buffer_views{
 		meshes.at(0).primitives.at(0).vertex_buffer_views
@@ -107,6 +107,26 @@ void GltfModel::Render(ID3D11DeviceContext* immediate_context, const DirectX::XM
 				immediate_context->IASetVertexBuffers(0, _countof(vertex_buffers), vertex_buffers, strides, offsets);
 				immediate_context->IASetIndexBuffer(primitive.index_buffer_view.buffer.Get(),
 					primitive.index_buffer_view.format, 0);
+				
+				const material& material_{ materials.at(primitive.material) };
+				const int texture_indices[]
+				{
+					material_.data.pbr_metallic_rougness_.basecolor_texture.index,
+					material_.data.pbr_metallic_rougness_.metalic_roughness_texture.index,
+					material_.data.normal_texture.index,
+					material_.data.emissive_texture.index,
+					material_.data.occlusion_texture.index,
+				};
+				ID3D11ShaderResourceView* null_shader_resource_view{};
+				std::vector<ID3D11ShaderResourceView*> shader_resource_views(_countof(texture_indices));
+				for (int texture_index = 0; texture_index < shader_resource_views.size(); ++texture_index)
+				{
+					shader_resource_views.at(texture_index) = texture_indices[texture_index] > -1 ?
+						texture_resource_views.at(textures.at(texture_indices[texture_index]).source).Get() :
+						null_shader_resource_view;
+				}
+				immediate_context->PSSetShaderResources(1, static_cast<UINT>(shader_resource_views.size()),
+					shader_resource_views.data());
 
 				primitive_constants primitive_data{};
 				primitive_data.material = primitive.material;
@@ -363,6 +383,59 @@ void GltfModel::FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltf
 	hr = device->CreateShaderResourceView(material_buffer.Get(),
 		&shader_resource_view_desc, material_resource_view.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+}
+
+//テクスチャ情報取り出し
+void GltfModel::FetchTextures(ID3D11Device* device, const tinygltf::Model& gltf_model)
+{
+	HRESULT hr{ S_OK };
+	for (const tinygltf::Texture& gltf_texture : gltf_model.textures)
+	{
+		texture& texture_{ textures.emplace_back() };
+		texture_.name = gltf_texture.name;
+		texture_.source = gltf_texture.source;
+	}
+	for (const tinygltf::Image& gltf_image : gltf_model.images)
+	{
+		image& image_{ images.emplace_back() };
+		image_.name = gltf_image.name;
+		image_.width = gltf_image.width;
+		image_.height = gltf_image.height;
+		image_.component = gltf_image.component;
+		image_.bits = gltf_image.bits;
+		image_.pixel_type = gltf_image.pixel_type;
+		image_.buffer_view = gltf_image.bufferView;
+		image_.uri = gltf_image.uri;
+		image_.as_is = gltf_image.as_is;
+
+		if (gltf_image.bufferView > -1)
+		{
+			const tinygltf::BufferView& buffer_view{ gltf_model.bufferViews.at(gltf_image.bufferView) };
+			const tinygltf::Buffer& buffer{ gltf_model.buffers.at(buffer_view.buffer) };
+			const byte* data = buffer.data.data() + buffer_view.byteOffset;
+
+			ID3D11ShaderResourceView* texture_resource_view{};
+			hr = ShaderManager::Instance()->LoadTextureFromMemory(device, data, buffer_view.byteLength, &texture_resource_view);
+			if (hr == S_OK)
+			{
+				texture_resource_views.emplace_back().Attach(texture_resource_view);
+			}
+		}
+		else
+		{
+			const std::filesystem::path path(filename);
+			ID3D11ShaderResourceView* shader_resource_view{};
+			D3D11_TEXTURE2D_DESC texture2d_desc;
+			std::wstring filename{
+			path.parent_path().concat(L"/").wstring() +
+				std::wstring(gltf_image.uri.begin(), gltf_image.uri.end()) };
+			hr = ShaderManager::Instance()->LoadTextureFromFile(device, filename.c_str(), &shader_resource_view, &texture2d_desc);
+			if (hr == S_OK)
+			{
+				texture_resource_views.emplace_back().Attach(shader_resource_view);
+			}
+		}
+	}
 }
 
 GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& accessor)

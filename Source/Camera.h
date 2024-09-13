@@ -23,25 +23,25 @@ public:
     void SetPerspectiveFov(float fovY, float aspect, float nearZ, float farZ);
 
     //ビュー行列取得
-    const DirectX::XMFLOAT4X4* GetView()const { return &view; }
+    const DirectX::XMFLOAT4X4& GetView()const { return view; }
 
     //プロジェクション行列
-    const DirectX::XMFLOAT4X4* GetProjection() const { return &projection; }
+    const DirectX::XMFLOAT4X4& GetProjection() const { return projection; }
 
     //視点取得
-    const DirectX::XMFLOAT3* GetEye() const { return &eye; }
+    const DirectX::XMFLOAT3& GetEye() const { return eye; }
 
     //注視点取得
-    const DirectX::XMFLOAT3* GetFocus() const { return &focus; }
+    const DirectX::XMFLOAT3& GetFocus() const { return focus; }
 
     //右方向ベクトル取得
-    const DirectX::XMFLOAT3* GetRight() const { return &up; }
+    const DirectX::XMFLOAT3& GetRight() const { return up; }
 
     //前方向ベクトル取得
-    const DirectX::XMFLOAT3* GetFront()const { return &front; }
+    const DirectX::XMFLOAT3& GetFront()const { return front; }
 
     //上方向ベクトル取得
-    const DirectX::XMFLOAT3* GetUp()const { return &up; }
+    const DirectX::XMFLOAT3& GetUp()const { return up; }
 private:
     DirectX::XMFLOAT4X4 view;
     DirectX::XMFLOAT4X4 projection;

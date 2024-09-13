@@ -104,7 +104,8 @@ void SceneTest::Render()
     RenderContext rc;
     rc.deviceContext = dc;
     rc.renderState = renderState;
-    rc.camera = camera;
+    rc.view = camera->GetView();
+    rc.projection = camera->GetProjection();
     rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
 
     framebuffers[0]->Clear(dc);

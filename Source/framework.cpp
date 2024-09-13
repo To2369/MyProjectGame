@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "SceneTitle.h"
 #include "SceneTest.h"
+#include "SceneGame.h"
 #include "SceneManager.h"
 Framework::Framework(HWND hwnd) : hWnd(hwnd)
 {
@@ -10,8 +11,10 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 	graphics = Graphics::Instance();
 	graphics->Initialize(hwnd);
 
+	input_mgr = InputManager::Instance()->initialize(hwnd);
+
 	//シーン初期化
-	SceneManager::Instance().ChangeScene(new SceneTest);
+	SceneManager::Instance().ChangeScene(new SceneGame);
 }
 
 Framework::~Framework()
@@ -24,6 +27,8 @@ Framework::~Framework()
 
 void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 {
+	input_mgr->update();
+
 	// シーン更新処理
 	SceneManager::Instance().Update(elapsedTime);
 }

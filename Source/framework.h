@@ -10,12 +10,14 @@
 #include <d3d11.h>
 #include"Graphics/Graphics.h"
 #include"Graphics/Sprite.h"
+#include "Input/InputManager.h"
 #ifdef USE_IMGUI
 
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_internal.h"
 #include "../Imgui/imgui_impl_dx11.h"
 #include "../Imgui/imgui_impl_win32.h"
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern ImWchar glyphRangesJapanese[];
 #endif
@@ -51,5 +53,7 @@ private:
 	float elapsed_time{ 0.0f };
 	Graphics* graphics;
 	const int	syncInterval = 1;		// ‚’¼“¯ŠúŠÔŠuİ’è
+
+	InputManager* input_mgr;
 };
 

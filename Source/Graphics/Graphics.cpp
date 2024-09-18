@@ -129,8 +129,13 @@ void Graphics::Initialize(HWND hwnd)
 	}
 
 	// レンダーステート生成
-	renderState = std::make_unique<RenderState>(device.Get());
+	render_state = std::make_unique<RenderState>(device.Get());
 
+	// レンダラ
+	{
+		debug_renderer = std::make_unique<DebugRenderer>(device.Get());
+		line_renderer= std::make_unique<LineRenderer>(device.Get(), 1024);
+	}
 }
 
 // クリア

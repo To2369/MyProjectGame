@@ -1,6 +1,8 @@
 #include"SceneGame.h"
 #include"Graphics/RenderContext.h"
 #include"Graphics/RenderState.h"
+#include "EnemySlime.h"
+#include "EnemyManager.h"
 //初期化
 void SceneGame::Initialize()
 {
@@ -9,28 +11,34 @@ void SceneGame::Initialize()
     //定数バッファの作成
     CreateBuffer<SceneGame::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
 
-    camera = Camera::Instance();
+    camera = &Camera::Instance();
     float x, y;
     x = static_cast<float>(graphics->GetScreenWidth());
     y = static_cast<float>(graphics->GetScreenHeight());
-    camera->SetPerspectiveFov(
-        DirectX::XMConvertToRadians(30),
-        x / y,
-        0.1f,
-        100.0f
-    );
     camera->SetLookAt(
-        DirectX::XMFLOAT3(0, 0, -10),		//カメラの視点(位置)
+        DirectX::XMFLOAT3(0, 10, -10),		//カメラの視点(位置)
         DirectX::XMFLOAT3(0, 0, 0),			//カメラの注視点(ターゲット)
         DirectX::XMFLOAT3(0, 1, 0)			//カメラの上方向
     );
+    camera->SetPerspectiveFov(
+        DirectX::XMConvertToRadians(45),
+        x / y,
+        0.1f,
+        1000.0f
+    );
     cameraCtrl = std::make_unique<CameraController>();
+
+    std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
+    slime->SetPosition({ 0,0,5 });
+
+    //敵管理クラス取付
+    EnemyManager& eneMgr = EnemyManager::Instance();
+    eneMgr.Regist(std::move(slime));
 
     stage = std::make_unique<Stage>();
 
     player = std::make_unique<Player>();
-
-    framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
+   // framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 }
@@ -46,6 +54,13 @@ void SceneGame::Update(float elapsedTime)
 {
     player->Update(elapsedTime);
 
+    EnemyManager::Instance().Update(elapsedTime);
+
+    DirectX::XMFLOAT3 target = player->GetPosition();
+    target.y += 0.5f;
+    cameraCtrl->SetTarget(target);
+    cameraCtrl->Update(elapsedTime);
+
     stage->Update(elapsedTime);
 
 #ifdef USE_IMGUI
@@ -59,7 +74,7 @@ void SceneGame::Update(float elapsedTime)
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
     ImGui::SliderFloat3("cameraPos", &camera_position.x, -100.0f, 100.0f);
-
+    player->DrawDebugGUI();
     ImGui::SliderFloat3("light_direction", &light_direction.x, -1.0f, +1.0f);
     ImGui::End();
 #endif
@@ -86,8 +101,8 @@ void SceneGame::Render()
     rc.projection = camera->GetProjection();
     rc.lightDirection = light_direction;	// ライト方向（下方向）
 
-    framebuffers[0]->Clear(dc);
-    framebuffers[0]->Activate(dc);
+  /*  framebuffers[0]->Clear(dc);
+    framebuffers[0]->Activate(dc);*/
 
     // 2D 描画設定
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
@@ -99,18 +114,17 @@ void SceneGame::Render()
     }
     // 2DデバッグGUI描画
     {
-#ifdef USE_IMGUI
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif
+
     }
 
 #if 1
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
-    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, DirectX::XMMatrixMultiply(
-        DirectX::XMLoadFloat4x4(&rc.view),
-        DirectX::XMLoadFloat4x4(&rc.projection)));
+    // ビュー行列
+    DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
+    // プロジェクション行列
+    DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
+    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, View * Projection);
     scene_data.lightDirection = rc.lightDirection;
     
 #else//ゲーム作成の時消す
@@ -142,8 +156,10 @@ void SceneGame::Render()
 
         player->Render(dc);
 
-        framebuffers[0]->Deactivate(dc);
-#if 1
+        EnemyManager::Instance().Render(dc);
+
+        //framebuffers[0]->Deactivate(dc);
+#if 0
         dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
         dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
         bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
@@ -152,6 +168,15 @@ void SceneGame::Render()
 
     // 3Dデバッグ描画
     {
+        graphics->GetLineRenderer()->Render(dc, rc.view, rc.projection);
+        graphics->GetDebugRenderer()->Render(dc, rc.view, rc.projection);
 
+        player->DrawDebugPrimitive();
+
+        EnemyManager::Instance().DrawDebugPrimitive();
+#ifdef USE_IMGUI
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
     }
 }

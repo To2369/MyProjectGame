@@ -141,6 +141,22 @@
     <ClInclude Include="Source\Input\Mouse.h">
       <Filter>Sources\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\DebugRenderer.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\LineRenderer.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy.h">
+      <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EnemySlime.h">
+      <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EnemyManager.h">
+      <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -236,6 +252,22 @@
     <ClCompile Include="Source\Input\Mouse.cpp">
       <Filter>Sources\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\DebugRenderer.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\LineRenderer.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy.cpp">
+      <Filter>Sources\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemySlime.cpp">
+      <Filter>Sources\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemyManager.cpp">
+      <Filter>Sources\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -254,6 +286,12 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\GltfModel.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Debug.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Line.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -295,6 +333,18 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\GltfModelPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\DebugPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\DebugVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\LineVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\LinePS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

@@ -4,6 +4,8 @@
 #include <wrl.h>
 #include <mutex>
 #include"RenderState.h"
+#include "DebugRenderer.h"
+#include "LineRenderer.h"
 
 class Graphics
 {
@@ -55,17 +57,17 @@ public:
 	float GetScreenHeight() const { return screenHeight; }
 
 	//// デバッグレンダラ取得
-	//DebugRenderer* GetDebugRenderer() const { return debugRenderer.get(); }
+	DebugRenderer* GetDebugRenderer() const { return debug_renderer.get(); }
 
-	//// ラインレンダラ取得
-	//LineRenderer* GetLineRenderer() const { return lineRenderer.get(); }
+	// ラインレンダラ取得
+	LineRenderer* GetLineRenderer() const { return line_renderer.get(); }
 
 	//// ImGuiレンダラ取得
 	//ImGuiRenderer* GetImGuiRenderer() const { return imguiRenderer.get(); }
 
 
 	// レンダーステート取得
-	RenderState* GetRenderState() { return renderState.get(); }
+	RenderState* GetRenderState() { return render_state.get(); }
 
 	std::mutex& GetMutex() { return mutex; }
 
@@ -94,5 +96,9 @@ private:
 
 	std::mutex mutex;
 
-	std::unique_ptr<RenderState> renderState;
+	std::unique_ptr<RenderState> render_state;
+
+	std::unique_ptr<DebugRenderer>					debug_renderer;
+
+	std::unique_ptr<LineRenderer>					line_renderer;
 };

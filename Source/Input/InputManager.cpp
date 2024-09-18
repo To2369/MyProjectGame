@@ -11,6 +11,6 @@ InputManager* InputManager::initialize(HWND hwnd)
 // XVˆ—
 void InputManager::update()
 {
-	gamePad->update();
-	mouse->update();
+	gamePad->Update();
+	mouse->Update();
 }

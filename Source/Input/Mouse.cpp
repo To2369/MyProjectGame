@@ -8,17 +8,17 @@ static const int KeyMap[] =
 };
 
 // コンストラクタ
-Mouse::Mouse(HWND hwnd)
-	: hwnd(hwnd)
+Mouse::Mouse(HWND hWnd)
+	: hWnd(hWnd)
 {
 	RECT rc;
-	GetClientRect(hwnd, &rc);
+	GetClientRect(hWnd, &rc);
 	screenWidth = rc.right - rc.left;
 	screenHeight = rc.bottom - rc.top;
 }
 
 // 更新
-void Mouse::update()
+void Mouse::Update()
 {
 	// スイッチ情報
 	MouseButton newButtonState = 0;
@@ -45,11 +45,11 @@ void Mouse::update()
 	// カーソル位置の取得
 	POINT cursor;
 	::GetCursorPos(&cursor);
-	::ScreenToClient(hwnd, &cursor);
+	::ScreenToClient(hWnd, &cursor);
 
 	// 画面のサイズを取得する。
 	RECT rc;
-	GetClientRect(hwnd, &rc);
+	GetClientRect(hWnd, &rc);
 	UINT screenW = rc.right - rc.left;
 	UINT screenH = rc.bottom - rc.top;
 	UINT viewportW = screenWidth;

@@ -1,17 +1,21 @@
 #include "CameraController.h"
 #include "Camera.h"
-
+#include "Input/InputManager.h"
 //XVˆ—
 void CameraController::Update(float elapsedTime)
 {
 
+    //“ü—Íî•ñ‚ðŽæ“¾
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    float ax = gamePad->GetAxisRX();
+    float ay = gamePad->GetAxisRY();
     //ƒJƒƒ‰‚Ì‰ñ“]‘¬“x
     constexpr float rollSpeed = DirectX::XMConvertToRadians(90);
     float speed = rollSpeed * elapsedTime;
 
     //ƒXƒeƒBƒbƒN‚Ì“ü—Í’l‚É‡‚í‚¹‚Ä‰ñ“]
-    //angle.x += ay * speed;      //XŽ²‰ñ“]
-    //angle.y += ax * speed;      //YŽ²‰ñ“]
+    angle.x += ay * speed;      //XŽ²‰ñ“]
+    angle.y += ax * speed;      //YŽ²‰ñ“]
 
     //XŽ²‚ÌƒJƒƒ‰‰ñ“]‚ðã‰º45“x‚É§ŒÀ
     constexpr float maxAngle = DirectX::XMConvertToRadians(45);
@@ -52,5 +56,5 @@ void CameraController::Update(float elapsedTime)
     eye.z = target.z - front.z * range;
 
     //ƒJƒƒ‰‚ÌŽ‹“_‚Æ’Ž‹“_‚ðÝ’è
-    Camera::Instance()->SetLookAt(eye, target, { 0,1,0 });
+    Camera::Instance().SetLookAt(eye, target, { 0,1,0 });
 }

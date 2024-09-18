@@ -10,10 +10,10 @@ private:
     ~Camera() {}
 
 public:
-    static Camera* Instance()
+    static Camera& Instance()
     {
         static Camera ins;
-        return &ins;
+        return ins;
     }
 
     //カメラの位置と姿勢の設定
@@ -35,7 +35,7 @@ public:
     const DirectX::XMFLOAT3& GetFocus() const { return focus; }
 
     //右方向ベクトル取得
-    const DirectX::XMFLOAT3& GetRight() const { return up; }
+    const DirectX::XMFLOAT3& GetRight() const { return right; }
 
     //前方向ベクトル取得
     const DirectX::XMFLOAT3& GetFront()const { return front; }

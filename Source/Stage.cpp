@@ -13,5 +13,5 @@ void Stage::Update(float elapsedTime)
 
 void Stage::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 }, { 0.8f,0.8f,0.8f,1.0f }, nullptr);
+	model->Render(dc, { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 }, { 0.1f,0.11f,0.1f,1.0f }, nullptr);
 }

@@ -2,8 +2,9 @@
 #include <math.h>
 #include <Xinput.h>
 #include "GamePad.h"
+
 // çXêV
-void GamePad::update()
+void GamePad::Update()
 {
 	axisLx = axisLy = 0.0f;
 	axisRx = axisRy = 0.0f;

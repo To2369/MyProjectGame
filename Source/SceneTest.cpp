@@ -9,7 +9,7 @@ void SceneTest::Initialize()
     //定数バッファの作成
     CreateBuffer<SceneTest::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
 
-    camera = Camera::Instance();
+    camera = &Camera::Instance();
     float x, y;
     x = static_cast<float>(graphics->GetScreenWidth());
     y = static_cast<float>(graphics->GetScreenHeight());

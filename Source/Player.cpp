@@ -17,7 +17,7 @@ Player::Player()
     //bulletMgr = std::make_unique<BulletManager>();
 
     // ヒットエフェクト読み込み
-    hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
+    //hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
 
 }
 
@@ -346,7 +346,7 @@ void Player::CollisionBulletsAndEnemies()
                     // ヒットエフェクトの再生
                     DirectX::XMFLOAT3 enePos = enemy->GetPosition();
                     enePos.y += enemy->GetHeight() * 0.5f;
-                    Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+                    //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
                     // 弾の破棄
                     bullet->Destroy();

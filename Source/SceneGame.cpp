@@ -3,7 +3,7 @@
 #include"Graphics/RenderState.h"
 #include "EnemySlime.h"
 #include "EnemyManager.h"
-#include "Effect/EffectManager.h"
+//#include "Effect/EffectManager.h"
 //初期化
 void SceneGame::Initialize()
 {
@@ -37,7 +37,7 @@ void SceneGame::Initialize()
     eneMgr.Regist(std::move(slime));
 
     // エフェクト管理の初期化
-    EffectManager::Instance().Initialize();
+    //EffectManager::Instance().Initialize();
 
     stage = std::make_unique<Stage>();
 
@@ -61,7 +61,7 @@ void SceneGame::Update(float elapsedTime)
     EnemyManager::Instance().Update(elapsedTime);
 
     // エフェクト更新処理
-    EffectManager::Instance().Update(elapsedTime);
+    //EffectManager::Instance().Update(elapsedTime);
 
     DirectX::XMFLOAT3 target = player->GetPosition();
     target.y += 0.5f;
@@ -175,7 +175,7 @@ void SceneGame::Render()
 
     // 3D エフェクト描画
     {
-        EffectManager::Instance().Render(&rc.view, &rc.projection);
+        //EffectManager::Instance().Render(&rc.view, &rc.projection);
     }
 
     // 3Dデバッグ描画

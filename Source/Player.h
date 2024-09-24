@@ -3,7 +3,7 @@
 #include "Graphics/Model.h"
 #include "Character.h"
 #include "BulletManager.h"
-#include "Effect/Effect.h"
+//#include "Effect/Effect.h"
 
 // プレイヤー
 class Player :public Character
@@ -68,5 +68,5 @@ private:
 	BulletManager bulletMgr;
 
 	// ヒットエフェクト
-	std::unique_ptr<Effect> hitEffect;
+	//std::unique_ptr<Effect> hitEffect;
 };

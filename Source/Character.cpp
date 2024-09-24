@@ -28,13 +28,15 @@ void Character::UpdateTransform()
 
 }
 
-//移動処理
-void Character::Move(float elapsedTime, float vx, float vz, float speed)
+// 移動方向を決定
+void Character::Move(float vx, float vz, float speed)
 {
-    //移動処理
-    float moveSpeed = speed * elapsedTime;
-    position.x += vx * moveSpeed;
-    position.z += vz * moveSpeed;
+    // 移動方向ベクトルを決定
+    direction.x = vx;
+    direction.z = vz;
+
+    // 最大速度設定
+    maxMoveSpeed = speed;
 }
 
 // 旋回処理
@@ -96,9 +98,84 @@ void Character::Jump(float speed)
 // 速度処理更新
 void Character::UpdateVelocity(float elapsedTime)
 {
+    // 垂直速度更新処理
+    UpdateVerticalVelocity(elapsedTime);
+
+    // 垂直移動更新処理
+    UpdateVerticalMove(elapsedTime);
+
+    // 水平速度更新処理
+    UpdateHorizontalVelocity(elapsedTime);
+
+    // 水平移動更新処理
+    UpdateHorizontalMove(elapsedTime);
+}
+
+// ダメージ処理
+bool Character::ApplyDamage(float invincibleTime,int damage)
+{
+    // ダメージが０以下の場合は HP に変化なし
+    if (damage <= 0)
+        return false;
+
+    // 既に HP が０以下（死亡）の場合は HP に変化なし
+    if (health <= 0)
+        return false;
+
+    // 無敵時間中は HP に変化なし
+    if (invincibleTimer > 0.0f)
+        return false;
+
+    // ダメージを受けた際に無敵時間を再設定
+    invincibleTimer = invincibleTime;
+
+    // ダメージ計算
+    health -= damage;
+
+    // ダメージ計算後の残り HP で処理を変化
+    if (health <= 0)
+    {
+        // 死亡
+        OnDead();
+    }
+    else
+    {
+        // ダメージを受けた
+        OnDamaged();
+    }
+
+    return true;
+}
+
+// 衝撃を与える
+void Character::AddImpulse(const DirectX::XMFLOAT3& impulse)
+{
+    // 速度に力を加える
+    velocity.x += impulse.x;
+    velocity.y += impulse.y;
+    velocity.z += impulse.z;
+}
+
+
+// 無敵時間の更新
+void Character::UpdateInvincibleTimer(float elapsedTime)
+{
+    if (invincibleTimer > 0.0f)
+    {
+        invincibleTimer -= elapsedTime;
+    }
+}
+
+// 垂直速度更新処理
+void Character::UpdateVerticalVelocity(float elapsedTime)
+{
     // 重力処理（フレーム単位で計算）
     velocity.y += gravity * elapsedTime * 60.0f;
+}
 
+// 垂直移動更新処理
+void Character::UpdateVerticalMove(float elapsedTime)
+{
     // 移動処理
     position.y += velocity.y * elapsedTime;
 
@@ -111,7 +188,7 @@ void Character::UpdateVelocity(float elapsedTime)
         // 着地した
         if (!groundedFlag)
         {
-            onLanding();
+            OnLanding();
         }
         groundedFlag = true;
     }
@@ -119,4 +196,80 @@ void Character::UpdateVelocity(float elapsedTime)
     {
         groundedFlag = false;
     }
+}
+
+// 水平速度更新処理
+void Character::UpdateHorizontalVelocity(float elapsedTime)
+{
+    // 速度に力が加わっていたら（0 じゃなかったら）減速処理を行う
+    float length = sqrtf(velocity.x * velocity.x + velocity.z * velocity.z);
+    if (length > 0.0f)
+    {
+        // 摩擦力（フレーム単位で計算）
+        float friction = this->friction * elapsedTime * 60.0f;
+
+        // 空中にいるときは摩擦力を減少
+        if (!groundedFlag)
+        {
+            friction *= airControl;
+        }
+
+        if (length > friction)
+        {
+            // 摩擦による横方向の減速処理
+            float vx = velocity.x / length;
+            float vz = velocity.z / length;
+
+            velocity.x -= vx * friction;
+            velocity.z -= vz * friction;
+        }
+        else
+        {
+            // 横方向の速度が摩擦力以下になったので速度を無効化
+            velocity.x = 0.0f;
+            velocity.z = 0.0f;
+        }
+    }
+
+    // 最大速度以下なら加速処理を行う
+    if (length <= maxMoveSpeed)
+    {
+        // 方向ベクトルがゼロでないなら加速処理を行う
+        // ゼロの場合は入力されていない
+        float directionLength = sqrtf(direction.x * direction.x + direction.z * direction.z);
+        if (directionLength > 0.0f)
+        {
+            // 加速度（フレーム単位で計算）
+            float acceleration = this->acceleration * elapsedTime * 60.0f;
+
+            // 空中にいるときは加速度を減少
+            if (!groundedFlag)
+            {
+                acceleration *= airControl;
+            }
+
+            // 加速処理
+            // 方向ベクトルに加速度をスケーリングした値を速度ベクトルに加算
+            velocity.x += direction.x * acceleration;
+            velocity.z += direction.z * acceleration;
+
+            // 最大速度制限
+            float length = sqrtf(velocity.x * velocity.x + velocity.z * velocity.z);
+            if (length > maxMoveSpeed)
+            {
+                // 方向ベクトルに最大移動速度をスケーリングした値を速度ベクトルに代入
+                velocity.x = direction.x * maxMoveSpeed;
+                velocity.z = direction.z * maxMoveSpeed;
+
+            }
+        }
+    }
+}
+
+// 水平移動更新処理
+void Character::UpdateHorizontalMove(float elapsedTime)
+{
+    // 移動処理
+    position.x += velocity.x * elapsedTime;
+    position.z += velocity.z * elapsedTime;
 }

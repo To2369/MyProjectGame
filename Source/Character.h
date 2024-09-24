@@ -19,6 +19,11 @@ public:
 	//行列更新
 	void UpdateTransform();
 
+	// ダメージ処理
+	bool ApplyDamage(float invincibleTime, int damage);
+
+	// 衝撃を与える
+	void AddImpulse(const DirectX::XMFLOAT3& impulse);
 public:
 	//位置取得
 	const DirectX::XMFLOAT3& GetPosition()const { return position; }
@@ -43,9 +48,25 @@ public:
 
 	// 着地したかどうかのフラグの取得
 	bool isGrounded() const { return groundedFlag; }
+
+	// 高さ取得
+	float GetHeight() const { return height; }
+
+private:
+	// 垂直速度更新処理
+	void UpdateVerticalVelocity(float elapsedTime);
+
+	// 垂直移動更新処理
+	void UpdateVerticalMove(float elapsedTime);
+
+	// 水平速度更新処理
+	void UpdateHorizontalVelocity(float elapsedTime);
+
+	// 水平移動更新処理
+	void UpdateHorizontalMove(float elapsedTime);
 protected:
-	//移動処理
-	void Move(float elapsedTime, float vx, float vz, float speed);
+	// 移動方向を決定
+	void Move(float vx, float vz, float speed);
 	// 旋回処理
 	void Turn(float elapsedTime, float vx, float vz, float speed);
 	// ジャンプ処理
@@ -53,8 +74,17 @@ protected:
 	// 速度処理更新
 	void UpdateVelocity(float elpasedTime);
 
+	// 無敵時間の更新
+	void UpdateInvincibleTimer(float elapsedTime);
+
 	// 着地したときに呼び出される
-	virtual void onLanding() {}
+	virtual void OnLanding() {}
+
+	// ダメージを受けたときに呼ばれる
+	virtual void OnDamaged() {}
+
+	// 死亡したときに呼ばれる
+	virtual void OnDead() {}
 protected:
 	DirectX::XMFLOAT3 position = { 0,0,0 };
 	DirectX::XMFLOAT3 angle = { 0,0,0 };
@@ -63,6 +93,14 @@ protected:
 	float gravity = -1.0f;	// 重力（フレーム単位の値）
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };	// 速度
 	bool groundedFlag = false;	// true...着地した
+	float height = 2.0f;	// 高さ
+	int health = 5; // ライフ
+	float invincibleTimer = 0.5f;   // 無敵時間
+	float friction = 0.5f; // 摩擦
+	float acceleration = 1.0f;  // 加速度
+	float maxMoveSpeed = 5.0f;  // 最大移動速度
+	DirectX::XMFLOAT3 direction = { 0,0,0 };    // 移動方向
+	float airControl = 0.3f;    // 空中制御用係数
 	//姿勢制御
 	DirectX::XMFLOAT4X4 transform = {
 		1,0,0,0,

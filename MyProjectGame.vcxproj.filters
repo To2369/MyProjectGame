@@ -28,6 +28,12 @@
     <Filter Include="Sources\Input">
       <UniqueIdentifier>{abb447bd-a4d3-479f-b7fa-074a4a6a4af2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Bullet">
+      <UniqueIdentifier>{3e100ed7-c47d-41bd-a336-297b2175d62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Effect">
+      <UniqueIdentifier>{46d8d1b1-71a0-4335-a01b-32db9c37cb9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Imgui\imconfig.h">
@@ -156,7 +162,27 @@
     <ClInclude Include="Source\EnemyManager.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Collision.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Bullet.h">
+      <Filter>Sources\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BulletManager.h">
+      <Filter>Sources\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StraightBullet.h">
+      <Filter>Sources\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HomingBullet.h">
+      <Filter>Sources\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EffectManager.h">
+      <Filter>Sources\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Effect\Effect.h">
+      <Filter>Sources\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -267,7 +293,27 @@
     <ClCompile Include="Source\EnemyManager.cpp">
       <Filter>Sources\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Collision.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bullet.cpp">
+      <Filter>Sources\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BulletManager.cpp">
+      <Filter>Sources\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StraightBullet.cpp">
+      <Filter>Sources\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HomingBullet.cpp">
+      <Filter>Sources\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EffectManager.cpp">
+      <Filter>Sources\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect\Effect.cpp">
+      <Filter>Sources\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">

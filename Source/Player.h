@@ -2,6 +2,8 @@
 
 #include "Graphics/Model.h"
 #include "Character.h"
+#include "BulletManager.h"
+#include "Effect/Effect.h"
 
 // プレイヤー
 class Player :public Character
@@ -34,11 +36,17 @@ private:
 	// ジャンプ入力処理
 	void InputJump();
 
+	// 入力による弾発射処理
+	void InputLaunchBullet();
+
 	// プレイヤーと敵との衝突処理
 	void CollisionPlayerAndEnemies();
+
+	// 弾と敵の衝突処理
+	void CollisionBulletsAndEnemies();
 protected:
 	// 着地したときに呼び出される
-	void onLanding() override;
+	void OnLanding() override;
 private:
 	std::unique_ptr<Model> model;
 	// 移動スピード
@@ -55,4 +63,10 @@ private:
 
 	int jumpCount = 0;	// ジャンプ回数
 	int jumpLimit = 2;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
+
+	//std::unique_ptr<BulletManager> bulletMgr;
+	BulletManager bulletMgr;
+
+	// ヒットエフェクト
+	std::unique_ptr<Effect> hitEffect;
 };

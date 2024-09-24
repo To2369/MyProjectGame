@@ -3,6 +3,7 @@
 #include"Graphics/RenderState.h"
 #include "EnemySlime.h"
 #include "EnemyManager.h"
+#include "Effect/EffectManager.h"
 //初期化
 void SceneGame::Initialize()
 {
@@ -35,6 +36,9 @@ void SceneGame::Initialize()
     EnemyManager& eneMgr = EnemyManager::Instance();
     eneMgr.Regist(std::move(slime));
 
+    // エフェクト管理の初期化
+    EffectManager::Instance().Initialize();
+
     stage = std::make_unique<Stage>();
 
     player = std::make_unique<Player>();
@@ -46,7 +50,7 @@ void SceneGame::Initialize()
 //終了化
 void SceneGame::Finalize()
 {
-
+    EnemyManager::Instance().Clear();
 }
 
 //更新処理
@@ -55,6 +59,9 @@ void SceneGame::Update(float elapsedTime)
     player->Update(elapsedTime);
 
     EnemyManager::Instance().Update(elapsedTime);
+
+    // エフェクト更新処理
+    EffectManager::Instance().Update(elapsedTime);
 
     DirectX::XMFLOAT3 target = player->GetPosition();
     target.y += 0.5f;
@@ -164,6 +171,11 @@ void SceneGame::Render()
         dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
         bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
 #endif
+    }
+
+    // 3D エフェクト描画
+    {
+        EffectManager::Instance().Render(&rc.view, &rc.projection);
     }
 
     // 3Dデバッグ描画

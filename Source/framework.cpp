@@ -3,6 +3,7 @@
 #include "SceneTest.h"
 #include "SceneGame.h"
 #include "SceneManager.h"
+
 Framework::Framework(HWND hwnd) : hWnd(hwnd)
 {
 	hDC = GetDC(hwnd);

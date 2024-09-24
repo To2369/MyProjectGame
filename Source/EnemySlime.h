@@ -13,6 +13,8 @@ public:
 
 	void Render(ID3D11DeviceContext* dc) override;
 
+	// Ž€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
+	void OnDead() override;
 private:
 	std::unique_ptr<Model> model;
 };

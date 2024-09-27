@@ -1,5 +1,6 @@
 #include "Character.h"
-
+#include "StageManager.h"
+#include "Mathf.h"
 //行列更新
 void Character::UpdateTransform()
 {
@@ -17,7 +18,10 @@ void Character::UpdateTransform()
     // スケール行列作成
     DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scale.x,scale.y,scale.z) };
     // 回転行列作成
-    DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(angle.x,angle.y,angle.z) };
+    DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(angle.x);
+    DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(angle.y);
+    DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(angle.z);
+    DirectX::XMMATRIX R = Y * X * Z;
     // 位置行列作成
     DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x,position.y,position.z) };
 
@@ -176,26 +180,66 @@ void Character::UpdateVerticalVelocity(float elapsedTime)
 // 垂直移動更新処理
 void Character::UpdateVerticalMove(float elapsedTime)
 {
-    // 移動処理
-    position.y += velocity.y * elapsedTime;
+    // 垂直方向の移動量
+    float moveY = velocity.y * elapsedTime;
 
-    // 地面判定
-    if (position.y < 0.0f)
+    slopeRate = 0.0f;
+
+    // 姿勢制御用法線ベクトル（デフォルトは上方向）
+    DirectX::XMFLOAT3 normal = { 0,1,0 };
+    if (moveY < 0.0f)
     {
-        position.y = 0.0f;
-        velocity.y = 0.0;
+        // 落下中
 
-        // 着地した
-        if (!groundedFlag)
+        // レイの開始位置を設定（足もとより少し上）
+        DirectX::XMFLOAT3 start = { position.x, position.y + 1.0f, position.z };
+        // レイの終点位置を設定（移動後の位置）
+        DirectX::XMFLOAT3 end = { position.x, position.y + moveY, position.z };
+
+        // レイキャストによる地面判定
+        HitResult hit;
+        if (StageManager::Instance().GetStage(0)->Raycast(start, end, hit))
         {
-            OnLanding();
+            // 地面の向きを姿勢制御用法線ベクトルに設定
+            normal = hit.normal;
+
+            // 地面に設置している（ヒット結果の y 位置を反映）
+            position.y = hit.position.y;
+
+            // 着地した
+            if (!groundedFlag)
+            {
+                OnLanding();
+            }
+            groundedFlag = true;
+            velocity.y = 0.0f;
+
+            // 傾斜率の計算
+            float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z + 0.001f);
+            slopeRate = 1.0f - (hit.normal.y / (normalLengthXZ + hit.normal.y));
         }
-        groundedFlag = true;
+        else
+        {
+            // 空中に浮いている
+            position.y += moveY;
+            groundedFlag = false;
+        }
     }
-    else
+    else if (moveY > 0.0f)
     {
+        // 上昇中
+        position.y += moveY;
         groundedFlag = false;
     }
+
+    // 姿勢制御用法線ベクトルから x と z の角度を計算
+    // y 軸が姿勢制御用法線ベクトル方向に向くように角度を計算
+    float angleX = atan2f(normal.z, normal.y);
+    float angleZ = -atan2f(normal.x, normal.y);
+
+    // 線形補間で滑らかに回転
+    angle.x = Mathf::Lerp(angle.x, angleX, 0.1f);
+    angle.z = Mathf::Lerp(angle.z, angleZ, 0.1f);
 }
 
 // 水平速度更新処理
@@ -262,14 +306,78 @@ void Character::UpdateHorizontalVelocity(float elapsedTime)
                 velocity.z = direction.z * maxMoveSpeed;
 
             }
+            
+            // 傾斜率が高い場合は落ちていくように計算
+            if (groundedFlag && slopeRate > 0.0f)
+            {
+                velocity.y -= length * slopeRate * elapsedTime * 60.0f;
+            }
         }
     }
+    direction.x = 0.0f;
+    direction.z = 0.0f;
 }
 
 // 水平移動更新処理
 void Character::UpdateHorizontalMove(float elapsedTime)
 {
-    // 移動処理
-    position.x += velocity.x * elapsedTime;
-    position.z += velocity.z * elapsedTime;
+    // 水平速度量計算
+    float velocityLengthXZ = sqrtf(velocity.x * velocity.x + velocity.z * velocity.z);
+    if (velocityLengthXZ > 0.0f)
+    {
+        // 計算用の移動後の速度
+        float moveX = velocity.x * elapsedTime;
+        float moveZ = velocity.z * elapsedTime;
+
+        // レイの始点位置と終点位置
+        DirectX::XMFLOAT3 start = { position.x, position.y + 1.0f, position.z };
+        DirectX::XMFLOAT3 end = { position.x + moveX, position.y + 1.0f, position.z + moveZ };
+
+        // レイキャスト
+        HitResult hit;
+        if (StageManager::Instance().GetStage(0)->Raycast(start, end, hit))
+        {
+            DirectX::XMVECTOR startVec = DirectX::XMLoadFloat3(&hit.position);
+            DirectX::XMVECTOR endVec = DirectX::XMLoadFloat3(&end);
+            DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(endVec, startVec);
+
+            // 壁の法線ベクトル
+            DirectX::XMVECTOR normalVec = DirectX::XMLoadFloat3(&hit.normal);
+
+            // 入射ベクトルを逆ベクトルに変換
+            vec = DirectX::XMVectorNegate(vec);
+
+            // 入射ベクトルを法線で射影（移動後の位置から壁までの距離）
+            DirectX::XMVECTOR lengthVec = DirectX::XMVector3Dot(vec, normalVec);
+            float length;
+            DirectX::XMStoreFloat(&length, lengthVec);
+
+            // 補正位置へのベクトルを計算
+            DirectX::XMVECTOR correctVec = DirectX::XMVectorScale(normalVec, length * 1.1f);
+
+            // 最終的な補正位置ベクトルを計算
+            DirectX::XMVECTOR correctPosVec = DirectX::XMVectorAdd(endVec, correctVec);
+            DirectX::XMFLOAT3 correctPos;
+            DirectX::XMStoreFloat3(&correctPos, correctPosVec);
+            //壁ずり方向へレイキャスト
+            HitResult hit2;
+            if (!StageManager::Instance().GetStage(0)->Raycast(hit.position, correctPos, hit2))
+            {
+                //壁ずる方向で壁に当たらなかったら補正位置に移動
+                position.x = correctPos.x;
+                position.z = correctPos.z;
+            }
+            else
+            {
+                position.x = hit2.position.x;
+                position.z = hit2.position.z;
+            }
+        }
+        else
+        {
+            // 壁にあたっていない場合は通常の移動
+            position.x += moveX;
+            position.z += moveZ;
+        }
+    }
 }

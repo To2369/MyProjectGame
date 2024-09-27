@@ -205,6 +205,7 @@
     <ClInclude Include="Source\Input\GamePad.h" />
     <ClInclude Include="Source\Input\InputManager.h" />
     <ClInclude Include="Source\Input\Mouse.h" />
+    <ClInclude Include="Source\Mathf.h" />
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Source\SceneTest.h" />
     <ClInclude Include="Source\SceneTitle.h" />
     <ClInclude Include="Source\Stage.h" />
+    <ClInclude Include="Source\StageManager.h" />
     <ClInclude Include="Source\StraightBullet.h" />
   </ItemGroup>
   <ItemGroup>
@@ -249,6 +251,7 @@
     <ClCompile Include="Source\Input\GamePad.cpp" />
     <ClCompile Include="Source\Input\InputManager.cpp" />
     <ClCompile Include="Source\Input\Mouse.cpp" />
+    <ClCompile Include="Source\Mathf.cpp" />
     <ClCompile Include="Source\Misc.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
@@ -256,6 +259,7 @@
     <ClCompile Include="Source\SceneTest.cpp" />
     <ClCompile Include="Source\SceneTitle.cpp" />
     <ClCompile Include="Source\Stage.cpp" />
+    <ClCompile Include="Source\StageManager.cpp" />
     <ClCompile Include="Source\StraightBullet.cpp" />
   </ItemGroup>
   <ItemGroup>

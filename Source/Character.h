@@ -101,6 +101,7 @@ protected:
 	float maxMoveSpeed = 5.0f;  // Å‘åˆÚ“®‘¬“x
 	DirectX::XMFLOAT3 direction = { 0,0,0 };    // ˆÚ“®•ûŒü
 	float airControl = 0.3f;    // ‹ó’†§Œä—pŒW”
+	float slopeRate = 1.0f; // ŒXÎ—¦
 	//p¨§Œä
 	DirectX::XMFLOAT4X4 transform = {
 		1,0,0,0,

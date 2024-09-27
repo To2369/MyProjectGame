@@ -28,6 +28,9 @@ Player::~Player()
 
 void Player::Update(float elapsedTime)
 {
+    // 速度処理更新
+    UpdateVelocity(elapsedTime);
+
     //移動入力処理
     InputMove(elapsedTime);
 
@@ -42,9 +45,6 @@ void Player::Update(float elapsedTime)
 
     // 弾と敵の衝突処理
     CollisionBulletsAndEnemies();
-
-    // 速度処理更新
-    UpdateVelocity(elapsedTime);
 
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
@@ -62,6 +62,7 @@ void Player::Render(ID3D11DeviceContext* dc)
 
 void Player::DrawDebugGUI()
 {
+#ifdef USE_IMGUI
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
@@ -87,6 +88,7 @@ void Player::DrawDebugGUI()
         }
     }
     ImGui::End();
+#endif
 }
 
 void Player::DrawDebugPrimitive()

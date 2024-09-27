@@ -3,6 +3,8 @@
 #include"Graphics/RenderState.h"
 #include "EnemySlime.h"
 #include "EnemyManager.h"
+#include "StageManager.h"
+
 //#include "Effect/EffectManager.h"
 //‰Šú‰»
 void SceneGame::Initialize()
@@ -40,6 +42,7 @@ void SceneGame::Initialize()
     //EffectManager::Instance().Initialize();
 
     stage = std::make_unique<Stage>();
+    StageManager::Instance().Regist(stage.get());
 
     player = std::make_unique<Player>();
    // framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);

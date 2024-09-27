@@ -177,6 +177,12 @@
     <ClInclude Include="Source\HomingBullet.h">
       <Filter>Sources\Bullet</Filter>
     </ClInclude>
+    <ClInclude Include="Source\StageManager.h">
+      <Filter>Sources\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mathf.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -301,6 +307,12 @@
     </ClCompile>
     <ClCompile Include="Source\HomingBullet.cpp">
       <Filter>Sources\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StageManager.cpp">
+      <Filter>Sources\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mathf.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

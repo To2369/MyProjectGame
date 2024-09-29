@@ -44,6 +44,10 @@ private:
 
 	// 弾と敵の衝突処理
 	void CollisionBulletsAndEnemies();
+
+	void InputTeleportBehindEnemy();
+
+	void InputDashTowardsEnemy(float elapsedTime);
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
@@ -64,6 +68,7 @@ private:
 	int jumpCount = 0;	// ジャンプ回数
 	int jumpLimit = 2;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
 
+	bool dash = false;
 	//std::unique_ptr<BulletManager> bulletMgr;
 	BulletManager bulletMgr;
 

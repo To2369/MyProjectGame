@@ -207,7 +207,7 @@ void SceneTest::Render()
             // デバッグ用(首を高くして左に回転)
             DirectX::XMStoreFloat4(&keyframe.nodes.at(30).rotation, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1, 0, 0, 0), factor[0]));
             keyframe.nodes.at(30).translation.x = factor[1];
-            model[0]->UpdateAnimation(keyframe);
+            //model[0]->UpdateAnimation();
 #endif
 #else
             // ５番目と９番目のアニメーションを設定

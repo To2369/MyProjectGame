@@ -90,6 +90,15 @@ void EnemyManager::CollisionEnemiesAndEnemies()
     }
 }
 
+//デバッグ用GUI描画
+void EnemyManager::DrawDebugGUI()
+{
+    for (const auto& enemy : enemies)
+    {
+        enemy->DrawDebugGUI();
+    }
+}
+
 // デバッグプリミティブ描画
 void EnemyManager::DrawDebugPrimitive()
 {

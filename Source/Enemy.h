@@ -13,6 +13,8 @@ public:
 
 	virtual void Render(ID3D11DeviceContext* dc) = 0;
 
+	virtual void DrawDebugGUI() = 0;
+
 	virtual void DrawDebugPrimitive();
 
 	//”jŠü

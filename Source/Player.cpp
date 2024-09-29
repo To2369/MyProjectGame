@@ -28,6 +28,7 @@ Player::~Player()
 
 void Player::Update(float elapsedTime)
 {
+
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
@@ -40,6 +41,9 @@ void Player::Update(float elapsedTime)
     // 入力による弾発射処理
     InputLaunchBullet();
 
+    InputTeleportBehindEnemy();
+
+    InputDashTowardsEnemy(elapsedTime);
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
 
@@ -48,6 +52,9 @@ void Player::Update(float elapsedTime)
 
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
+
+    model->UpdateAnimation(elapsedTime);
+
 
 	// ワールド行列更新
 	UpdateTransform();
@@ -184,25 +191,25 @@ void Player::InputLaunchBullet()
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     std::unique_ptr<StraightBullet> bullet;
     // ストレート弾発射
-    if (gamePad->GetButtonDown() & GamePad::BTN_X)
-    {
-        // 前方向
-        DirectX::XMFLOAT3 dir;
-        dir.x = sinf(angle.y);
-        dir.y = 0.0f;
-        dir.z = cosf(angle.y);
+    //if (gamePad->GetButtonDown() & GamePad::BTN_X)
+    //{
+    //    // 前方向
+    //    DirectX::XMFLOAT3 dir;
+    //    dir.x = sinf(angle.y);
+    //    dir.y = 0.0f;
+    //    dir.z = cosf(angle.y);
 
-        // 発射位置（プレイヤーの腰あたり
-        DirectX::XMFLOAT3 pos;
-        pos.x = position.x;
-        pos.y = position.y + height * 0.5f;
-        pos.z = position.z;
+    //    // 発射位置（プレイヤーの腰あたり
+    //    DirectX::XMFLOAT3 pos;
+    //    pos.x = position.x;
+    //    pos.y = position.y + height * 0.5f;
+    //    pos.z = position.z;
 
-        // 発射
-        StraightBullet* bullet = new StraightBullet(&bulletMgr);
-        bullet->Launch(dir, pos);
-        //bulletMgr->Regist(bullet.get());
-    }
+    //    // 発射
+    //    StraightBullet* bullet = new StraightBullet(&bulletMgr);
+    //    bullet->Launch(dir, pos);
+    //    //bulletMgr->Regist(bullet.get());
+    //}
 
     // ホーミング弾発射
     if (gamePad->GetButtonDown() & GamePad::BTN_Y)
@@ -289,6 +296,8 @@ void Player::CollisionPlayerAndEnemies()
         {
             //OutputDebugStringA("衝突\n");
 
+            dash = false;
+
             // 半径の合計
             float range = radius + enemy->GetRadius();
 
@@ -354,6 +363,143 @@ void Player::CollisionBulletsAndEnemies()
                     bullet->Destroy();
                 }
             }
+        }
+    }
+}
+
+void Player::InputTeleportBehindEnemy()
+{
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
+    {
+        // 一番近くの敵をターゲットに設定
+        float minDistance = FLT_MAX;
+        Enemy* closestEnemy = nullptr;
+        EnemyManager& enemyMgr = EnemyManager::Instance();
+        int enemyCount = enemyMgr.GetEnemyCount();
+
+        for (int i = 0; i < enemyCount; ++i)
+        {
+            Enemy* enemy = enemyMgr.GetEnemy(i);
+
+            // 敵との距離を計算
+            DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+            DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            DirectX::XMVECTOR vecToEnemy = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+            DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vecToEnemy);
+
+            float distance;
+            DirectX::XMStoreFloat(&distance, lengthSqVec);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        if (closestEnemy)
+        {
+            // 敵の後ろに飛ぶ
+            DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
+
+            // 敵の前方方向を計算 (敵の向いている方向を仮定)
+            DirectX::XMFLOAT3 enemyForward;
+            enemyForward.x = sinf(closestEnemy->GetAngle().y);
+            enemyForward.y = 0.0f;
+            enemyForward.z = cosf(closestEnemy->GetAngle().y);
+
+            // 敵の後ろの位置 = 敵の位置 - 前方方向 * 2.0f (距離を調整)
+            const float distanceBehindEnemy = 2.0f; // プレイヤーが敵から後ろに飛ぶ距離
+            DirectX::XMFLOAT3 teleportPos;
+            teleportPos.x = enemyPos.x - (enemyForward.x * distanceBehindEnemy);
+            teleportPos.y = enemyPos.y;
+            teleportPos.z = enemyPos.z - (enemyForward.z * distanceBehindEnemy);
+
+            // プレイヤーの位置を更新
+            position = teleportPos;
+
+            // プレイヤーが敵の方を向くように回転
+            angle.y = closestEnemy->GetAngle().y;
+        }
+    }
+}
+
+void Player::InputDashTowardsEnemy(float elapsedTime)
+{
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+
+    // Xボタンでダッシュ
+    if (gamePad->GetButtonDown() & GamePad::BTN_X)
+    {
+        if (dash)
+        {
+            dash = false;
+            return;
+        }
+        dash = true;
+    }
+
+    if (dash)
+    {
+        // 一番近くの敵をターゲットに設定
+        float minDistance = FLT_MAX;
+        Enemy* closestEnemy = nullptr;
+        EnemyManager& enemyMgr = EnemyManager::Instance();
+        int enemyCount = enemyMgr.GetEnemyCount();
+
+        for (int i = 0; i < enemyCount; ++i)
+        {
+            Enemy* enemy = enemyMgr.GetEnemy(i);
+
+            // 敵との距離を計算
+            DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+            DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            DirectX::XMVECTOR vecToEnemy = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+            DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vecToEnemy);
+
+            float distance;
+            DirectX::XMStoreFloat(&distance, lengthSqVec);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        if (closestEnemy)
+        {
+            // 敵の方向を計算
+            DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
+            DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemyPos);
+            DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+            DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+            directionVec = DirectX::XMVector3Normalize(directionVec);
+
+            // ダッシュ速度を設定 (徐々に移動する速度)
+            float dashSpeed = 10.0f; // ダッシュの速さ（フレーム単位）
+            DirectX::XMVECTOR dashVec = DirectX::XMVectorScale(directionVec, dashSpeed * elapsedTime);
+
+            // プレイヤーの位置を更新 (徐々に移動)
+            DirectX::XMVECTOR newPositionVec = DirectX::XMVectorAdd(playerPosVec, dashVec);
+            DirectX::XMStoreFloat3(&position, newPositionVec);
+
+            // 常に敵の方向を向くように回転
+            DirectX::XMVECTOR forwardVec = DirectX::XMVectorSet(0, 0, 1, 0);  // プレイヤーの現在の前方ベクトル
+            DirectX::XMVECTOR rightVec = DirectX::XMVectorSet(1, 0, 0, 0);    // プレイヤーの右方向ベクトル
+            DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0, 1, 0, 0);       // 上方向ベクトル
+
+            // 敵への方向ベクトルのY軸成分のみを使用して回転を計算（Y軸回転）
+            DirectX::XMVECTOR projectedDirectionVec = DirectX::XMVector3Normalize(
+                DirectX::XMVectorSet(DirectX::XMVectorGetX(directionVec), 0, DirectX::XMVectorGetZ(directionVec), 0)
+            );
+
+            // Y軸周りの回転角度を計算
+            float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(forwardVec, projectedDirectionVec));
+            float det = DirectX::XMVectorGetX(DirectX::XMVector3Dot(rightVec, projectedDirectionVec));
+            float angleRadians = atan2(det, dot);
+
+            // Y軸回転を更新
+            angle.y = angleRadians;
         }
     }
 }

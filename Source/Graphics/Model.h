@@ -311,7 +311,7 @@ public:
 		const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe);
 
 	//	アニメーション更新
-	void UpdateAnimation(animation::keyframe& keyframe);
+	void UpdateAnimation(float elapsedTime);
 
 	// アニメーションの追加
 	bool AppendAnimations(const char* animation_filename, float sampling_rate);
@@ -334,11 +334,17 @@ public:
 
 	// バッファの生成
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);
+
+	void PlayAnimation(int index,bool loop, float blendSeconds = 0.2f);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		// 入力レイアウト
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
+
+	int animIndex = 0;
+	bool animLoop = false;
+	animation::keyframe* keyframe = nullptr;
 protected:
 	// このfbxの親シーン
 	scene scene_view;

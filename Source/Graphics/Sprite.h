@@ -39,6 +39,12 @@ public:
         std::string s,
         float x, float y, float w, float h,
         float r, float g, float b, float a);
+
+    // テクスチャ幅取得
+    int GetTextureWidth() const { return textureWidth; }
+
+    // テクスチャ高さ取得
+    int GetTextureHeight() const { return textureHeight; }
 private:
     // 頂点シェーダー
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
@@ -52,4 +58,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
     // テクスチャ
     D3D11_TEXTURE2D_DESC texture2d_desc;
+
+    int textureWidth = 0;
+	int textureHeight = 0;
 };

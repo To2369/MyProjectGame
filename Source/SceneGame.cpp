@@ -45,6 +45,8 @@ void SceneGame::Initialize()
     StageManager::Instance().Regist(stage.get());
 
     player = std::make_unique<Player>();
+
+    lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
    // framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
@@ -85,6 +87,7 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Begin("ImGUI");
     ImGui::SliderFloat3("cameraPos", &camera_position.x, -100.0f, 100.0f);
     player->DrawDebugGUI();
+    EnemyManager::Instance().DrawDebugGUI();
     ImGui::SliderFloat3("light_direction", &light_direction.x, -1.0f, +1.0f);
     ImGui::End();
 #endif
@@ -120,7 +123,25 @@ void SceneGame::Render()
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // 2D 描画
     {
+        // ゲージの長さ
+        const float gaugeWidth = 30.0f;
+        const float gaugeHeight = 5.0f;
 
+        float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
+
+        // ゲージ描画
+        lifegauge->Render(
+            dc,
+            10 - gaugeWidth * 0.5f,
+            10 - gaugeHeight,
+            gaugeWidth * healthRate,
+            gaugeHeight,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f,
+            0, 0,
+            static_cast<float>(lifegauge->GetTextureWidth()),
+            static_cast<float>(lifegauge->GetTextureHeight())
+        );
     }
     // 2DデバッグGUI描画
     {

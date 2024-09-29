@@ -57,9 +57,19 @@ Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
 
     // テクスチャの読み込み
     {
-        ShaderManager::Instance()->LoadTextureFromFile(device, filename, 
-            shader_resource_view.GetAddressOf(), &texture2d_desc);
+        if (filename!=nullptr)
+        {
+            ShaderManager::Instance()->LoadTextureFromFile(device, filename,
+                shader_resource_view.GetAddressOf(), &texture2d_desc);
+        }
+        else
+        {
+            ShaderManager::Instance()->MakeDummyTexture(device, shader_resource_view.GetAddressOf(), 0xFFFFFFFF, 16);
+        }
     }
+
+    textureWidth = texture2d_desc.Width;
+    textureHeight = texture2d_desc.Height;
 }
 Sprite::~Sprite()
 {

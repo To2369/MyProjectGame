@@ -5,6 +5,7 @@
 #include"Graphics/FrameBuffer.h"
 #include"Graphics/FullScreenQuad.h"
 #include"Stage.h"
+#include "Graphics/Sprite.h"
 #include "Player.h"
 //タイトルシーン
 class SceneGame :public Scene
@@ -40,6 +41,7 @@ private:
 
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;
+    std::unique_ptr<Sprite> lifegauge;
 
 private:
     // カメラの位置

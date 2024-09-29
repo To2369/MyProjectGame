@@ -52,6 +52,11 @@ public:
 	// 高さ取得
 	float GetHeight() const { return height; }
 
+	// ライフを取得
+	int GetHealth() const { return health; }
+
+	// 最大ライフを取得
+	int GetMaxHealth() const { return maxHealth; }
 private:
 	// 垂直速度更新処理
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -95,6 +100,7 @@ protected:
 	bool groundedFlag = false;	// true...着地した
 	float height = 2.0f;	// 高さ
 	int health = 5; // ライフ
+	int maxHealth = 5;	// 最大ライフ
 	float invincibleTimer = 0.5f;   // 無敵時間
 	float friction = 0.5f; // 摩擦
 	float acceleration = 1.0f;  // 加速度

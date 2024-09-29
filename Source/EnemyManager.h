@@ -27,6 +27,9 @@ public:
 	//エネミー登録
 	void Regist(std::unique_ptr<Enemy> enemy);
 
+	//デバッグ用GUI描画
+	void DrawDebugGUI();
+
 	// デバッグプリミティブ描画
 	void DrawDebugPrimitive();
 

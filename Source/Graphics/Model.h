@@ -343,8 +343,13 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
 
 	int animIndex = 0;
+	// 前回のアニメーションの番号
+	int prevAnimationIndex = 0;
 	bool animLoop = false;
-	animation::keyframe* keyframe = nullptr;
+
+	float animationBlendTime;
+	float animationBlendSeconds;
+	animation::keyframe keyframe;
 protected:
 	// このfbxの親シーン
 	scene scene_view;

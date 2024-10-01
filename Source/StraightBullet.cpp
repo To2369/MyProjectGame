@@ -35,7 +35,7 @@ void StraightBullet::Update(float elapsedTime)
 // •`‰æˆ—
 void StraightBullet::Render(ID3D11DeviceContext* dc)
 {
-    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f }, nullptr);
+    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
 }
 
 //”­ŽË

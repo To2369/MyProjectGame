@@ -9,7 +9,7 @@
 #include "HomingBullet.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".//Data//Model//Jammo//Jammo.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
 
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
@@ -19,6 +19,8 @@ Player::Player()
     // ヒットエフェクト読み込み
     //hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
 
+    //待機ステートへ遷移
+    TransitionIdleState();
 }
 
 Player::~Player()
@@ -28,7 +30,11 @@ Player::~Player()
 
 void Player::Update(float elapsedTime)
 {
-
+    //ステート毎の処理
+    switch (state)
+    {
+    case State::Idle:UpdateIdleState(elapsedTime); break;
+    }
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
@@ -52,17 +58,14 @@ void Player::Update(float elapsedTime)
 
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
-
     model->UpdateAnimation(elapsedTime);
-
-
 	// ワールド行列更新
 	UpdateTransform();
 }
 
 void Player::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f }, nullptr);
+	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
 
     bulletMgr.Render(dc);
 }
@@ -502,4 +505,42 @@ void Player::InputDashTowardsEnemy(float elapsedTime)
             angle.y = angleRadians;
         }
     }
+}
+
+//待機ステートへ遷移
+void Player::TransitionIdleState()
+{
+    state = State::Idle;
+
+    //待機アニメーション再生
+    model->PlayAnimation(0, true);
+}
+
+//待機ステート更新処理
+void Player::UpdateIdleState(float elapsedTime)
+{
+    ////移動入力処理
+    //InputMove(elapsedTime);
+    //if (InputMove(elapsedTime) == true)
+    //{
+    //    //移動ステートへの遷移
+    //    TransitionMoveState();
+    //}
+
+    ////ジャンプ入力処理
+    //InputJump();
+    //if (InputJump() == true)
+    //{
+    //    //ジャンプステートへの遷移
+    //    TransitionJumpState();
+    //}
+
+    ////攻撃入力処理
+    //InputAttack();
+    //if (InputAttack())
+    //{
+    //    TransitionAttackState();
+    //}
+    ////弾丸入力処理
+    //InputProjectile();
 }

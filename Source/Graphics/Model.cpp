@@ -309,7 +309,7 @@ Model::Model(ID3D11Device* device, std::vector<std::string>& animation_filenames
 
 //描画処理
 void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
-    const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe)
+    const DirectX::XMFLOAT4& material_color)
 {
     //メッシュごとに描画処理を行う
     for (const mesh& mesh_ : meshes)
@@ -333,10 +333,10 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 
         // 定数バッファの更新（ワールド行列とマテリアルカラーの設定
         constants data;
-        if (keyframe && keyframe->nodes.size() > 0)
+        if (&keyframe && keyframe.nodes.size() > 0)
         {
             // メッシュの位置・姿勢行列をキーフレームから取得
-            const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh_.node_index) };
+            const animation::keyframe::node& mesh_node{ keyframe.nodes.at(mesh_.node_index) };
             // 取得したキーフレームごとの位置・姿勢行列をワールド変換行列に合成する
             DirectX::XMStoreFloat4x4(&data.world,
                 DirectX::XMLoadFloat4x4(&mesh_node.global_transform) * DirectX::XMLoadFloat4x4(&world));
@@ -365,7 +365,7 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
             for (int bone_index = 0; bone_index < bone_count; ++bone_index)
             {
                 const skeleton::bone& bone{ mesh_.bind_pose.bones.at(bone_index) };
-                const animation::keyframe::node& bone_node{ keyframe->nodes.at(bone.node_index) };
+                const animation::keyframe::node& bone_node{ keyframe.nodes.at(bone.node_index) };
                 DirectX::XMStoreFloat4x4(&data.bone_transforms[bone_index],
                     DirectX::XMLoadFloat4x4(&bone.offset_transform) *
                     DirectX::XMLoadFloat4x4(&bone_node.global_transform) *
@@ -404,6 +404,9 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 // アニメーションの更新
 void Model::UpdateAnimation(float elapsedTime)
 {
+    //再生中でないなら処理しない
+    if (!IsPlayAnimation())return;
+
     // ブレンド補間にかかる時間（0.5f）を 0.0 から 1.0 に変更
     float blendRate = 1.0f;
     if (animationBlendTime < animationBlendSeconds)
@@ -417,7 +420,6 @@ void Model::UpdateAnimation(float elapsedTime)
         blendRate *= blendRate;
     }
 
-
     if (blendRate < 1.0f)
     {
         // ブレンド再生
@@ -426,17 +428,14 @@ void Model::UpdateAnimation(float elapsedTime)
         const animation::keyframe* keyframes[2]{
             &keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &animation_clips.at(animIndex).sequence.at(0),
+            &animation_clips.at(currentAnimationIndex).sequence.at(0),
         };
 
         // ブレンド補間
         BlendAnimations(keyframes, blendRate, outkeyframe);
-
-        // 補完されたキーフレームに基づいて更新
-        keyframe = outkeyframe;
-
-        // 補完したキーフレームを使用してアニメーションのノードを更新
+        // キーフレームに存在するすべてのノードを更新する
         size_t node_count{ keyframe.nodes.size() };
+        keyframe.nodes.resize(node_count);
         for (size_t node_index = 0; node_index < node_count; ++node_index)
         {
             // ローカル行列を設定
@@ -447,8 +446,7 @@ void Model::UpdateAnimation(float elapsedTime)
 
             // 親のグローバル行列を取得
             int64_t parent_index{ scene_view.nodes.at(node_index).parent_index };
-            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() :
-            DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
+            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
 
             // ローカル行列 * 親のグローバル行列
             DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
@@ -459,28 +457,26 @@ void Model::UpdateAnimation(float elapsedTime)
         // 通常再生
 
         // アニメーションの番号
-        int clip_index{ animIndex };
+        int clip_index{ currentAnimationIndex };
 
-        // アニメーションのフレーム管理
         int frame_index{ 0 };
         static float animation_tick{ 0 };
-        animation& animation_{ animation_clips.at(clip_index) };
-        frame_index = static_cast<int>(animation_tick * animation_.sampling_rate);
-        if (frame_index > animation_.sequence.size() - 1)
+        animation& animation{ animation_clips.at(clip_index) };
+        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+        if (frame_index > animation.sequence.size() - 1)
         {
-            frame_index = 0;  // ループさせるためにフレームをリセット
+            frame_index = 0;
             animation_tick = 0;
         }
         else
         {
             animation_tick += elapsedTime;
         }
-        keyframe = animation_.sequence.at(frame_index);
+        keyframe = animation.sequence.at(frame_index);
 
-        /*UpdateAnimation(keyframe
-        skinned_meshes[0]->render(immediate_context.Get(), world, material_color, &keyframe);*/
         // キーフレームに存在するすべてのノードを更新する
         size_t node_count{ keyframe.nodes.size() };
+        keyframe.nodes.resize(node_count);
         for (size_t node_index = 0; node_index < node_count; ++node_index)
         {
             // ローカル行列を設定
@@ -491,14 +487,41 @@ void Model::UpdateAnimation(float elapsedTime)
 
             // 親のグローバル行列を取得
             int64_t parent_index{ scene_view.nodes.at(node_index).parent_index };
-            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() :
-            DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
+            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
 
             // ローカル行列 * 親のグローバル行列
             DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
         }
     }
-    
+
+    //最終フレーム処理
+    if (animationEndFlag)
+    {
+        animationEndFlag = false;
+        currentAnimationIndex = -1;
+        return;
+    }
+    //時間経過
+    currentAnimationSeconds += elapsedTime;
+
+    // アニメーション全体の長さを計算
+    float totalAnimationTime = 
+        animation_clips.at(currentAnimationIndex).sequence.size() *
+        (1.0f / animation_clips.at(currentAnimationIndex).sampling_rate);
+    //再生時間が終端時間を超えたら
+    if (currentAnimationSeconds >= totalAnimationTime)
+    {
+        //再生時間を巻き戻す
+        if (animLoop)
+        {
+            currentAnimationSeconds -= totalAnimationTime;
+        }
+        else
+        {
+            currentAnimationSeconds = totalAnimationTime;
+            animationEndFlag = true;
+        }
+    }
 }
 
 // アニメーションの追加
@@ -1067,9 +1090,19 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
 
 void Model::PlayAnimation(int index, bool loop, float blendSeconds)
 {
-    animIndex = index;
+    currentAnimationIndex = index;
+    currentAnimationSeconds = 0.0f;
     animLoop = loop;
+    animationEndFlag = false;
     // ブレンド用トータル時間をリセット
     animationBlendTime = 0.0f;
     animationBlendSeconds = blendSeconds;
+}
+
+//アニメーション再生中か
+bool Model::IsPlayAnimation()const
+{
+    if (currentAnimationIndex < 0)return false;
+    if (currentAnimationIndex >= animation_clips.size())return false;
+    return true;
 }

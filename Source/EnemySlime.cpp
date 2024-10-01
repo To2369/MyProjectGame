@@ -25,7 +25,7 @@ void EnemySlime::Update(float elapsedTime)
 
 void EnemySlime::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f }, nullptr);
+	model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
 }
 
 void EnemySlime::DrawDebugGUI()

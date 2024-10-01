@@ -207,7 +207,7 @@ void SceneTest::Render()
             // デバッグ用(首を高くして左に回転)
             DirectX::XMStoreFloat4(&keyframe.nodes.at(30).rotation, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1, 0, 0, 0), factor[0]));
             keyframe.nodes.at(30).translation.x = factor[1];
-            //model[0]->UpdateAnimation();
+            //model[0]->UpdateAnimation(keyframe);
 #endif
 #else
             // ５番目と９番目のアニメーションを設定
@@ -222,8 +222,8 @@ void SceneTest::Render()
             model[0]->UpdateAnimation(keyframe);
 #endif
 #endif
-            ////model[0]->Render(dc, world, material_color, &keyframe);
-            gltf_models[0]->Render(dc, world);
+            //model[0]->Render(dc, world, material_color, &keyframe);
+            //gltf_models[0]->Render(dc, world);
             framebuffers[0]->Deactivate(dc);
 #if 1
             dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);

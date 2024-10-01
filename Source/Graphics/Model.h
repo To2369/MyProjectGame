@@ -307,8 +307,7 @@ public:
 	virtual ~Model() = default;
 
 	// 描画処理
-	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,
-		const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe);
+	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,const DirectX::XMFLOAT4& material_color);
 
 	//	アニメーション更新
 	void UpdateAnimation(float elapsedTime);
@@ -336,17 +335,22 @@ public:
 	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);
 
 	void PlayAnimation(int index,bool loop, float blendSeconds = 0.2f);
+
+	//アニメーション再生中かどうか
+	bool IsPlayAnimation() const;
+
+	void Up(float elapsedTime);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		// 入力レイアウト
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
 
-	int animIndex = 0;
 	// 前回のアニメーションの番号
-	int prevAnimationIndex = 0;
+	int currentAnimationIndex = -1;
+	float currentAnimationSeconds = 0.0f;
 	bool animLoop = false;
-
+	bool animationEndFlag = false;
 	float animationBlendTime;
 	float animationBlendSeconds;
 	animation::keyframe keyframe;

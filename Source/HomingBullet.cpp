@@ -93,7 +93,7 @@ void HomingBullet::Update(float elapsedTime)
 // •`‰æˆ—
 void HomingBullet::Render(ID3D11DeviceContext* dc)
 {
-    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f }, nullptr);
+    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
 }
 
 //”­ŽË

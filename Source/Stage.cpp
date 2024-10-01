@@ -13,7 +13,7 @@ void Stage::Update(float elapsedTime)
 
 void Stage::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 }, { 1.0f,1.0f,1.0f,1.0f }, nullptr);
+	model->Render(dc, { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 }, { 1.0f,1.0f,1.0f,1.0f });
 }
 
 // レイキャスト

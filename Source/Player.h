@@ -48,6 +48,12 @@ private:
 	void InputTeleportBehindEnemy();
 
 	void InputDashTowardsEnemy(float elapsedTime);
+private:
+	//待機ステートへ遷移
+	void TransitionIdleState();
+
+	//待機ステート更新処理
+	void UpdateIdleState(float elapsedTime);
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
@@ -71,7 +77,35 @@ private:
 	bool dash = false;
 	//std::unique_ptr<BulletManager> bulletMgr;
 	BulletManager bulletMgr;
-
+	float elapsedTime_ = 0;
+	//アニメーション
+	enum Animation
+	{
+		Anim_Attack,
+		Anim_Death,
+		Anim_Falling,
+		Anim_GetHit1,
+		Anim_GetHit2,
+		Anim_Idle,
+		Anim_jump,
+		Anim_jump_Flip,
+		Anim_Landing,
+		Anim_Revive,
+		Anim_Running,
+		Anim_Walking
+	};
+	enum class State
+	{
+		Idle,
+		Move,
+		Jump,
+		Land,
+		Attack,
+		Damage,
+		Death,
+		Revive,
+	};
+	State state = State::Idle;
 	// ヒットエフェクト
 	//std::unique_ptr<Effect> hitEffect;
 };

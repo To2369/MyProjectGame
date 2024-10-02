@@ -57,6 +57,20 @@ public:
 
 	// 最大ライフを取得
 	int GetMaxHealth() const { return maxHealth; }
+
+	// 気力を取得
+	int GetSpritEnergy() const { return spiritEnergy; }
+
+	// 最大気力を取得
+	int GetMaxSpritEnergy() const { return maxSpritEnergy; }
+
+	// 気力を取得
+	int GetSkillEnergy() const { return skillEnergy; }
+
+	// 最大気力を取得
+	int GetMaxSkillEnergy() const { return maxSkillEnergy; }
+
+	bool IsUseSpiritEnergy()const { return useSpiritEnergyFlag; }
 private:
 	// 垂直速度更新処理
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -82,6 +96,9 @@ protected:
 	// 無敵時間の更新
 	void UpdateInvincibleTimer(float elapsedTime);
 
+	//ステータス更新
+	void UpdateStatus(float elapsedTime);
+
 	// 着地したときに呼び出される
 	virtual void OnLanding() {}
 
@@ -97,17 +114,6 @@ protected:
 	float radius = 0.5f;
 	float gravity = -1.0f;	// 重力（フレーム単位の値）
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };	// 速度
-	bool groundedFlag = false;	// true...着地した
-	float height = 2.0f;	// 高さ
-	int health = 5; // ライフ
-	int maxHealth = 5;	// 最大ライフ
-	float invincibleTimer = 0.5f;   // 無敵時間
-	float friction = 0.5f; // 摩擦
-	float acceleration = 1.0f;  // 加速度
-	float maxMoveSpeed = 5.0f;  // 最大移動速度
-	DirectX::XMFLOAT3 direction = { 0,0,0 };    // 移動方向
-	float airControl = 0.3f;    // 空中制御用係数
-	float slopeRate = 1.0f; // 傾斜率
 	//姿勢制御
 	DirectX::XMFLOAT4X4 transform = {
 		1,0,0,0,
@@ -115,4 +121,29 @@ protected:
 		0,0,1,0,
 		0,0,0,1
 	};
+	bool groundedFlag = false;	// true...着地した
+	float height = 2.0f;	// 高さ
+	int health = 5; // ライフ
+	int maxHealth = 5;	// 最大ライフ
+	int spiritEnergy = 500;	//気力
+	int maxSpritEnergy = 500;//最大気力
+	int skillEnergy = 200;	//技力
+	int maxSkillEnergy = 600;	//最大技力
+
+	float invincibleTimer = 0.5f;   // 無敵時間
+	float friction = 0.5f; // 摩擦
+	float acceleration = 1.0f;  // 加速度
+	float maxMoveSpeed = 5.0f;  // 最大移動速度
+	DirectX::XMFLOAT3 direction = { 0,0,0 };    // 移動方向
+	float airControl = 0.3f;    // 空中制御用係数
+	float slopeRate = 1.0f; // 傾斜率
+
+	bool useSpiritEnergyFlag = false;
+	float energyRecoveryTimer = 0.0f;
+	float energyNoRecoveryTimer = 1.0f;
+
+	int useDashSkillEnergy = 1;
+	float skillEnergyTimer = 0.0f;	// 技力を使って何秒たったか
+
+	bool dashFlag = false;
 };

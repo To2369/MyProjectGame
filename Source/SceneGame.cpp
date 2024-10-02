@@ -47,6 +47,8 @@ void SceneGame::Initialize()
     player = std::make_unique<Player>();
 
     lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
+    skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
+    spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
    // framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
@@ -117,37 +119,6 @@ void SceneGame::Render()
   /*  framebuffers[0]->Clear(dc);
     framebuffers[0]->Activate(dc);*/
 
-    // 2D 描画設定
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    // 2D 描画
-    {
-        // ゲージの長さ
-        const float gaugeWidth = 30.0f;
-        const float gaugeHeight = 5.0f;
-
-        float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
-
-        // ゲージ描画
-        lifegauge->Render(
-            dc,
-            10 - gaugeWidth * 0.5f,
-            10 - gaugeHeight,
-            gaugeWidth * healthRate,
-            gaugeHeight,
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f,
-            0, 0,
-            static_cast<float>(lifegauge->GetTextureWidth()),
-            static_cast<float>(lifegauge->GetTextureHeight())
-        );
-    }
-    // 2DデバッグGUI描画
-    {
-
-    }
-
 #if 1
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
@@ -215,4 +186,66 @@ void SceneGame::Render()
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
     }
+
+    // 2D 描画設定
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    // 2D 描画
+    {
+        // ゲージの長さ
+        const float lifegaugeWidth = 600.0f;
+        const float lifegaugeHeight = 50.0f;
+
+        const float spiritgaugeWidth = 500.0f;
+        const float spiritgaugeHeight = 25.0f;
+
+        const float skillgaugeWidth = 500.0f;
+        const float skillgaugeHeight = 25.0f;
+
+        float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
+        float spiritEnergyRate = player->GetSpritEnergy() / static_cast<float>(player->GetMaxSpritEnergy());
+        float skillEnergyRate = player->GetSkillEnergy() / static_cast<float>(player->GetMaxSkillEnergy());
+        // ゲージ描画
+        lifegauge->Render(
+            dc,
+            50,
+            25,
+            lifegaugeWidth * healthRate,
+            lifegaugeHeight,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f,
+            0, 0,
+            static_cast<float>(lifegauge->GetTextureWidth()),
+            static_cast<float>(lifegauge->GetTextureHeight())
+        );
+        skillEnergyGauge->Render(
+            dc,
+            50,
+            75,
+            skillgaugeWidth * skillEnergyRate,
+            skillgaugeHeight,
+            1.0f, 1.0f, 0.0f, 1.0f,
+            0.0f,
+            0, 0,
+            static_cast<float>(skillEnergyGauge->GetTextureWidth()),
+            static_cast<float>(skillEnergyGauge->GetTextureHeight())
+        );
+        spritEnergyGauge->Render(
+            dc,
+            50,
+            100,
+            spiritgaugeWidth * spiritEnergyRate,
+            spiritgaugeHeight,
+            0.0f, 0.3f, 1.0f, 1.0f,
+            0.0f,
+            0, 0,
+            static_cast<float>(spritEnergyGauge->GetTextureWidth()),
+            static_cast<float>(spritEnergyGauge->GetTextureHeight())
+        );
+    }
+    // 2DデバッグGUI描画
+    {
+
+}
 }

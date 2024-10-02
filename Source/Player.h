@@ -31,7 +31,7 @@ private:
 	DirectX::XMFLOAT3 GetMoveVec() const;
 
 	//操作移動
-	void InputMove(float elapsedTime);
+	bool InputMove(float elapsedTime);
 
 	// ジャンプ入力処理
 	void InputJump();
@@ -45,15 +45,44 @@ private:
 	// 弾と敵の衝突処理
 	void CollisionBulletsAndEnemies();
 
-	void InputTeleportBehindEnemy();
+	void CollisionSkillAndEnemies();
 
-	void InputDashTowardsEnemy(float elapsedTime);
+	void TeleportBehindEnemy();
+
+	bool InputDashTowardsEnemy(float elapsedTime);
+
+	bool InputRecoverySkillEnergy(float elapsedTime);
+
+	bool InputDash(float elapsedTime);
 private:
-	//待機ステートへ遷移
+	//待機ステート
 	void TransitionIdleState();
 
 	//待機ステート更新処理
 	void UpdateIdleState(float elapsedTime);
+
+	//移動ステート
+	void TransitionMoveState();
+
+	//移動ステート更新処理
+	void UpdateMoveState(float elapsedTime);
+
+	//ダッシュステート
+	void TransitionDashState();
+
+	//ダッシュステート更新処理
+	void UpdateDashState(float elapsedTime);
+
+	//敵へダッシュステート
+	void TransitionDashToEnemyState();
+
+	//敵へダッシュステート更新処理
+	void UpdateDashToEnemyState(float elapsedTime);
+
+	// 技力回復
+	void TransitionRecoverySkillEnergy();
+	// 技力回復更新処理
+	void UpdateRecoverySkillEnergyState(float elapsedTime);
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
@@ -73,8 +102,6 @@ private:
 
 	int jumpCount = 0;	// ジャンプ回数
 	int jumpLimit = 2;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
-
-	bool dash = false;
 	//std::unique_ptr<BulletManager> bulletMgr;
 	BulletManager bulletMgr;
 	float elapsedTime_ = 0;
@@ -99,13 +126,23 @@ private:
 		Idle,
 		Move,
 		Jump,
+		Dash,
+		DashToEnemy,
+		RecoverySkillEnergy,
 		Land,
 		Attack,
 		Damage,
 		Death,
 		Revive,
 	};
+	enum class Skill
+	{
+		SpiritBlast,
+		SkillMax,
+	};
 	State state = State::Idle;
+	Skill skill = Skill::SkillMax;
+	bool dashTowardEnemyFlag = false;
 	// ヒットエフェクト
 	//std::unique_ptr<Effect> hitEffect;
 };

@@ -42,6 +42,8 @@ private:
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;
     std::unique_ptr<Sprite> lifegauge;
+    std::unique_ptr<Sprite> skillEnergyGauge;
+    std::unique_ptr<Sprite> spritEnergyGauge;
 
 private:
     // ƒJƒƒ‰‚ÌˆÊ’u

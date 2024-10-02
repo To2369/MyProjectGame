@@ -32,6 +32,50 @@ void Character::UpdateTransform()
 
 }
 
+void Character::UpdateStatus(float elapsedTime)
+{
+    if (!useSpiritEnergyFlag)
+    {
+        //気力を回復する間隔
+        energyRecoveryTimer -= elapsedTime;
+        if (energyRecoveryTimer <= 0)
+        {
+            spiritEnergy += 1;
+            energyRecoveryTimer = 0.1f;
+        }
+    }
+    else
+    {
+        //気力を使用した際、次に回復し始めるまでの時間
+        energyNoRecoveryTimer -= elapsedTime;
+        if (energyNoRecoveryTimer <= 0)
+        {
+            energyNoRecoveryTimer = 1.0f;
+            energyRecoveryTimer = 0.1f;
+            useSpiritEnergyFlag = false;
+        }
+    }
+
+
+    //　最大値と最小値固定
+    {
+        if (health <= 0)
+            health = 0;
+        if (health >= maxHealth)
+            health = maxHealth;
+
+        if (spiritEnergy <= 0)
+            spiritEnergy = 0;
+        if (spiritEnergy >= maxSpritEnergy)
+            spiritEnergy = maxSpritEnergy;
+
+        if (skillEnergy <= 0)
+            skillEnergy = 0;
+        if (skillEnergy >= maxSkillEnergy)
+            skillEnergy = maxSkillEnergy;
+    }
+}
+
 // 移動方向を決定
 void Character::Move(float vx, float vz, float speed)
 {

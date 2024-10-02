@@ -34,22 +34,20 @@ void Player::Update(float elapsedTime)
     switch (state)
     {
     case State::Idle:UpdateIdleState(elapsedTime); break;
+    case State::Move:UpdateMoveState(elapsedTime); break;
+    case State::Dash:UpdateDashState(elapsedTime); break;
+    case State::DashToEnemy:UpdateDashToEnemyState(elapsedTime); break;
+    case State::RecoverySkillEnergy:UpdateRecoverySkillEnergyState(elapsedTime); break;
     }
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
-    //移動入力処理
-    InputMove(elapsedTime);
-
     // ジャンプ入力処理
-    InputJump();
+    //InputJump();
 
     // 入力による弾発射処理
     InputLaunchBullet();
 
-    InputTeleportBehindEnemy();
-
-    InputDashTowardsEnemy(elapsedTime);
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
 
@@ -59,6 +57,8 @@ void Player::Update(float elapsedTime)
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
     model->UpdateAnimation(elapsedTime);
+
+    UpdateStatus(elapsedTime);
 	// ワールド行列更新
 	UpdateTransform();
 }
@@ -76,6 +76,26 @@ void Player::DrawDebugGUI()
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
+    std::string str = "";
+    std::string subStr = "";
+    switch (static_cast<State>(state))
+    {
+    case State::Idle:
+        str = "Idle";
+        break;
+    case State::Move:
+        str = "Move";
+        break;
+    case State::Dash:
+        str = "Dash";
+        break;
+    case State::DashToEnemy:
+        str = "DashToEnemy";
+        break;
+    case State::RecoverySkillEnergy:
+        str = "RecoverySkillEnergy";
+        break;
+    }
     if (ImGui::Begin("Player", nullptr, ImGuiWindowFlags_None))
     {
         //トランスフォーム
@@ -84,17 +104,23 @@ void Player::DrawDebugGUI()
             //位置
             ImGui::InputFloat3("Position", &position.x);
             //回転
-            DirectX::XMFLOAT3 a;
-            a.x = DirectX::XMConvertToDegrees(angle.x);
-            a.y = DirectX::XMConvertToDegrees(angle.y);
-            a.z = DirectX::XMConvertToDegrees(angle.z);
-            ImGui::InputFloat3("Angle", &a.x);
-            angle.x = DirectX::XMConvertToRadians(a.x);
-            angle.y = DirectX::XMConvertToRadians(a.y);
-            angle.z = DirectX::XMConvertToRadians(a.z);
+            DirectX::XMFLOAT3 pangle;
+            pangle.x = DirectX::XMConvertToDegrees(angle.x);
+            pangle.y = DirectX::XMConvertToDegrees(angle.y);
+            pangle.z = DirectX::XMConvertToDegrees(angle.z);
+            ImGui::InputFloat3("Angle", &pangle.x);
+            angle.x = DirectX::XMConvertToRadians(pangle.x);
+            angle.y = DirectX::XMConvertToRadians(pangle.y);
+            angle.z = DirectX::XMConvertToRadians(pangle.z);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
-            //ImGui::InputFloat("b", &b);
+            ImGui::InputInt("helth", &health);
+            ImGui::InputInt("spirit", &spiritEnergy);
+            ImGui::InputInt("skill", &skillEnergy);
+            ImGui::InputFloat("movespeed", &moveSpeed);
+
+            ImGui::Text(u8"State　%s", str.c_str());
+            //ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
     }
     ImGui::End();
@@ -161,7 +187,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
 }
 
 //操作移動
-void Player::InputMove(float elapsedTime)
+bool Player::InputMove(float elapsedTime)
 {
     //進行ベクトルを取得
     DirectX::XMFLOAT3 moveVec = GetMoveVec();
@@ -170,6 +196,10 @@ void Player::InputMove(float elapsedTime)
 
     //旋回処理
     Turn(elapsedTime, moveVec.x, moveVec.z, this->turnSpeed);
+
+
+    //進行ベクトルがゼロベクトルでない場合は入力された
+    return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
 }
 
 // ジャンプ入力処理
@@ -191,78 +221,83 @@ void Player::InputJump()
 // 入力による弾発射処理
 void Player::InputLaunchBullet()
 {
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    std::unique_ptr<StraightBullet> bullet;
-    // ストレート弾発射
-    //if (gamePad->GetButtonDown() & GamePad::BTN_X)
-    //{
-    //    // 前方向
-    //    DirectX::XMFLOAT3 dir;
-    //    dir.x = sinf(angle.y);
-    //    dir.y = 0.0f;
-    //    dir.z = cosf(angle.y);
-
-    //    // 発射位置（プレイヤーの腰あたり
-    //    DirectX::XMFLOAT3 pos;
-    //    pos.x = position.x;
-    //    pos.y = position.y + height * 0.5f;
-    //    pos.z = position.z;
-
-    //    // 発射
-    //    StraightBullet* bullet = new StraightBullet(&bulletMgr);
-    //    bullet->Launch(dir, pos);
-    //    //bulletMgr->Regist(bullet.get());
-    //}
-
-    // ホーミング弾発射
-    if (gamePad->GetButtonDown() & GamePad::BTN_Y)
+    float useEnergy = 2;
+    if (skillEnergy >= useEnergy)
     {
-        // 前方向
-        DirectX::XMFLOAT3 dir;
-        dir.x = sinf(angle.y);
-        dir.y = 0.0f;
-        dir.z = cosf(angle.y);
+        GamePad* gamePad = InputManager::Instance()->getGamePad();
+        std::unique_ptr<StraightBullet> bullet;
+        // ストレート弾発射
+        //if (gamePad->GetButtonDown() & GamePad::BTN_X)
+        //{
+        //    // 前方向
+        //    DirectX::XMFLOAT3 dir;
+        //    dir.x = sinf(angle.y);
+        //    dir.y = 0.0f;
+        //    dir.z = cosf(angle.y);
 
-        // 発射位置（プレイヤーの腰あたり
-        DirectX::XMFLOAT3 pos;
-        pos.x = position.x;
-        pos.y = position.y + height * 0.5f;
-        pos.z = position.z;
+        //    // 発射位置（プレイヤーの腰あたり
+        //    DirectX::XMFLOAT3 pos;
+        //    pos.x = position.x;
+        //    pos.y = position.y + height * 0.5f;
+        //    pos.z = position.z;
 
-        // ターゲット
-        DirectX::XMFLOAT3 target;
-        target.x = pos.x + dir.x * 1000.0f;
-        target.y = pos.y + dir.y * 1000.0f;
-        target.z = pos.z + dir.z * 1000.0f;
+        //    // 発射
+        //    StraightBullet* bullet = new StraightBullet(&bulletMgr);
+        //    bullet->Launch(dir, pos);
+        //    //bulletMgr->Regist(bullet.get());
+        //}
 
-        // 一番近くの敵をターゲットに設定
-        float dist = FLT_MAX;
-        EnemyManager& enemyMgr = EnemyManager::Instance();
-        int enemyCount = enemyMgr.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)
+        // ホーミング弾発射
+        if (gamePad->GetButtonDown() & GamePad::BTN_Y)
         {
-            // 敵との距離を判定
-            Enemy* enemy = enemyMgr.GetEnemy(i);
-            DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
-            DirectX::XMVECTOR eneVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-            DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(eneVec, posVec);
-            DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vec);
-            float lengthSq;
-            DirectX::XMStoreFloat(&lengthSq, lengthSqVec);
-            if (lengthSq < dist)
+            skillEnergy -= useEnergy;
+            // 前方向
+            DirectX::XMFLOAT3 dir;
+            dir.x = sinf(angle.y);
+            dir.y = 0.0f;
+            dir.z = cosf(angle.y);
+
+            // 発射位置（プレイヤーの腰あたり
+            DirectX::XMFLOAT3 pos;
+            pos.x = position.x;
+            pos.y = position.y + height * 0.5f;
+            pos.z = position.z;
+
+            // ターゲット
+            DirectX::XMFLOAT3 target;
+            target.x = pos.x + dir.x * 1000.0f;
+            target.y = pos.y + dir.y * 1000.0f;
+            target.z = pos.z + dir.z * 1000.0f;
+
+            // 一番近くの敵をターゲットに設定
+            float dist = FLT_MAX;
+            EnemyManager& enemyMgr = EnemyManager::Instance();
+            int enemyCount = enemyMgr.GetEnemyCount();
+            for (int i = 0; i < enemyCount; ++i)
             {
-                dist = lengthSq;
-                target = enemy->GetPosition();
-                target.y += enemy->GetHeight() * 0.5f;
+                // 敵との距離を判定
+                Enemy* enemy = enemyMgr.GetEnemy(i);
+                DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
+                DirectX::XMVECTOR eneVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(eneVec, posVec);
+                DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vec);
+                float lengthSq;
+                DirectX::XMStoreFloat(&lengthSq, lengthSqVec);
+                if (lengthSq < dist)
+                {
+                    dist = lengthSq;
+                    target = enemy->GetPosition();
+                    target.y += enemy->GetHeight() * 0.5f;
+
+                }
 
             }
 
+            // 発射
+            HomingBullet* bullet = new HomingBullet(&bulletMgr);
+            bullet->Launch(dir, pos, target);
+            bullet->LockonTarget(target);
         }
-
-        // 発射
-        HomingBullet* bullet = new HomingBullet(&bulletMgr);
-        bullet->Launch(dir, pos, target);
-        bullet->LockonTarget(target);
     }
 }
 
@@ -299,7 +334,7 @@ void Player::CollisionPlayerAndEnemies()
         {
             //OutputDebugStringA("衝突\n");
 
-            dash = false;
+            dashTowardEnemyFlag = false;
 
             // 半径の合計
             float range = radius + enemy->GetRadius();
@@ -370,10 +405,10 @@ void Player::CollisionBulletsAndEnemies()
     }
 }
 
-void Player::InputTeleportBehindEnemy()
+void Player::TeleportBehindEnemy()
 {
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
+    int useEnergy = 200;
+    if (spiritEnergy >= useEnergy)
     {
         // 一番近くの敵をターゲットに設定
         float minDistance = FLT_MAX;
@@ -402,6 +437,9 @@ void Player::InputTeleportBehindEnemy()
 
         if (closestEnemy)
         {
+            spiritEnergy -= useEnergy;
+            useSpiritEnergyFlag = true;
+
             // 敵の後ろに飛ぶ
             DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
 
@@ -427,22 +465,30 @@ void Player::InputTeleportBehindEnemy()
     }
 }
 
-void Player::InputDashTowardsEnemy(float elapsedTime)
+bool Player::InputDashTowardsEnemy(float elapsedTime)
 {
     GamePad* gamePad = InputManager::Instance()->getGamePad();
-
+    float useEnergy = 5;
     // Xボタンでダッシュ
     if (gamePad->GetButtonDown() & GamePad::BTN_X)
     {
-        if (dash)
+        // Xボタンでダッシュ
+        if (skillEnergy >= useEnergy)
         {
-            dash = false;
-            return;
+            if (dashTowardEnemyFlag)
+            {
+                dashTowardEnemyFlag = false;
+            }
+            dashTowardEnemyFlag = true;
         }
-        dash = true;
+        else
+        {
+            dashTowardEnemyFlag = false;
+        }
     }
 
-    if (dash)
+    float useEnergyTimer = 0.3f;
+    if (dashTowardEnemyFlag)
     {
         // 一番近くの敵をターゲットに設定
         float minDistance = FLT_MAX;
@@ -471,6 +517,13 @@ void Player::InputDashTowardsEnemy(float elapsedTime)
 
         if (closestEnemy)
         {
+            skillEnergyTimer -= elapsedTime;
+            if (skillEnergyTimer <= 0)
+            {
+                skillEnergy -= useEnergy;
+                skillEnergyTimer = useEnergyTimer;
+            }
+
             // 敵の方向を計算
             DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
             DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemyPos);
@@ -504,7 +557,63 @@ void Player::InputDashTowardsEnemy(float elapsedTime)
             // Y軸回転を更新
             angle.y = angleRadians;
         }
+        return true;
     }
+    else
+    {
+        skillEnergyTimer = useEnergyTimer;
+    }
+    return false;
+}
+
+bool Player::InputDash(float elapsedTime)
+{
+    float useEnergy = 1;
+    float useEnergyTimer = 0.3f;
+    if (skillEnergy >= useEnergy)
+    {
+        Mouse* mouse = InputManager::Instance()->getMouse();
+        if (mouse->GetButton() & Mouse::BTN_RIGHT)
+        {
+            this->moveSpeed = 10.0f;
+            skillEnergyTimer -= elapsedTime;
+            if (skillEnergyTimer <= 0)
+            {
+                skillEnergy -= useEnergy;
+                skillEnergyTimer = useEnergyTimer;
+            }
+            InputMove(elapsedTime);
+            return true;
+        }
+        else
+        {
+            moveSpeed = 5.0f;
+            skillEnergyTimer = useEnergyTimer;
+            return false;
+        }
+    }
+    else
+    {
+        moveSpeed = 5.0f;
+        skillEnergyTimer = useEnergyTimer;
+        return false;
+    }
+}
+
+bool Player::InputRecoverySkillEnergy(float elapsedTime)
+{
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButton() & GamePad::BTN_A)//Z
+    {
+        skillEnergyTimer -= elapsedTime;
+        if (skillEnergyTimer <= 0)
+        {
+            skillEnergy += 1;
+            skillEnergyTimer = 0.1f;
+        }
+        return true;
+    }
+    return false;
 }
 
 //待機ステートへ遷移
@@ -519,14 +628,28 @@ void Player::TransitionIdleState()
 //待機ステート更新処理
 void Player::UpdateIdleState(float elapsedTime)
 {
-    ////移動入力処理
-    //InputMove(elapsedTime);
-    //if (InputMove(elapsedTime) == true)
-    //{
-    //    //移動ステートへの遷移
-    //    TransitionMoveState();
-    //}
+    //移動入力処理
+    InputMove(elapsedTime);
+    if (InputMove(elapsedTime))
+    {
+        //移動ステートへの遷移
+        TransitionMoveState();
+    }
 
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
+    {
+        TeleportBehindEnemy();
+    }
+
+    if (InputDashTowardsEnemy(elapsedTime))
+    {
+        TransitionDashToEnemyState();
+    }
+    if (InputRecoverySkillEnergy(elapsedTime))
+    {
+        TransitionRecoverySkillEnergy();
+    }
     ////ジャンプ入力処理
     //InputJump();
     //if (InputJump() == true)
@@ -543,4 +666,114 @@ void Player::UpdateIdleState(float elapsedTime)
     //}
     ////弾丸入力処理
     //InputProjectile();
+}
+
+//移動ステート
+void Player::TransitionMoveState()
+{
+    state = State::Move;
+
+    //アニメーション再生
+    //model->PlayAnimation(0, true);
+}
+
+//移動ステート更新処理
+void Player::UpdateMoveState(float elapsedTime)
+{
+    //移動入力処理
+    if (!InputMove(elapsedTime))
+    {
+        //移動ステートへの遷移
+        TransitionIdleState();
+    }
+
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
+    {
+        TeleportBehindEnemy();
+    }
+
+    if (InputDash(elapsedTime))
+    {
+        TransitionDashState();
+    }
+
+    if (InputDashTowardsEnemy(elapsedTime))
+    {
+        TransitionDashToEnemyState();
+    }
+
+    if (InputRecoverySkillEnergy(elapsedTime))
+    {
+        TransitionRecoverySkillEnergy();
+    }
+    ////ジャンプ入力処理
+    //InputJump();
+    //if (InputJump() == true)
+    //{
+    //    //ジャンプステートへの遷移
+    //    TransitionJumpState();
+    //}
+
+    ////攻撃入力処理
+    //InputAttack();
+    //if (InputAttack())
+    //{
+    //    TransitionAttackState();
+    //}
+    ////弾丸入力処理
+    //InputProjectile();
+}
+
+//ダッシュステート
+void Player::TransitionDashState()
+{
+    state = State::Dash;
+}
+
+//ダッシュステート更新処理
+void Player::UpdateDashState(float elapsedTime)
+{
+    InputDash(elapsedTime);
+    if (!InputDash(elapsedTime))
+    {
+        TransitionIdleState();
+    }
+}
+
+//敵へダッシュステート
+void Player::TransitionDashToEnemyState()
+{
+    state = State::DashToEnemy;
+
+    //アニメーション再生
+    //model->PlayAnimation(0, true);
+}
+
+//敵へダッシュステート更新処理
+void Player::UpdateDashToEnemyState(float elapsedTime)
+{
+
+    InputDashTowardsEnemy(elapsedTime);
+    if (!InputDashTowardsEnemy(elapsedTime))
+    {
+        TransitionMoveState();
+    }
+
+}
+
+// 技力回復
+void Player::TransitionRecoverySkillEnergy()
+{
+    state = State::RecoverySkillEnergy;
+}
+
+// 技力回復更新処理
+void Player::UpdateRecoverySkillEnergyState(float elapsedTime)
+{
+    InputRecoverySkillEnergy(elapsedTime);
+    if (!InputRecoverySkillEnergy(elapsedTime))
+    {
+        TransitionIdleState();
+    }
 }

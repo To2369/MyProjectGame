@@ -3,6 +3,7 @@
 #include "Graphics/Model.h"
 #include "Character.h"
 #include "BulletManager.h"
+#include "ArtsManager.h"
 //#include "Effect/Effect.h"
 
 // プレイヤー
@@ -39,13 +40,15 @@ private:
 	// 入力による弾発射処理
 	void InputLaunchBullet();
 
+	void InputArts();
+
 	// プレイヤーと敵との衝突処理
 	void CollisionPlayerAndEnemies();
 
 	// 弾と敵の衝突処理
 	void CollisionBulletsAndEnemies();
 
-	void CollisionSkillAndEnemies();
+	void CollisionArtsAndEnemies();
 
 	void TeleportBehindEnemy();
 
@@ -104,6 +107,7 @@ private:
 	int jumpLimit = 2;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
 	//std::unique_ptr<BulletManager> bulletMgr;
 	BulletManager bulletMgr;
+	ArtsManager artsMgr;
 	float elapsedTime_ = 0;
 	//アニメーション
 	enum Animation

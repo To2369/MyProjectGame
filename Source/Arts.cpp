@@ -1,22 +1,21 @@
-#include "Bullet.h"
-#include "BulletManager.h"
+#include "Arts.h"
+#include "ArtsManager.h"
 #include "Graphics/Graphics.h"
 
-Bullet::Bullet(BulletManager* manager) : bulletMgr(manager)
+Arts::Arts(ArtsManager* manager) : artsMgr(manager)
 {
-    bulletMgr->Regist(this);
+    artsMgr->Regist(this);
 }
 // デバッグプリミティブ描画
-void Bullet::DrawDebugPrimitive()
+void Arts::DrawDebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance()->GetDebugRenderer();
     //衝突判定用のデバッグ球を描画
-    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4{ 0,0,0,1 });
-    //debugRenderer->DrawCapsule(position, radius, 2, DirectX::XMFLOAT4{ 0,0,0,1 });
+    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4{ 0,0,1,1 });
 }
 
 // 行列更新処理
-void Bullet::UpdateTransform()
+void Arts::UpdateTransform()
 {
     DirectX::XMVECTOR frontVec, upVec, rightVec;
 
@@ -67,7 +66,7 @@ void Bullet::UpdateTransform()
 }
 
 // 破棄
-void Bullet::Destroy()
+void Arts::Destroy()
 {
-    bulletMgr->Remove(this);
+    artsMgr->Remove(this);
 }

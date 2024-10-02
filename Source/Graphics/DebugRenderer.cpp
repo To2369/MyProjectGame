@@ -94,6 +94,9 @@ DebugRenderer::DebugRenderer(ID3D11Device* device)
 
 	// 円柱メッシュ作成
 	CreateCylinderMesh(device, 1.0f, 1.0f, 0.0f, 1.0f, 16, 1);
+
+	//カプセルメッシュの作成
+	CreateCapsuleMesh(device, 1.0f, 1.0f, 16, 16);
 }
 
 // 描画開始
@@ -163,6 +166,26 @@ void DebugRenderer::Render(ID3D11DeviceContext* context, const DirectX::XMFLOAT4
 		context->Draw(cylinderVertexCount, 0);
 	}
 	cylinders.clear();
+
+	// カプセル描画
+	context->IASetVertexBuffers(0, 1, capsuleVertexBuffer.GetAddressOf(), &stride, &offset);
+	for (const Capsule& capsule : capsules)
+	{
+		// ワールドビュープロジェクション行列作成
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(capsule.radius, capsule.height, capsule.radius);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(capsule.position.x, capsule.position.y, capsule.position.z);
+		DirectX::XMMATRIX W = S * T;
+		DirectX::XMMATRIX WVP = W * VP;
+
+		// 定数バッファ更新
+		CbMesh cbMesh;
+		cbMesh.color = capsule.color;
+		DirectX::XMStoreFloat4x4(&cbMesh.wvp, WVP);
+
+		context->UpdateSubresource(constantBuffer.Get(), 0, 0, &cbMesh, 0, 0);
+		context->Draw(capsuleVertexCount, 0);
+	}
+	capsules.clear();
 }
 
 // 球描画
@@ -184,6 +207,17 @@ void DebugRenderer::DrawCylinder(const DirectX::XMFLOAT3& position, float radius
 	cylinder.height = height;
 	cylinder.color = color;
 	cylinders.emplace_back(cylinder);
+}
+
+// カプセル描画
+void DebugRenderer::DrawCapsule(const DirectX::XMFLOAT3& position, float radius, float height, const DirectX::XMFLOAT4& color)
+{
+	Capsule cupsule;
+	cupsule.position = position;
+	cupsule.radius = radius;
+	cupsule.height = height;
+	cupsule.color = color;
+	capsules.emplace_back(cupsule);
 }
 
 // 球メッシュ作成
@@ -329,4 +363,10 @@ void DebugRenderer::CreateCylinderMesh(ID3D11Device* device, float radius1, floa
 		HRESULT hr = device->CreateBuffer(&desc, &subresourceData, cylinderVertexBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
+}
+
+// カプセルメッシュ作成
+void DebugRenderer::CreateCapsuleMesh(ID3D11Device* device, float radius, float height, int slices, int stacks)
+{
+	
 }

@@ -21,6 +21,8 @@ public:
 	// 円柱描画
 	void DrawCylinder(const DirectX::XMFLOAT3& position, float radius, float height, const DirectX::XMFLOAT4& color);
 
+	// カプセル描画
+	void DrawCapsule(const DirectX::XMFLOAT3& position, float radius, float height, const DirectX::XMFLOAT4& color);
 private:
 	// 球メッシュ作成
 	void CreateSphereMesh(ID3D11Device* device, float radius, int slices, int stacks);
@@ -28,6 +30,8 @@ private:
 	// 円柱メッシュ作成
 	void CreateCylinderMesh(ID3D11Device* device, float radius1, float radius2, float start, float height, int slices, int stacks);
 
+	// カプセルメッシュの作成
+	void CreateCapsuleMesh(ID3D11Device* device, float radius, float height, int slices, int stacks);
 private:
 	struct CbMesh
 	{
@@ -50,8 +54,16 @@ private:
 		float				height;
 	};
 
+	struct Capsule
+	{
+		DirectX::XMFLOAT4 color;
+		DirectX::XMFLOAT3 position;
+		float	radius;
+		float	height;
+	};
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			sphereVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			cylinderVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>			capsuleVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			constantBuffer;
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>		vertexShader;
@@ -64,7 +76,9 @@ private:
 
 	std::vector<Sphere>		spheres;
 	std::vector<Cylinder>	cylinders;
+	std::vector<Capsule>	capsules;
 
 	UINT	sphereVertexCount = 0;
 	UINT	cylinderVertexCount = 0;
+	UINT capsuleVertexCount = 0;
 };

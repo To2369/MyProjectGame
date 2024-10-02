@@ -7,6 +7,7 @@
 #include "Collision.h"
 #include "StraightBullet.h"
 #include "HomingBullet.h"
+#include "ArtsSpiritExplosion.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
@@ -46,7 +47,9 @@ void Player::Update(float elapsedTime)
     //InputJump();
 
     // 入力による弾発射処理
-    InputLaunchBullet();
+    //InputLaunchBullet();
+
+    InputArts();
 
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
@@ -54,8 +57,11 @@ void Player::Update(float elapsedTime)
     // 弾と敵の衝突処理
     CollisionBulletsAndEnemies();
 
+    CollisionArtsAndEnemies();
+
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
+    artsMgr.Update(elapsedTime);
     model->UpdateAnimation(elapsedTime);
 
     UpdateStatus(elapsedTime);
@@ -68,6 +74,7 @@ void Player::Render(ID3D11DeviceContext* dc)
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
 
     bulletMgr.Render(dc);
+    artsMgr.Render(dc);
 }
 
 void Player::DrawDebugGUI()
@@ -139,6 +146,7 @@ void Player::DrawDebugPrimitive()
 
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
+    artsMgr.DrawDebugPrimitive();
 }
 
 //入力値から移動ベクトルを取得
@@ -301,6 +309,53 @@ void Player::InputLaunchBullet()
     }
 }
 
+void Player::InputArts()
+{
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    // ストレート弾発射
+    if (gamePad->GetButtonDown() & GamePad::BTN_Y)
+    {
+        // 前方向
+        DirectX::XMFLOAT3 dir;
+        dir.x = sinf(angle.y);
+        dir.y = 0.0f;
+        dir.z = cosf(angle.y);
+
+        // 発射位置（プレイヤーの腰あたり
+        DirectX::XMFLOAT3 pos;
+        pos.x = position.x;
+        pos.y = position.y + height * 0.5f;
+        pos.z = position.z;
+
+        // 発射
+        ArtsSpiritExplosion* artsSpiritExplosion  = new ArtsSpiritExplosion(&artsMgr);
+        artsSpiritExplosion->Launch(dir, pos);
+        spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
+        //bulletMgr->Regist(bullet.get());
+    }
+
+    // ストレート弾発射
+    //if (gamePad->GetButtonDown() & GamePad::BTN_Y)
+    //{
+    //    // 前方向
+    //    DirectX::XMFLOAT3 dir;
+    //    dir.x = sinf(angle.y);
+    //    dir.y = 0.0f;
+    //    dir.z = cosf(angle.y);
+
+    //    // 発射位置（プレイヤーの腰あたり
+    //    DirectX::XMFLOAT3 pos;
+    //    pos.x = position.x;
+    //    pos.y = position.y + height * 0.5f;
+    //    pos.z = position.z;
+
+    //    // 発射
+    //    StraightBullet* bullet = new StraightBullet(&bulletMgr);
+    //    bullet->Launch(dir, pos);
+    //    //bulletMgr->Regist(bullet.get());
+    //}
+}
+
 // 着地したときに呼び出される
 void Player::OnLanding()
 {
@@ -405,6 +460,55 @@ void Player::CollisionBulletsAndEnemies()
     }
 }
 
+void Player::CollisionArtsAndEnemies()
+{
+    EnemyManager& enemyMgr = EnemyManager::Instance();
+
+    // 全ての弾と全ての敵を総当たりで衝突処理
+    int artsCount = artsMgr.GetArtsCount();
+    int enemyCount = enemyMgr.GetEnemyCount();
+    for (int i = 0; i < artsCount; ++i)
+    {
+        Arts* arts = artsMgr.GetArts(i);
+
+        for (int j = 0; j < enemyCount; ++j)
+        {
+            Enemy* enemy = enemyMgr.GetEnemy(j);
+
+            // 衝突処理
+            DirectX::XMFLOAT3 outVec;
+            if (Collision::IntersectSphereAndCylinder(
+                arts->GetPosition(),
+                arts->GetRadius(),
+                enemy->GetPosition(),
+                enemy->GetRadius(),
+                enemy->GetHeight(),
+                outVec))
+            {
+                int damage = 1;
+                if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
+                {
+                    // 吹き飛ばし
+                    float power = 10.0f;
+                    DirectX::XMFLOAT3 impulse;
+                    impulse.x = outVec.x * power;
+                    impulse.y = power * 0.5f;
+                    impulse.z = outVec.z * power;
+
+                    enemy->AddImpulse(impulse);
+
+                    // ヒットエフェクトの再生
+                    DirectX::XMFLOAT3 enePos = enemy->GetPosition();
+                    enePos.y += enemy->GetHeight() * 0.5f;
+                    //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+
+                    // 弾の破棄
+                    //arts->Destroy();
+                }
+            }
+        }
+    }
+}
 void Player::TeleportBehindEnemy()
 {
     int useEnergy = 200;

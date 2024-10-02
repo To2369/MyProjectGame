@@ -34,6 +34,9 @@
     <Filter Include="Sources\Effect">
       <UniqueIdentifier>{46d8d1b1-71a0-4335-a01b-32db9c37cb9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Skill">
+      <UniqueIdentifier>{85ecbfb4-69a7-4c82-a2f9-d8beb87bb9db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Imgui\imconfig.h">
@@ -183,6 +186,18 @@
     <ClInclude Include="Source\Mathf.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Arts.h">
+      <Filter>Sources\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ArtsManager.h">
+      <Filter>Sources\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ArtsSkillStraightBallet.h">
+      <Filter>Sources\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ArtsSpiritExplosion.h">
+      <Filter>Sources\Skill</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -313,6 +328,18 @@
     </ClCompile>
     <ClCompile Include="Source\Mathf.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Arts.cpp">
+      <Filter>Sources\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ArtsManager.cpp">
+      <Filter>Sources\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ArtsSkillStraightBallet.cpp">
+      <Filter>Sources\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ArtsSpiritExplosion.cpp">
+      <Filter>Sources\Skill</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

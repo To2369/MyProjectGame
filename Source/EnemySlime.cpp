@@ -20,6 +20,8 @@ void EnemySlime::Update(float elapsedTime)
 	// 無敵時間の更新
 	UpdateInvincibleTimer(elapsedTime);
 
+
+    UpdateStatus(elapsedTime);
 	UpdateTransform();
 }
 
@@ -52,6 +54,9 @@ void EnemySlime::DrawDebugGUI()
             angle.z = DirectX::XMConvertToRadians(pos.z);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
+            ImGui::InputInt("helth", &health);
+            ImGui::InputInt("spirit", &spiritEnergy);
+            ImGui::InputInt("skill", &skillEnergy);
             //ImGui::InputFloat("b", &b);
         }
     }

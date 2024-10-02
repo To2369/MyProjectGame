@@ -338,8 +338,6 @@ public:
 
 	//アニメーション再生中かどうか
 	bool IsPlayAnimation() const;
-
-	void Up(float elapsedTime);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー

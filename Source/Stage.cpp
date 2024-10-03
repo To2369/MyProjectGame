@@ -17,7 +17,7 @@ void Stage::Render(ID3D11DeviceContext* dc)
 }
 
 // レイキャスト
-bool Stage::Raycast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit)
+bool Stage::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit)
 {
 	return Collision::IntersectRayAndModel(start, end, model.get(), hit);
 }

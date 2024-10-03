@@ -242,7 +242,7 @@ void Character::UpdateVerticalMove(float elapsedTime)
 
         // レイキャストによる地面判定
         HitResult hit;
-        if (StageManager::Instance().GetStage(0)->Raycast(start, end, hit))
+        if (StageManager::Instance().GetStage(0)->RayCast(start, end, hit))
         {
             // 地面の向きを姿勢制御用法線ベクトルに設定
             normal = hit.normal;
@@ -379,7 +379,7 @@ void Character::UpdateHorizontalMove(float elapsedTime)
 
         // レイキャスト
         HitResult hit;
-        if (StageManager::Instance().GetStage(0)->Raycast(start, end, hit))
+        if (StageManager::Instance().GetStage(0)->RayCast(start, end, hit))
         {
             DirectX::XMVECTOR startVec = DirectX::XMLoadFloat3(&hit.position);
             DirectX::XMVECTOR endVec = DirectX::XMLoadFloat3(&end);
@@ -405,7 +405,7 @@ void Character::UpdateHorizontalMove(float elapsedTime)
             DirectX::XMStoreFloat3(&correctPos, correctPosVec);
             //壁ずり方向へレイキャスト
             HitResult hit2;
-            if (!StageManager::Instance().GetStage(0)->Raycast(hit.position, correctPos, hit2))
+            if (!StageManager::Instance().GetStage(0)->RayCast(hit.position, correctPos, hit2))
             {
                 //壁ずる方向で壁に当たらなかったら補正位置に移動
                 position.x = correctPos.x;

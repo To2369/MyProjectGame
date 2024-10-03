@@ -393,6 +393,8 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
                 material_.shader_resource_views[0].GetAddressOf());
             immediate_context->PSSetShaderResources(1, 1,
                 material_.shader_resource_views[1].GetAddressOf());
+            //immediate_context->PSSetShaderResources(1, 2,
+            //    material_.shader_resource_views[2].GetAddressOf());
             // インデックスを使用して描画
             //D3D11_BUFFER_DESC buffer_desc;
             //mesh_.index_buffer->GetDesc(&buffer_desc);
@@ -763,8 +765,8 @@ void Model::FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
             mesh_.bounding_box[0].y = std::min<float>(mesh_.bounding_box[0].y, v.position.y);
             mesh_.bounding_box[0].z = std::min<float>(mesh_.bounding_box[0].z, v.position.z);
             mesh_.bounding_box[1].x = std::max<float>(mesh_.bounding_box[1].x, v.position.x);
-            mesh_.bounding_box[1].y = std::max<float>(mesh_.bounding_box[1].y, v.position.x);
-            mesh_.bounding_box[1].z = std::max<float>(mesh_.bounding_box[1].z, v.position.x);
+            mesh_.bounding_box[1].y = std::max<float>(mesh_.bounding_box[1].y, v.position.y);
+            mesh_.bounding_box[1].z = std::max<float>(mesh_.bounding_box[1].z, v.position.z);
         }
     }
 }
@@ -840,7 +842,13 @@ void Model::FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, mat
                 // ファイル名が存在したら相対パス込みでのファイル名を取得
                 material_.texture_filenames[1] = file_texture ? file_texture->GetRelativeFileName() : "";
             }
-
+            // EMISSIVE
+            fbx_property = fbx_material->FindProperty(FbxSurfaceMaterial::sEmissive);
+            if (fbx_property.IsValid())
+            {
+                const FbxFileTexture* file_texture{ fbx_property.GetSrcObject<FbxFileTexture>() };
+                material_.texture_filenames[2] = file_texture ? file_texture->GetRelativeFileName() : "";
+            }
             // 取得したマテリアルの情報を設定する
             materials.emplace(material_.unique_id, std::move(material_));
         }

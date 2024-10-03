@@ -18,7 +18,7 @@ struct VS_OUT
     float4 color : COLOR;
 };
 
-static const int MAX_BONES = 256;
+static const int MAX_BONES = 512;
 cbuffer OBJECT_CONSTANT_BUFFER : register(b0)
 {
     row_major float4x4 world;

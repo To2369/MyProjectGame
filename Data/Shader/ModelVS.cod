@@ -9,7 +9,7 @@
 //
 //   row_major float4x4 world;          // Offset:    0 Size:    64
 //   float4 material_color;             // Offset:   64 Size:    16
-//   row_major float4x4 bone_transforms[256];// Offset:   80 Size: 16384
+//   row_major float4x4 bone_transforms[512];// Offset:   80 Size: 32768
 //
 // }
 //
@@ -65,7 +65,7 @@ dcl_immediateConstantBuffer { { 1.000000, 0, 0, 0},
                               { 0, -1, 0, 0},
                               { 0, 0, -1, 0},
                               { 0, 0, 0, -1} }
-dcl_constantbuffer CB0[1029], dynamicIndexed
+dcl_constantbuffer CB0[2053], dynamicIndexed
 dcl_constantbuffer CB1[4], immediateIndexed
 dcl_input v0.xyzw
 dcl_input v1.xyz

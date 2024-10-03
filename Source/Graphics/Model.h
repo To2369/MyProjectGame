@@ -211,7 +211,7 @@ public:
 		}
 	};
 
-	static const int MAX_BONES{ 256 };
+	static const int MAX_BONES{ 516 };
 	// 定数バッファフォーマット
 	struct constants
 	{

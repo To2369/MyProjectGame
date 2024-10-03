@@ -14,7 +14,7 @@ public:
 	void Render(ID3D11DeviceContext* dc);
 
 	// レイキャスト
-	bool Raycast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit);
+	bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit);
 private:
 	std::unique_ptr<Model> model;
 };

@@ -177,6 +177,7 @@ void SceneGame::Render()
     {
         graphics->GetLineRenderer()->Render(dc, rc.view, rc.projection);
         graphics->GetDebugRenderer()->Render(dc, rc.view, rc.projection);
+        graphics->GetDebugPrimitive()->Render(dc);
 
         player->DrawDebugPrimitive();
 

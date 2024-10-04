@@ -6,6 +6,7 @@
 #include"RenderState.h"
 #include "DebugRenderer.h"
 #include "LineRenderer.h"
+#include "DebugPrimitive.h"
 
 class Graphics
 {
@@ -59,6 +60,9 @@ public:
 	//// デバッグレンダラ取得
 	DebugRenderer* GetDebugRenderer() const { return debug_renderer.get(); }
 
+	// デバッグプリミティブ取得
+	DebugPrimitive* GetDebugPrimitive() const { return debugPrimitive.get(); }
+
 	// ラインレンダラ取得
 	LineRenderer* GetLineRenderer() const { return line_renderer.get(); }
 
@@ -99,6 +103,8 @@ private:
 	std::unique_ptr<RenderState> render_state;
 
 	std::unique_ptr<DebugRenderer>					debug_renderer;
+	
+	std::unique_ptr<DebugPrimitive>					debugPrimitive;
 
 	std::unique_ptr<LineRenderer>					line_renderer;
 };

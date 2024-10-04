@@ -9,9 +9,9 @@ Arts::Arts(ArtsManager* manager) : artsMgr(manager)
 // デバッグプリミティブ描画
 void Arts::DrawDebugPrimitive()
 {
-    DebugRenderer* debugRenderer = Graphics::Instance()->GetDebugRenderer();
     //衝突判定用のデバッグ球を描画
-    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4{ 0,0,1,1 });
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
 }
 
 // 行列更新処理

@@ -72,7 +72,6 @@ void Player::Update(float elapsedTime)
 void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
-
     bulletMgr.Render(dc);
     artsMgr.Render(dc);
 }
@@ -142,8 +141,12 @@ void Player::DrawDebugPrimitive()
     //debugRenderer->DrawSphere(position, radius, { 0, 0, 1, 1 });
 
     // 衝突判定用のデバッグ用円柱を描画
-    debugRenderer->DrawCylinder(position, radius, height, { 0, 0, 0, 1 });
+    //debugRenderer->DrawCylinder(position, radius, height, { 0, 0, 0, 1 });
 
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
+    //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
+    debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
     artsMgr.DrawDebugPrimitive();

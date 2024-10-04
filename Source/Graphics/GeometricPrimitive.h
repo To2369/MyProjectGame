@@ -67,7 +67,8 @@ class GeometricCylinder :public GeometricPrimitive
 {
 public:
     // 第２引数はシリンダーの円を何分割するかの数を指定
-    GeometricCylinder(ID3D11Device* device, uint32_t slices);
+    GeometricCylinder(ID3D11Device* device, float radius1, float radius2,
+        float start, float height, uint32_t slices, uint32_t stack);
 };
 
 // 球
@@ -75,6 +76,7 @@ class GeometricSphere :public GeometricPrimitive
 {
 public:
     GeometricSphere(ID3D11Device* device,
+        float radius,
         uint32_t slices,
         uint32_t stacks);
 };

@@ -198,6 +198,9 @@
     <ClInclude Include="Source\ArtsSpiritExplosion.h">
       <Filter>Sources\Skill</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\DebugPrimitive.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -340,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="Source\ArtsSpiritExplosion.cpp">
       <Filter>Sources\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\DebugPrimitive.cpp">
+      <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

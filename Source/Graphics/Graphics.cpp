@@ -134,6 +134,7 @@ void Graphics::Initialize(HWND hwnd)
 	// ƒŒƒ“ƒ_ƒ‰
 	{
 		debug_renderer = std::make_unique<DebugRenderer>(device.Get());
+		debugPrimitive = std::make_unique<DebugPrimitive>(device.Get());
 		line_renderer= std::make_unique<LineRenderer>(device.Get(), 1024);
 	}
 }

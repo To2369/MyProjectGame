@@ -100,6 +100,47 @@ bool Collision::IntersectSphereAndCylinder(
     return true;
 }
 
+// カプセルとカプセルの交差判定
+bool Collision::IntersectCapsuleAndCapsule(
+    const DirectX::XMFLOAT3& positionA,
+    float radiusA,
+    float heightA,
+    const DirectX::XMFLOAT3& positionB,
+    float radiusB,
+    float heightB,
+    DirectX::XMFLOAT3& outVec)
+{
+    // カプセルの中心線の両端を計算
+    DirectX::XMFLOAT3 topA = { positionA.x, positionA.y + heightA / 2.0f, positionA.z };
+    DirectX::XMFLOAT3 bottomA = { positionA.x, positionA.y - heightA / 2.0f, positionA.z };
+    DirectX::XMFLOAT3 topB = { positionB.x, positionB.y + heightB / 2.0f, positionB.z };
+    DirectX::XMFLOAT3 bottomB = { positionB.x, positionB.y - heightB / 2.0f, positionB.z };
+
+    // 線分と線分の最短距離を求める（カプセルの軸）
+    float sqDist = DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(
+        DirectX::XMVectorSubtract(
+            DirectX::XMLoadFloat3(&topA),
+            DirectX::XMLoadFloat3(&topB)
+        )
+    ));
+
+    // 半径の合計
+    float range = radiusA + radiusB;
+
+    // 距離判定
+    if (sqrtf(sqDist) > range)
+    {
+        return false;
+    }
+
+    // 衝突方向のベクトルを計算
+    DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&positionB), DirectX::XMLoadFloat3(&positionA));
+    vec = DirectX::XMVector3Normalize(vec);
+    DirectX::XMStoreFloat3(&outVec, vec);
+
+    return true;
+}
+
 // レイとモデルの交差判定
 bool Collision::IntersectRayAndModel(
     const DirectX::XMFLOAT3& start,

@@ -1,18 +1,19 @@
 #include "DebugPrimitive.h"
-
+#include "Graphics.h"
 DebugPrimitive::DebugPrimitive(ID3D11Device*device)
 {
     geometricPrimitives[static_cast<int>(FORM_STATE::Cube)] =
         std::make_unique<GeometricCube>(device);
 
     geometricPrimitives[static_cast<int>(FORM_STATE::Cylinder)] =
-        std::make_unique<GeometricCylinder>(device, 1.0f, 32);
+        std::make_unique<GeometricCylinder>(device, 1.0f,1.0f,16);
 
     geometricPrimitives[static_cast<int>(FORM_STATE::Sphere)] =
         std::make_unique<GeometricSphere>(device,1.0f,32,32);
 
     geometricPrimitives[static_cast<int>(FORM_STATE::Capsule)] =
-        std::make_unique<GeometricCapsule>(device, 1.0f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3);
+        std::make_unique<GeometricCapsule>(device, 0.5f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3);
+    
 }
 
 void DebugPrimitive::UpdateTransform(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& scale)
@@ -36,6 +37,12 @@ void DebugPrimitive::UpdateTransform(const DirectX::XMFLOAT3& position, const Di
 
 void DebugPrimitive::Render(ID3D11DeviceContext* immediate_context)
 {
+    Graphics* graphics = Graphics::Instance();
+    ID3D11DeviceContext* dc = graphics->GetDeviceContext();
+    RenderState* renderState = graphics->GetRenderState();
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::WIRE_CULLNONE));
     //ê≥ï˚å`
     for (const Cube& cube : cubes)
     {

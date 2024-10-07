@@ -42,6 +42,16 @@ public:
 		float heightB,
 		DirectX::XMFLOAT3& outVec);
 
+	// カプセルとカプセルの交差判定
+	static bool IntersectCapsuleAndCapsule(
+		const DirectX::XMFLOAT3& positionA,
+		float radiusA,
+		float heightA,
+		const DirectX::XMFLOAT3& positionB,
+		float radiusB,
+		float heightB,
+		DirectX::XMFLOAT3& outVec);
+
 	// レイとモデルの交差判定
 	static bool IntersectRayAndModel(
 		const DirectX::XMFLOAT3& start,

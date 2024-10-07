@@ -44,7 +44,7 @@ void Player::Update(float elapsedTime)
     UpdateVelocity(elapsedTime);
 
     // ジャンプ入力処理
-    //InputJump();
+    InputJump();
 
     // 入力による弾発射処理
     //InputLaunchBullet();
@@ -146,7 +146,10 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
+    //debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
+    {
+        debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });
+    }
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
     artsMgr.DrawDebugPrimitive();
@@ -380,7 +383,7 @@ void Player::CollisionPlayerAndEnemies()
         DirectX::XMFLOAT3 outVec;
 
         // 衝突処理
-        if (Collision::IntersectCylinderAndCylinder(
+        if (Collision::IntersectCapsuleAndCapsule(
             position,
             radius,
             height,
@@ -408,6 +411,9 @@ void Player::CollisionPlayerAndEnemies()
             DirectX::XMStoreFloat3(&pos, vec);
             pos.y = enemy->GetPosition().y;
             enemy->SetPosition(pos);
+        }
+        else
+        {
         }
     }
 }
@@ -709,17 +715,17 @@ bool Player::InputDash(float elapsedTime)
 
 bool Player::InputRecoverySkillEnergy(float elapsedTime)
 {
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (gamePad->GetButton() & GamePad::BTN_A)//Z
-    {
-        skillEnergyTimer -= elapsedTime;
-        if (skillEnergyTimer <= 0)
-        {
-            skillEnergy += 1;
-            skillEnergyTimer = 0.1f;
-        }
-        return true;
-    }
+    //GamePad* gamePad = InputManager::Instance()->getGamePad();
+    //if (gamePad->GetButton() & GamePad::BTN_A)//Z
+    //{
+    //    skillEnergyTimer -= elapsedTime;
+    //    if (skillEnergyTimer <= 0)
+    //    {
+    //        skillEnergy += 1;
+    //        skillEnergyTimer = 0.1f;
+    //    }
+    //    return true;
+    //}
     return false;
 }
 

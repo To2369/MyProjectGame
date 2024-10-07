@@ -429,16 +429,14 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
 }
 
 // 円柱
-GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float radius2,
-    float start, float height, uint32_t slices, uint32_t stack):GeometricPrimitive(device)
+GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius, float height, uint32_t slices)
+    :GeometricPrimitive(device)
 {
     // 分割数(円を作るための三角形の数、６個の三角形)
     // 半径
-    //float radius_ = radius;
-    float radius_ = (radius2 - radius1) / stack;
+    float radius_ = radius;
     // 頂点データ
-    //vertex* vertices = new vertex[(slices + 1) * 2 + slices * 2];
-    vertex* vertices = new vertex[2 * slices * (stack + 1) + 2 * slices];
+    vertex* vertices = new vertex[(slices + 1) * 2 + slices * 2];
     // 頂点インデックス
     uint32_t* indices = new uint32_t[(slices * 3) * 2 + (3 * 2 * slices)];
 
@@ -448,7 +446,7 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float 
     //float r{ 0.5f };
 
     // 真ん中の頂点座標と法線
-    vertices[0].position = { 0.0f, 0.5f, 0.0f };
+    vertices[0].position = { 0.0f, 1.0f, 0.0f };
     vertices[0].normal = { 0.0f, 1.0f, 0.0f };
 
     // 円の周りの頂点座標と法線を設定
@@ -456,7 +454,7 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float 
 
         // 角度から頂点座標を計算
         vertices[1 + i].position.x = radius_ * cosf(i * d);
-        vertices[1 + i].position.y = 0.5f;
+        vertices[1 + i].position.y = 1.0f;
         vertices[1 + i].position.z = radius_ * sinf(i * d);
         // 法線を設定
         vertices[1 + i].normal = { 0.0f, 1.0f, 0.0f };
@@ -477,7 +475,7 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float 
     int base_slices = slices + 1;
 
     // 下の円の真ん中の頂点座標と法線
-    vertices[base_slices].position = { 0.0f, -0.5f, 0.0f };
+    vertices[base_slices].position = { 0.0f, 0.0f, 0.0f };
     vertices[base_slices].normal = { 0.0f, -1.0f, 0.0f };
 
     // 円の周りの頂点座標と法線を設定
@@ -485,7 +483,7 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float 
     {
         // 角度から頂点座標を計算
         vertices[slices + 1 + 1 + i].position.x = radius_ * cosf(i * d);
-        vertices[slices + 1 + 1 + i].position.y = -0.5f;
+        vertices[slices + 1 + 1 + i].position.y = 0.0f;
         vertices[slices + 1 + 1 + i].position.z = radius_ * sinf(i * d);
         // 法線を設定
         vertices[slices + 1 + 1 + i].normal = { 0.0f, -1.0f, 0.0f };
@@ -512,11 +510,11 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius1, float 
         float z = radius_ * sinf(i * d);
 
         // 上の点の座標と法線
-        vertices[slices + 1 + slices + 1 + i * 2 + 0].position = { x, 0.5f , z };
+        vertices[slices + 1 + slices + 1 + i * 2 + 0].position = { x, 1.0f , z };
         vertices[slices + 1 + slices + 1 + i * 2 + 0].normal = { x, 0.0f , z };
 
         // 下の点の座標と法線
-        vertices[slices + 1 + slices + 1 + i * 2 + 1].position = { x, -0.5f , z };
+        vertices[slices + 1 + slices + 1 + i * 2 + 1].position = { x, 0.0f , z };
         vertices[slices + 1 + slices + 1 + i * 2 + 1].normal = { x, 0.0f , z };
     }
 

@@ -67,8 +67,7 @@ class GeometricCylinder :public GeometricPrimitive
 {
 public:
     // 第２引数はシリンダーの円を何分割するかの数を指定
-    GeometricCylinder(ID3D11Device* device, float radius1, float radius2,
-        float start, float height, uint32_t slices, uint32_t stack);
+    GeometricCylinder(ID3D11Device* device,float radius,float height, uint32_t slices);
 };
 
 // 球

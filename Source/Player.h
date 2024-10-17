@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "BulletManager.h"
 #include "ArtsManager.h"
+#include "Graphics/GeometricPrimitive.h"
 //#include "Effect/Effect.h"
 
 // プレイヤー
@@ -49,7 +50,7 @@ private:
 	void CollisionBulletsAndEnemies();
 
 	void CollisionArtsAndEnemies();
-
+	void CollisionPlayerAndArts();
 	void TeleportBehindEnemy();
 
 	bool InputDashTowardsEnemy(float elapsedTime);
@@ -91,6 +92,7 @@ protected:
 	void OnLanding() override;
 private:
 	std::unique_ptr<Model> model;
+	std::unique_ptr<GeometricPrimitive> geo;
 	// 移動スピード
 	float moveSpeed = 5.0f;
 	// 旋回スピード

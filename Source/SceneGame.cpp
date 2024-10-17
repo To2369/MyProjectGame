@@ -49,9 +49,9 @@ void SceneGame::Initialize()
     lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
     skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
     spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
-   // framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
+    //framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
-    bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
+    //bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 }
 
 //終了化
@@ -159,7 +159,6 @@ void SceneGame::Render()
         player->Render(dc);
 
         EnemyManager::Instance().Render(dc);
-
         //framebuffers[0]->Deactivate(dc);
 #if 0
         dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);

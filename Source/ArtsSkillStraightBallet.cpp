@@ -3,9 +3,12 @@
 
 ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(manager)
 {
-    model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".//Data//Model//SpikeBall//SpikeBall.fbx");
+    height = 1.0f;
+
+    prim = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, DirectX::XMFLOAT3{ radius,radius,radius }, 6, 3, 3, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
     const float scale_fcator = 1.0f;	// モデルが大きいのでスケール調整
     scale = { scale_fcator, scale_fcator, scale_fcator };
+    position = { 1,5,1 };
 }
 
 ArtsSkillStraightBallet::~ArtsSkillStraightBallet()
@@ -21,14 +24,13 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         // 時間が 0 以下になったら自分を破棄
         Destroy();
     }
+    //angle.x = DirectX::XMConvertToRadians(90);
     // 移動
     float speed = this->speed * elapsedTime;
-
     // 位置 += 方向 * 速さ
-    position.x += direction.x * speed;
+    /*position.x += direction.x * speed;
     position.y += direction.y * speed;
-    position.z += direction.z * speed;
-
+    position.z += direction.z * speed;*/
     // ワールド行列の更新
     UpdateTransform();
 }
@@ -36,7 +38,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
 // 描画処理
 void ArtsSkillStraightBallet::Render(ID3D11DeviceContext* dc)
 {
-    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
+    prim->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
 }
 
 //発射

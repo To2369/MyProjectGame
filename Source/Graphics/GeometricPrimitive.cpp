@@ -654,45 +654,51 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     const DirectX::XMFLOAT3& radius,
     uint32_t slices,
     uint32_t ellipsoid_stacks,
-    uint32_t mantle_stacks) :GeometricPrimitive(device)
+    uint32_t mantle_stacks,
+    const DirectX::XMFLOAT3& rotationAngle) :GeometricPrimitive(device)
 {
-    std::vector<vertex> vertices;   // 頂点のリスト
-    std::vector<uint32_t> indices;  // インデックスのリスト
-    const int base_offset = 0;      // 基準オフセット
+    std::vector<vertex> vertices;
+    std::vector<uint32_t> indices;
+    const int base_offset = 0;
 
-    // スライス、マントルスタック、楕円体スタックの最小値を設定
     slices = std::max<uint32_t>(3u, slices);
     mantle_stacks = std::max<uint32_t>(1u, mantle_stacks);
     ellipsoid_stacks = std::max<uint32_t>(2u, ellipsoid_stacks);
 
-    // 各種ステップの逆数を計算
     const float inv_slices = 1.0f / static_cast<float>(slices);
     const float inv_mantle_stacks = 1.0f / static_cast<float>(mantle_stacks);
     const float inv_ellipsoid_stacks = 1.0f / static_cast<float>(ellipsoid_stacks);
 
-    const float pi_2{ 3.14159265358979f * 2.0f };   // 2π
-    const float pi_0_5{ 3.14159265358979f * 0.5f }; // π/2
-    const float angle_steps = inv_slices * pi_2;    // 角度ステップ
-    const float half_height = mantle_height * 0.5f; // マントルの高さの半分
+    const float pi_2{ 3.14159265358979f * 2.0f };
+    const float pi_0_5{ 3.14159265358979f * 0.5f };
+    const float angle_steps = inv_slices * pi_2;
+    const float half_height = mantle_height * 0.5f;
 
-    // マントルの頂点を生成 
+    /* Generate mantle vertices */
     struct spherical {
         float radius, theta, phi;
-    } point{ 1, 0, 0 };     // 球の座標系情報
-    DirectX::XMFLOAT3 position, normal;     // 位置と法線ベクトル
-    DirectX::XMFLOAT2 texcoord;             // テクスチャ座標
+    } point{ 1, 0, 0 };
+    DirectX::XMFLOAT3 position, normal;
+    DirectX::XMFLOAT2 texcoord;
 
-    float angle = 0.0f; // 角度初期化
+    float angle = 0.0f;
+    // 回転行列の作成
+    DirectX::XMMATRIX rotation_matrix_x = DirectX::XMMatrixRotationX(rotationAngle.x);
+    DirectX::XMMATRIX rotation_matrix_y = DirectX::XMMatrixRotationY(rotationAngle.y);
+    DirectX::XMMATRIX rotation_matrix_z = DirectX::XMMatrixRotationZ(rotationAngle.z);
+    DirectX::XMMATRIX rotation_matrix = rotation_matrix_x * rotation_matrix_y * rotation_matrix_z;
+    
+    // マントル部分の頂点生成ループ
     for (uint32_t u = 0; u <= slices; ++u)
     {
-        // X- および Z- 座標を計算
+        /* X座標とZ座標の計算 */
         texcoord.x = sinf(angle);
         texcoord.y = cosf(angle);
 
         position.x = texcoord.x * radius.x;
         position.z = texcoord.y * radius.z;
 
-        // 法線ベクトルを計算
+        /* 法線ベクトルの計算 */
         normal.x = texcoord.x;
         normal.y = 0;
         normal.z = texcoord.y;
@@ -702,25 +708,30 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
         normal.y = normal.y / magnitude;
         normal.z = normal.z / magnitude;
 
-        // 上部と下部の頂点を追加
+        /* 上部と下部の頂点を追加 */
         texcoord.x = static_cast<float>(slices - u) * inv_slices;
 
         for (uint32_t v = 0; v <= mantle_stacks; ++v)
         {
-            texcoord.y = static_cast<float>(v) * inv_mantle_stacks; // 頂点の Y 座標を計算
+            texcoord.y = static_cast<float>(v) * inv_mantle_stacks;
 #if _HAS_CXX20
             position.y = lerp(half_height, -half_height, texcoord.y);
 #else
             position.y = half_height * (1 - texcoord.y) + -half_height * texcoord.y;
 #endif
-            vertices.push_back({ position, normal });   // 頂点を追加
+            // 頂点の座標に回転を適用
+            DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
+            pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
+            DirectX::XMStoreFloat3(&position, pos_vector);
+
+            vertices.push_back({ position, normal });
         }
 
-        // 次のイテレーションのために角度を増加
+        /* 次のスライス用に角度を増加 */
         angle += angle_steps;
     }
 
-    // 上部および下部のカバー頂点を生成 
+    /* 上部と下部のカバー頂点の生成 */
     const float cover_side[2] = { 1, -1 };
     uint32_t base_offset_ellipsoid[2] = { 0 };
     for (size_t i = 0; i < 2; ++i)
@@ -729,17 +740,17 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
 
         for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
         {
-            // 球面座標のθを計算
+            /* 球面座標系のθの計算 */
             texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
             point.theta = texcoord.y * pi_0_5;
 
             for (uint32_t u = 0; u <= slices; ++u)
             {
-                // 球面座標のφを計算
+                /* 球面座標系のφの計算 */
                 texcoord.x = static_cast<float>(u) * inv_slices;
                 point.phi = texcoord.x * pi_2 * cover_side[i] + pi_0_5;
 
-                // 球面座標を直交座標に変換し、法線ベクトルを設定
+                /* 球面座標系を直交座標系に変換して、法線をセット */
                 const float sin_theta = sinf(point.theta);
                 position.x = point.radius * cosf(point.phi) * sin_theta;
                 position.y = point.radius * sinf(point.phi) * sin_theta;
@@ -748,25 +759,29 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
                 std::swap(position.y, position.z);
                 position.y *= cover_side[i];
 
-                // ノーマルを取得し、半球を移動
+                /* 法線を求めて半球体を移動 */
                 float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
                 normal.x = position.x / magnitude;
                 normal.y = position.y / magnitude;
                 normal.z = position.z / magnitude;
 
-                // 半径と高さで座標を変換
+                /* 半径と高さを使って座標を変換 */
                 position.x *= radius.x;
                 position.y *= radius.y;
                 position.z *= radius.z;
                 position.y += half_height * cover_side[i];
 
-                // 新しい頂点を追加
+                // 頂点の座標に回転を適用
+                DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
+                pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
+                DirectX::XMStoreFloat3(&position, pos_vector);
+
                 vertices.push_back({ position, normal });
             }
         }
     }
 
-    // マントルのインデックスを生成
+    /* Generate indices for the mantle */
     int offset = base_offset;
     for (uint32_t u = 0; u < slices; ++u)
     {
@@ -787,21 +802,21 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
         offset += (1 + mantle_stacks);
     }
 
-    // 上部および下部のインデックスを生成
+    /* Generate indices for the top and bottom */
     for (size_t i = 0; i < 2; ++i)
     {
         for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
         {
             for (uint32_t u = 0; u < slices; ++u)
             {
-                // 現在の面のインデックスを計算
+                /* Compute indices for current face */
                 auto i0 = v * (slices + 1) + u;
                 auto i1 = v * (slices + 1) + (u + 1);
 
                 auto i2 = (v + 1) * (slices + 1) + (u + 1);
                 auto i3 = (v + 1) * (slices + 1) + u;
 
-                // 新しいインデックスを追加
+                /* Add new indices */
                 indices.emplace_back(i0 + base_offset_ellipsoid[i]);
                 indices.emplace_back(i1 + base_offset_ellipsoid[i]);
                 indices.emplace_back(i3 + base_offset_ellipsoid[i]);

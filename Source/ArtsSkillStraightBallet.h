@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Graphics/Model.h"
+#include "Graphics/GeometricPrimitive.h"
 #include "Arts.h"
-
+#include<memory>
 // ãCíeãZíºêi
 class ArtsSkillStraightBallet : public Arts
 {
@@ -19,7 +19,7 @@ public:
     void Launch(const DirectX::XMFLOAT3& direction,
         const DirectX::XMFLOAT3& position);
 private:
-    std::unique_ptr<Model> model;
+    std::unique_ptr<GeometricPrimitive> prim;
     float speed = 10.0f;
     float lifeTimer = 3.0f; // éıñΩÅiÇRïbÅj
 };

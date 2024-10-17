@@ -7,6 +7,7 @@
 #include"Stage.h"
 #include "Graphics/Sprite.h"
 #include "Player.h"
+#include "Graphics/Light.h"
 //タイトルシーン
 class SceneGame :public Scene
 {
@@ -61,4 +62,5 @@ private:
 
     std::unique_ptr<Stage> stage;
     std::unique_ptr<Player> player;
+    std::unique_ptr<Light> light;
 };

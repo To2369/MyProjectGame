@@ -8,13 +8,14 @@
 #include "StraightBullet.h"
 #include "HomingBullet.h"
 #include "ArtsSpiritExplosion.h"
+#include "ArtsSkillStraightBallet.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
-
+    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ 100,100,100 }, 6, 3, 3, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
-
+    height=1;
     //bulletMgr = std::make_unique<BulletManager>();
 
     // ヒットエフェクト読み込み
@@ -47,18 +48,17 @@ void Player::Update(float elapsedTime)
     InputJump();
 
     // 入力による弾発射処理
-    //InputLaunchBullet();
+    InputLaunchBullet();
 
     InputArts();
 
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
-
     // 弾と敵の衝突処理
     CollisionBulletsAndEnemies();
 
     CollisionArtsAndEnemies();
-
+    CollisionPlayerAndArts();
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
     artsMgr.Update(elapsedTime);
@@ -68,12 +68,16 @@ void Player::Update(float elapsedTime)
 	// ワールド行列更新
 	UpdateTransform();
 }
-
+int a = 0;
 void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     bulletMgr.Render(dc);
     artsMgr.Render(dc);
+    if (a == 1)
+       geo->Render(dc, transform, { 0,0,1,1 });
+    ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+    artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 
 void Player::DrawDebugGUI()
@@ -109,6 +113,7 @@ void Player::DrawDebugGUI()
         {
             //位置
             ImGui::InputFloat3("Position", &position.x);
+            ImGui::SliderFloat("Position", &position.y,-10,10);
             //回転
             DirectX::XMFLOAT3 pangle;
             pangle.x = DirectX::XMConvertToDegrees(angle.x);
@@ -124,7 +129,7 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("spirit", &spiritEnergy);
             ImGui::InputInt("skill", &skillEnergy);
             ImGui::InputFloat("movespeed", &moveSpeed);
-
+            ImGui::InputInt("a", &a);
             ImGui::Text(u8"State　%s", str.c_str());
             //ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
@@ -146,9 +151,10 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    //debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
+    debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
     {
-        debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });
+        //if(a==1)
+        //debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });
     }
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
@@ -336,7 +342,9 @@ void Player::InputArts()
         // 発射
         ArtsSpiritExplosion* artsSpiritExplosion  = new ArtsSpiritExplosion(&artsMgr);
         artsSpiritExplosion->Launch(dir, pos);
-        spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
+     /*   ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+        artsSkillStraightBallet->Launch(dir,pos);*///Launch(dir, pos);
+        //spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
         //bulletMgr->Regist(bullet.get());
     }
 
@@ -383,7 +391,7 @@ void Player::CollisionPlayerAndEnemies()
         DirectX::XMFLOAT3 outVec;
 
         // 衝突処理
-        if (Collision::IntersectCapsuleAndCapsule(
+        if (Collision::IntersectCylinderAndCylinder(
             position,
             radius,
             height,
@@ -518,6 +526,43 @@ void Player::CollisionArtsAndEnemies()
         }
     }
 }
+
+void Player::CollisionPlayerAndArts()
+{
+    // 全ての弾と全ての敵を総当たりで衝突処理
+    int artsCount = artsMgr.GetArtsCount();
+    IntersectionResult result;
+    for (int i = 0; i < artsCount; ++i)
+    {
+        Arts* arts = artsMgr.GetArts(i);
+
+        // 衝突処理
+        DirectX::XMFLOAT3 outVec;
+        direction.y = 1;
+        DirectX::XMFLOAT3 plPos = position;
+        plPos.y +=0.5f;
+        if (Collision::IntersectCapsuleAndCapsule(
+            DirectX::XMLoadFloat3(&plPos),
+            DirectX::XMLoadFloat3(&direction),
+            height/2,
+            radius,
+            DirectX::XMLoadFloat3(&arts->GetPosition()),
+            DirectX::XMLoadFloat3(&arts->GetDirection()),
+            arts->GetHeight(),
+            arts->GetRadius(),
+            &result))
+        {
+            a = 1;
+            //DirectX::XMStoreFloat3(&position,result.pointB);
+        }
+        else
+        {
+            a = 0;
+        }
+        
+    }
+}
+
 void Player::TeleportBehindEnemy()
 {
     int useEnergy = 200;
@@ -715,17 +760,17 @@ bool Player::InputDash(float elapsedTime)
 
 bool Player::InputRecoverySkillEnergy(float elapsedTime)
 {
-    //GamePad* gamePad = InputManager::Instance()->getGamePad();
-    //if (gamePad->GetButton() & GamePad::BTN_A)//Z
-    //{
-    //    skillEnergyTimer -= elapsedTime;
-    //    if (skillEnergyTimer <= 0)
-    //    {
-    //        skillEnergy += 1;
-    //        skillEnergyTimer = 0.1f;
-    //    }
-    //    return true;
-    //}
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButton() & GamePad::BTN_A)//Z
+    {
+        skillEnergyTimer -= elapsedTime;
+        if (skillEnergyTimer <= 0)
+        {
+            skillEnergy += 1;
+            skillEnergyTimer = 0.1f;
+        }
+        return true;
+    }
     return false;
 }
 

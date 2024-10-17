@@ -218,7 +218,7 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    velocity.y += gravity * elapsedTime * 60.0f;
+    //velocity.y += gravity * elapsedTime * 60.0f;
 }
 
 // 垂直移動更新処理

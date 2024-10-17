@@ -37,7 +37,7 @@ public:
 
     // ”¼Œaæ“¾
     float GetRadius() const { return radius; }
-
+    float GetHeight() const { return height; }
     int GetUseSpiritEnergy() const { return useSpiritEnergy; }
     int GetUseSkillEnergy() const { return useSkillEnergy; }
     int GetDamage() const { return damage; }
@@ -47,7 +47,8 @@ protected:
 
 protected:
     DirectX::XMFLOAT3	position = { 0,0,0 };	// ˆÊ’u
-    DirectX::XMFLOAT3	direction = { 0,0,1 };	// •ûŒü
+    DirectX::XMFLOAT3	direction = { 0,1,0 };	// •ûŒü
+    DirectX::XMFLOAT3 angle = { 0,0,0 };
     DirectX::XMFLOAT3	scale = { 1,1,1 };		// Šg‘åk¬
     // p¨s—ñ
     DirectX::XMFLOAT4X4	transform = {
@@ -58,7 +59,9 @@ protected:
     };
     ArtsManager* artsMgr = nullptr;
 
-    float radius = 0.5f;	// ”¼Œa
+    float radius = 1.0f;	// ”¼Œa
+
+    float height = 1.0f;
 
     int useSpiritEnergy = 0;
     int useSkillEnergy = 0;

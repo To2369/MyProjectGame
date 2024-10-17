@@ -49,7 +49,9 @@ public:
 	struct constants
 	{
 		DirectX::XMFLOAT4X4 world;	// ワールド行列
-		DirectX::XMFLOAT4 material_color;	// マテリアルカラー
+		DirectX::XMFLOAT4 Ka;
+		DirectX::XMFLOAT4 Kd;
+		DirectX::XMFLOAT4 Ks;
 	};
 
 	// マテリアル名とDrawIndex()に必要な情報部分をサブセット化

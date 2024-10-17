@@ -12,7 +12,7 @@ DebugPrimitive::DebugPrimitive(ID3D11Device*device)
         std::make_unique<GeometricSphere>(device,1.0f,32,32);
 
     geometricPrimitives[static_cast<int>(FORM_STATE::Capsule)] =
-        std::make_unique<GeometricCapsule>(device, 0.5f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3);
+        std::make_unique<GeometricCapsule>(device, 1.0f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3, DirectX::XMFLOAT3{ 0,0,0 });
     
 }
 

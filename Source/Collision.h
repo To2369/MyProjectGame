@@ -11,6 +11,15 @@ struct HitResult
 	int materialIndex = -1; // 衝突したポリゴンのマテリアル番号
 };
 
+// オブジェクトの交差結果の構造体
+struct IntersectionResult
+{
+	DirectX::XMVECTOR	pointA = {};			// オブジェクトA側の交点。オブジェクトA Vs オブジェクトBで関数が構成される
+	DirectX::XMVECTOR	pointB = {};			// オブジェクトB側の交点。オブジェクトA Vs オブジェクトBで関数が構成される
+	DirectX::XMVECTOR	normal = {};			// 交点を結ぶ衝突の単位法線ベクトル。方向はオブジェクトB→オブジェクトA
+	float				penetration = 0.0f; 	// 法線ベクトルを元にしためり込み量。交差している場合にプラスの値が返却される
+};
+
 class Collision
 {
 public:
@@ -33,20 +42,30 @@ public:
 		float heightB,
 		DirectX::XMFLOAT3& outVec);
 
+	static bool IntersectCapsuleAndCapsule(
+		const DirectX::XMVECTOR& position1,	// 中心
+		const DirectX::XMVECTOR& direction1,	// 向き（正規化）
+		const float					length1,	// 長さ
+		const float					radius1,	// 半径
+		const DirectX::XMVECTOR& position2,	// 中心
+		const DirectX::XMVECTOR& direction2,	// 向き（正規化）
+		const float					length2,	// 長さ
+		const float					radius2,	// 半径
+		IntersectionResult* result);
+
+	// 線分と線分の最短距離の二乗を取得する
+	static float GetMinDistSq_SegmentSegment(
+		const  DirectX::XMVECTOR& point1A,
+		const  DirectX::XMVECTOR& point1B,
+		const  DirectX::XMVECTOR& point2A,
+		const  DirectX::XMVECTOR& point2B,
+		DirectX::XMVECTOR* nearPoint1,
+		DirectX::XMVECTOR* nearPoint2);
+
 	// 球と円柱の交差反映
 	static bool IntersectSphereAndCylinder(
 		const DirectX::XMFLOAT3& positionA,
 		float radiusA,
-		const DirectX::XMFLOAT3& positionB,
-		float radiusB,
-		float heightB,
-		DirectX::XMFLOAT3& outVec);
-
-	// カプセルとカプセルの交差判定
-	static bool IntersectCapsuleAndCapsule(
-		const DirectX::XMFLOAT3& positionA,
-		float radiusA,
-		float heightA,
 		const DirectX::XMFLOAT3& positionB,
 		float radiusB,
 		float heightB,

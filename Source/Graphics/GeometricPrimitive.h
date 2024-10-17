@@ -89,5 +89,6 @@ public:
         const DirectX::XMFLOAT3& radius,
         uint32_t slices,
         uint32_t ellipsoid_stacks,
-        uint32_t mantle_stacks);
+        uint32_t mantle_stacks,
+        const DirectX::XMFLOAT3& rotationAngle);
 };

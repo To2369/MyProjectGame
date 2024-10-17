@@ -201,6 +201,9 @@
     <ClInclude Include="Source\Graphics\DebugPrimitive.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Light.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -347,6 +350,9 @@
     <ClCompile Include="Source\Graphics\DebugPrimitive.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Light.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -371,6 +377,9 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\Line.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\PhongShader.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -424,6 +433,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\LinePS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PhongShaderVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PhongShaderPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

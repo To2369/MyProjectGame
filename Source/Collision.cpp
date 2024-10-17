@@ -1,4 +1,5 @@
 #include "Collision.h"
+#include <algorithm>
 
 // 球と球の交差判定
 bool Collision::IntersectSphereAndSphere(
@@ -66,6 +67,126 @@ bool Collision::IntersectCylinderAndCylinder(
 
     return true;
 }
+bool Collision::IntersectCapsuleAndCapsule(
+    const DirectX::XMVECTOR& position1,	// 中心
+    const DirectX::XMVECTOR& direction1,	// 向き（正規化）
+    const float					length1,	// 長さ
+    const float					radius1,	// 半径
+    const DirectX::XMVECTOR& position2,	// 中心
+    const DirectX::XMVECTOR& direction2,	// 向き（正規化）
+    const float					length2,	// 長さ
+    const float					radius2,	// 半径
+    IntersectionResult* result)
+{
+    // 各カプセルの中心線上の最近点算出
+    DirectX::XMVECTOR point1 = {}, point2 = {};
+    DirectX::XMVECTOR end1 = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
+    DirectX::XMVECTOR end2 = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));
+
+    // 線分同士の最短距離の二乗を取得
+    float distSq = GetMinDistSq_SegmentSegment(position1, end1, position2, end2, &point1, &point2);
+    DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(point1, point2);
+    float radiusAdd = radius1 + radius2;
+
+    // 最近接点間の距離がカプセルの半径の和より小さい場合、衝突している
+    if (distSq < radiusAdd * radiusAdd)
+    {
+        if (result)
+        {
+            result->normal = DirectX::XMVector3Normalize(vec);
+            result->penetration = radiusAdd - sqrtf(distSq);
+            result->pointA = DirectX::XMVectorAdd(point1, DirectX::XMVectorScale(result->normal, -radius1));
+            result->pointB = DirectX::XMVectorAdd(point2, DirectX::XMVectorScale(result->normal, radius2));
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+// 線分と線分の最短距離の二乗を取得する
+float Collision::GetMinDistSq_SegmentSegment(
+    const  DirectX::XMVECTOR& point1A,
+    const  DirectX::XMVECTOR& point1B,
+    const  DirectX::XMVECTOR& point2A,
+    const  DirectX::XMVECTOR& point2B,
+    DirectX::XMVECTOR* nearPoint1,
+    DirectX::XMVECTOR* nearPoint2)
+{
+    DirectX::XMVECTOR segmentDirection1 = DirectX::XMVectorSubtract(point1B, point1A);
+    DirectX::XMVECTOR segmentDirection2 = DirectX::XMVectorSubtract(point2B, point2A);
+    DirectX::XMVECTOR r = DirectX::XMVectorSubtract(point1A, point2A);
+
+    float a = DirectX::XMVectorGetX(DirectX::XMVector3Dot(segmentDirection1, segmentDirection1));
+    float e = DirectX::XMVectorGetX(DirectX::XMVector3Dot(segmentDirection2, segmentDirection2));
+    float f = DirectX::XMVectorGetX(DirectX::XMVector3Dot(segmentDirection2, r));
+
+    float t1 = 0.0f, t2 = 0.0f;
+
+    if (a <= FLT_EPSILON && e <= FLT_EPSILON)	// 両線分が点に縮退している場合
+    {
+        t1 = t2 = 0.0f;
+    }
+    else if (a <= FLT_EPSILON)					// 片方（d0）が点に縮退している場合
+    {
+        t1 = 0.0f;
+        t2 = std::clamp(f / e, 0.0f, 1.0f);
+    }
+    else
+    {
+        float c = DirectX::XMVectorGetX(DirectX::XMVector3Dot(segmentDirection1, r));
+        if (e <= FLT_EPSILON)					// 片方（d1）が点に縮退している場合
+        {
+            t2 = 0.0f;
+            t1 = std::clamp(-c / a, 0.0f, 1.0f);
+        }
+        else									// 両方が線分
+        {
+            float b = DirectX::XMVectorGetX(DirectX::XMVector3Dot(segmentDirection1, segmentDirection2));
+            float denom = a * e - b * b;
+
+            if (denom != 0.0f)					// 平行確認（平行時は t1 = 0.0f（線分の始端）を仮の初期値として計算をすすめる）
+            {
+                t1 = std::clamp((b * f - c * e) / denom, 0.0f, 1.0f);
+            }
+
+            t2 = b * t1 + f;
+
+            if (t2 < 0.0f)						// t1が始端より外側にある場合
+            {
+                t2 = 0.0f;
+                t1 = std::clamp(-c / a, 0.0f, 1.0f);
+            }
+            else if (t2 > e)					// t1が終端より外側にある場合
+            {
+                t2 = 1.0f;
+                t1 = std::clamp((b - c) / a, 0.0f, 1.0f);
+            }
+            else								// t1が線分上にある場合
+            {
+                t2 /= e;
+            }
+        }
+    }
+
+    // 各線分上の最近点算出
+    DirectX::XMVECTOR point1 = DirectX::XMVectorAdd(point1A, DirectX::XMVectorScale(segmentDirection1, t1));
+    DirectX::XMVECTOR point2 = DirectX::XMVectorAdd(point2A, DirectX::XMVectorScale(segmentDirection2, t2));
+
+    DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(point1, point2);
+
+    if (nearPoint1)
+    {
+        *nearPoint1 = point1;
+    }
+    if (nearPoint2)
+    {
+        *nearPoint2 = point2;
+    }
+
+    return DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(vec));
+}
 
 // 球と円柱の交差反映
 bool Collision::IntersectSphereAndCylinder(
@@ -100,46 +221,6 @@ bool Collision::IntersectSphereAndCylinder(
     return true;
 }
 
-// カプセルとカプセルの交差判定
-bool Collision::IntersectCapsuleAndCapsule(
-    const DirectX::XMFLOAT3& positionA,
-    float radiusA,
-    float heightA,
-    const DirectX::XMFLOAT3& positionB,
-    float radiusB,
-    float heightB,
-    DirectX::XMFLOAT3& outVec)
-{
-    // カプセルの中心線の両端を計算
-    DirectX::XMFLOAT3 topA = { positionA.x, positionA.y + heightA / 2.0f, positionA.z };
-    DirectX::XMFLOAT3 bottomA = { positionA.x, positionA.y - heightA / 2.0f, positionA.z };
-    DirectX::XMFLOAT3 topB = { positionB.x, positionB.y + heightB / 2.0f, positionB.z };
-    DirectX::XMFLOAT3 bottomB = { positionB.x, positionB.y - heightB / 2.0f, positionB.z };
-
-    // 線分と線分の最短距離を求める（カプセルの軸）
-    float sqDist = DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(
-        DirectX::XMVectorSubtract(
-            DirectX::XMLoadFloat3(&topA),
-            DirectX::XMLoadFloat3(&topB)
-        )
-    ));
-
-    // 半径の合計
-    float range = radiusA + radiusB;
-
-    // 距離判定
-    if (sqrtf(sqDist) > range)
-    {
-        return false;
-    }
-
-    // 衝突方向のベクトルを計算
-    DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&positionB), DirectX::XMLoadFloat3(&positionA));
-    vec = DirectX::XMVector3Normalize(vec);
-    DirectX::XMStoreFloat3(&outVec, vec);
-
-    return true;
-}
 
 // レイとモデルの交差判定
 bool Collision::IntersectRayAndModel(

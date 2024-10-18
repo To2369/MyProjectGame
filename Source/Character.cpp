@@ -4,32 +4,35 @@
 //行列更新
 void Character::UpdateTransform()
 {
-    //　座標系変換用の行列
-    const DirectX::XMFLOAT4X4 coordinate_system_transform[]
+    // 座標系変換用の行列
+    const DirectX::XMFLOAT4X4 coordinate_system_transform[] =
     {
         { -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	//0:右手系 Y-UP
         { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	    //1:左手系 Y-UP
         { -1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	//2:右手系 Z-UP
         { 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	    //3:左手系 Z-UP
     };
-    //　デフォルトのスケールファクタを設定して行列に反映
+    // デフォルトのスケールファクタを設定して行列に反映
     const float scale_factor = 1.0f;
-    DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[0]) * DirectX::XMMatrixScaling(scale_factor,scale_factor,scale_factor) };
+    DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transform[0]) * DirectX::XMMatrixScaling(scale_factor, scale_factor, scale_factor) };
+
     // スケール行列作成
-    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scale.x,scale.y,scale.z) };
-    // 回転行列作成
-    DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(angle.x);
-    DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(angle.y);
-    DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(angle.z);
-    DirectX::XMMATRIX R = Y * X * Z;
+    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) };
+
+
+    DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quaternion));
     // 位置行列作成
-    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x,position.y,position.z) };
+    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x, position.y, position.z) };
 
     // 行列を組み合わせ、ワールド行列を作成
-    DirectX::XMMATRIX W= C * S * R * T;
-    //計算したワールド行列をtrabsformに取り出す
+    DirectX::XMMATRIX W = C * S * R * T;
+
+    // 計算したワールド行列をtransformに取り出す
     DirectX::XMStoreFloat4x4(&transform, W);
 
+    right = { transform._11,transform._12,transform._13 };
+    up = { transform._21,transform._22,transform._23 };
+    front = { transform._31,transform._32,transform._33 };
 }
 
 void Character::UpdateStatus(float elapsedTime)
@@ -127,15 +130,18 @@ void Character::Turn(float elapsedTime, float vx, float vz, float speed)
     {
         rot = speed;
     }
-    // 外積が正の場合は右回転,負の場合は左回転
-    if (cross < 0.0f)
-    {
-        angle.y -= rot;
-    }
-    else
-    {
-        angle.y += rot;
-    }
+    // Y軸回りの回転角をクォータニオンに変換
+    DirectX::XMVECTOR rotationQuat = DirectX::XMQuaternionRotationAxis(
+        up, // Y軸
+        cross < 0.0f ? -rot : rot                     // 回転方向に応じて符号を変える
+    );
+
+    // 現在のクォータニオンに新しい回転を掛け合わせる
+    DirectX::XMVECTOR currentQuat = DirectX::XMLoadFloat4(&quaternion);
+    currentQuat = DirectX::XMQuaternionMultiply(currentQuat, rotationQuat);
+
+    // 結果を保存
+    DirectX::XMStoreFloat4(&quaternion, currentQuat);
 }
 // ジャンプ処理
 void Character::Jump(float speed)
@@ -218,7 +224,7 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    //velocity.y += gravity * elapsedTime * 60.0f;
+    velocity.y += gravity * elapsedTime * 60.0f;
 }
 
 // 垂直移動更新処理
@@ -276,14 +282,15 @@ void Character::UpdateVerticalMove(float elapsedTime)
         groundedFlag = false;
     }
 
-    // 姿勢制御用法線ベクトルから x と z の角度を計算
-    // y 軸が姿勢制御用法線ベクトル方向に向くように角度を計算
+    //// 姿勢制御用法線ベクトルから x と z の角度を計算
+    //// y 軸が姿勢制御用法線ベクトル方向に向くように角度を計算
     float angleX = atan2f(normal.z, normal.y);
     float angleZ = -atan2f(normal.x, normal.y);
 
-    // 線形補間で滑らかに回転
-    angle.x = Mathf::Lerp(angle.x, angleX, 0.1f);
-    angle.z = Mathf::Lerp(angle.z, angleZ, 0.1f);
+    //// 線形補間で滑らかに回転
+    float a, b;
+    //quaternion.x = Mathf::Lerp(quaternion.x, angleX, 0.1f);
+    quaternion.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
 }
 
 // 水平速度更新処理

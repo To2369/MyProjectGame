@@ -115,14 +115,16 @@ void Player::DrawDebugGUI()
             ImGui::InputFloat3("Position", &position.x);
             ImGui::SliderFloat("Position", &position.y,-10,10);
             //âÒì]
-            DirectX::XMFLOAT3 pangle;
-            pangle.x = DirectX::XMConvertToDegrees(angle.x);
-            pangle.y = DirectX::XMConvertToDegrees(angle.y);
-            pangle.z = DirectX::XMConvertToDegrees(angle.z);
-            ImGui::InputFloat3("Angle", &pangle.x);
-            angle.x = DirectX::XMConvertToRadians(pangle.x);
-            angle.y = DirectX::XMConvertToRadians(pangle.y);
-            angle.z = DirectX::XMConvertToRadians(pangle.z);
+            DirectX::XMFLOAT4 pquater;
+            pquater.x = DirectX::XMConvertToDegrees(quaternion.x);
+            pquater.y = DirectX::XMConvertToDegrees(quaternion.y);
+            pquater.z = DirectX::XMConvertToDegrees(quaternion.z);
+            pquater.w = DirectX::XMConvertToDegrees(quaternion.w);
+            ImGui::InputFloat4("Angle", &pquater.x);
+   /*         quaternion.x = DirectX::XMConvertToRadians(pquater.x);
+            quaternion.y = DirectX::XMConvertToRadians(pquater.y);
+            quaternion.z = DirectX::XMConvertToRadians(pquater.z);
+            quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
             //ÉXÉPÅ[Éã
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);

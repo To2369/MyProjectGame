@@ -37,6 +37,12 @@ public:
 	//回転設定
 	void SetAngle(const DirectX::XMFLOAT3& angle) { this->angle = angle; }
 
+	//回転取得
+	const DirectX::XMFLOAT4& GetQuarternion()const { return quaternion; }
+
+	//回転設定
+	void SetQuarternion(const DirectX::XMFLOAT4& quaternion) { this->quaternion = quaternion; }
+
 	//スケール設定
 	const DirectX::XMFLOAT3& GetScale()const { return scale; }
 
@@ -110,7 +116,11 @@ protected:
 protected:
 	DirectX::XMFLOAT3 position = { 0,0,0 };
 	DirectX::XMFLOAT3 angle = { 0,0,0 };
+	DirectX::XMFLOAT4 quaternion = { 0,0,0,1 };
 	DirectX::XMFLOAT3 scale = { 1,1,1 };
+	DirectX::XMVECTOR right = { 1,0,0 };
+	DirectX::XMVECTOR up = { 0,1,0 };
+	DirectX::XMVECTOR front = { 0,0,1 };
 	float radius = 0.5f;
 	float gravity = -1.0f;	// 重力（フレーム単位の値）
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };	// 速度

@@ -6,13 +6,6 @@ Arts::Arts(ArtsManager* manager) : artsMgr(manager)
 {
     artsMgr->Regist(this);
 }
-// デバッグプリミティブ描画
-void Arts::DrawDebugPrimitive()
-{
-    //衝突判定用のデバッグ球を描画
-    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
-}
 
 // 行列更新処理
 void Arts::UpdateTransform()

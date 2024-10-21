@@ -316,9 +316,9 @@ void Player::InputLaunchBullet()
             }
 
             // ”­ŽË
-            HomingBullet* bullet = new HomingBullet(&bulletMgr);
+          /*  HomingBullet* bullet = new HomingBullet(&bulletMgr);
             bullet->Launch(dir, pos, target);
-            bullet->LockonTarget(target);
+            bullet->LockonTarget(target);*/
         }
     }
 }

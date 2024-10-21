@@ -9,10 +9,19 @@ ArtsSpiritExplosion::ArtsSpiritExplosion(ArtsManager* manager) : Arts(manager)
     useSpiritEnergy = 300;
     radius = 2;
     damage = 1;
+    lifeTimer = 3.0f;
 }
 
 ArtsSpiritExplosion::~ArtsSpiritExplosion()
 {
+}
+
+// デバッグプリミティブ描画
+void ArtsSpiritExplosion::DrawDebugPrimitive()
+{
+    //衝突判定用のデバッグ球を描画
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
 }
 
 void ArtsSpiritExplosion::Update(float elapsedTime)

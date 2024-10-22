@@ -288,9 +288,8 @@ void Character::UpdateVerticalMove(float elapsedTime)
     float angleZ = -atan2f(normal.x, normal.y);
 
     //// 線形補間で滑らかに回転
-    float a, b;
     //quaternion.x = Mathf::Lerp(quaternion.x, angleX, 0.1f);
-    quaternion.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
+    //quaternion.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
 }
 
 // 水平速度更新処理

@@ -48,6 +48,7 @@ protected:
 protected:
     DirectX::XMFLOAT3	position = { 0,0,0 };	// à íu
     DirectX::XMFLOAT3	direction = { 0,1,0 };	// ï˚å¸
+    DirectX::XMFLOAT4 quaternion = { 0,0,0,1 };
     DirectX::XMFLOAT3 angle = { 0,0,0 };
     DirectX::XMFLOAT3	scale = { 1,1,1 };		// ägëÂèkè¨
     // épê®çsóÒ

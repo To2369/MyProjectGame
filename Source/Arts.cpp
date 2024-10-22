@@ -71,10 +71,8 @@ void Arts::UpdateTransform()
     // スケール行列作成
     DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scale.x,scale.y,scale.z) };
     // 回転行列作成
-    DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(angle.x);
-    DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(angle.y);
-    DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(angle.z);
-    DirectX::XMMATRIX R = Y * X * Z;
+    DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quaternion));
+
     // 位置行列作成
     DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x,position.y,position.z) };
 

@@ -15,7 +15,7 @@ Player::Player()
     geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ 100,100,100 }, 6, 3, 3, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
-    height=1;
+    height=1.5f;
     //bulletMgr = std::make_unique<BulletManager>();
 
     // ヒットエフェクト読み込み
@@ -45,7 +45,7 @@ void Player::Update(float elapsedTime)
     UpdateVelocity(elapsedTime);
 
     // ジャンプ入力処理
-    InputJump();
+    //InputJump();
 
     // 入力による弾発射処理
     InputLaunchBullet();
@@ -243,31 +243,31 @@ void Player::InputJump()
 // 入力による弾発射処理
 void Player::InputLaunchBullet()
 {
-    float useEnergy = 2;
+    int useEnergy = 2;
     if (skillEnergy >= useEnergy)
     {
         GamePad* gamePad = InputManager::Instance()->getGamePad();
         std::unique_ptr<StraightBullet> bullet;
         // ストレート弾発射
-        //if (gamePad->GetButtonDown() & GamePad::BTN_X)
-        //{
-        //    // 前方向
-        //    DirectX::XMFLOAT3 dir;
-        //    dir.x = sinf(angle.y);
-        //    dir.y = 0.0f;
-        //    dir.z = cosf(angle.y);
+        /*if (gamePad->GetButtonDown() & GamePad::BTN_X)
+        {
+            // 前方向
+            DirectX::XMFLOAT3 dir;
+            dir.x = sinf(angle.y);
+            dir.y = 0.0f;
+            dir.z = cosf(angle.y);
 
-        //    // 発射位置（プレイヤーの腰あたり
-        //    DirectX::XMFLOAT3 pos;
-        //    pos.x = position.x;
-        //    pos.y = position.y + height * 0.5f;
-        //    pos.z = position.z;
+            // 発射位置（プレイヤーの腰あたり
+            DirectX::XMFLOAT3 pos;
+            pos.x = position.x;
+            pos.y = position.y + height * 0.5f;
+            pos.z = position.z;
 
-        //    // 発射
-        //    StraightBullet* bullet = new StraightBullet(&bulletMgr);
-        //    bullet->Launch(dir, pos);
-        //    //bulletMgr->Regist(bullet.get());
-        //}
+            // 発射
+            StraightBullet* bullet = new StraightBullet(&bulletMgr);
+            bullet->Launch(dir, pos);
+            //bulletMgr->Regist(bullet.get());
+        }*/
 
         // ホーミング弾発射
         if (gamePad->GetButtonDown() & GamePad::BTN_Y)
@@ -275,7 +275,7 @@ void Player::InputLaunchBullet()
             skillEnergy -= useEnergy;
             // 前方向
             DirectX::XMFLOAT3 dir;
-            dir.x = sinf(angle.y);
+            dir.x = sinf(angle.x);
             dir.y = 0.0f;
             dir.z = cosf(angle.y);
 
@@ -312,7 +312,6 @@ void Player::InputLaunchBullet()
                     target.y += enemy->GetHeight() * 0.5f;
 
                 }
-
             }
 
             // 発射
@@ -331,9 +330,15 @@ void Player::InputArts()
     {
         // 前方向
         DirectX::XMFLOAT3 dir;
-        dir.x = sinf(angle.y);
-        dir.y = 0.0f;
-        dir.z = cosf(angle.y);
+
+        DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&quaternion);
+        // 回転クォータニオンを前方ベクトルに適用して、実際の方向を計算
+        DirectX::XMVECTOR rotatedForward = DirectX::XMVector3Rotate(front, q);
+        
+
+        // rotatedForward を XMFLOAT3 に変換
+        DirectX::XMStoreFloat3(&dir, rotatedForward);
+
 
         // 発射位置（プレイヤーの腰あたり
         DirectX::XMFLOAT3 pos;
@@ -342,11 +347,11 @@ void Player::InputArts()
         pos.z = position.z;
 
         // 発射
-        ArtsSpiritExplosion* artsSpiritExplosion  = new ArtsSpiritExplosion(&artsMgr);
-        artsSpiritExplosion->Launch(dir, pos);
-     /*   ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-        artsSkillStraightBallet->Launch(dir,pos);*///Launch(dir, pos);
+        //ArtsSpiritExplosion* artsSpiritExplosion  = new ArtsSpiritExplosion(&artsMgr);
+        //artsSpiritExplosion->Launch(dir, pos);
         //spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
+        ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+        artsSkillStraightBallet->Launch(dir, pos);
         //bulletMgr->Regist(bullet.get());
     }
 
@@ -619,8 +624,22 @@ void Player::TeleportBehindEnemy()
             // プレイヤーの位置を更新
             position = teleportPos;
 
-            // プレイヤーが敵の方を向くように回転
-            angle.y = closestEnemy->GetAngle().y;
+            // プレイヤーが敵の方を向くようにクォータニオンを使用して回転
+            DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+            DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemyPos);
+
+            // 敵の方への方向ベクトルを計算
+            DirectX::XMVECTOR toEnemy = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+            toEnemy = DirectX::XMVector3Normalize(toEnemy);
+
+            // 方向ベクトルから回転行列を計算
+            DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixLookToLH(playerPosVec, toEnemy, up);
+
+            // 回転行列からクォータニオンを計算
+            DirectX::XMVECTOR rotationQuat = DirectX::XMQuaternionRotationMatrix(rotationMatrix);
+
+            // プレイヤーの回転にクォータニオンを適用
+            DirectX::XMStoreFloat4(&quaternion, rotationQuat);
         }
     }
 }

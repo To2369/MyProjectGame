@@ -79,7 +79,7 @@ void Player::Render(ID3D11DeviceContext* dc)
     ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
     artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
-
+float c = 0;
 void Player::DrawDebugGUI()
 {
 #ifdef USE_IMGUI
@@ -115,16 +115,19 @@ void Player::DrawDebugGUI()
             ImGui::InputFloat3("Position", &position.x);
             ImGui::SliderFloat("Position", &position.y,-10,10);
             //回転
-            DirectX::XMFLOAT4 pquater;
-            pquater.x = DirectX::XMConvertToDegrees(quaternion.x);
-            pquater.y = DirectX::XMConvertToDegrees(quaternion.y);
-            pquater.z = DirectX::XMConvertToDegrees(quaternion.z);
-            pquater.w = DirectX::XMConvertToDegrees(quaternion.w);
-            ImGui::InputFloat4("Angle", &pquater.x);
-   /*         quaternion.x = DirectX::XMConvertToRadians(pquater.x);
+            DirectX::XMVECTOR p = DirectX::XMQuaternionRotationAxis(right, c);
+            DirectX::XMVECTOR orientationVec= DirectX::XMLoadFloat4(&quaternion);
+            orientationVec = DirectX::XMQuaternionMultiply(orientationVec, p);
+            // 結果を保存
+            DirectX::XMStoreFloat4(&quaternion, orientationVec);
+            //DirectX::XMFLOAT4 pquater;
+            ImGui::InputFloat("movespeed", &moveSpeed);
+      /*      quaternion.x = DirectX::XMConvertToRadians(pquater.x);
             quaternion.y = DirectX::XMConvertToRadians(pquater.y);
             quaternion.z = DirectX::XMConvertToRadians(pquater.z);
             quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
+            ImGui::InputFloat4("quaternion", &quaternion.x);
+            ImGui::SliderFloat("quaternion", &c,-1,1);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);
@@ -328,16 +331,13 @@ void Player::InputArts()
     // ストレート弾発射
     if (gamePad->GetButtonDown() & GamePad::BTN_Y)
     {
+        DirectX::XMFLOAT3 f;
+        DirectX::XMStoreFloat3(&f, front);
         // 前方向
         DirectX::XMFLOAT3 dir;
-
-        DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&quaternion);
-        // 回転クォータニオンを前方ベクトルに適用して、実際の方向を計算
-        DirectX::XMVECTOR rotatedForward = DirectX::XMVector3Rotate(front, q);
-        
-
-        // rotatedForward を XMFLOAT3 に変換
-        DirectX::XMStoreFloat3(&dir, rotatedForward);
+        dir.x = f.x;
+        dir.y = 0.0f;
+        dir.z = f.z;
 
 
         // 発射位置（プレイヤーの腰あたり

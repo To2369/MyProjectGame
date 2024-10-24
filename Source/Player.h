@@ -151,4 +151,5 @@ private:
 	bool dashTowardEnemyFlag = false;
 	// ヒットエフェクト
 	//std::unique_ptr<Effect> hitEffect;
+	float PIDIV180 = 0.017452f;
 };

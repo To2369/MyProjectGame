@@ -224,9 +224,35 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    velocity.y += gravity * elapsedTime * 60.0f;
+    //velocity.y += gravity * elapsedTime * 60.0f;
 }
 
+DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)
+{
+    //	ZXY回転
+    DirectX::XMFLOAT3 euler;
+    if (1.0f - fabs(rotation.m[2][1]) < 1.0e-6f)
+    {
+        euler.x = rotation.m[2][1] < 0 ? DirectX::XM_PIDIV2 : -DirectX::XM_PIDIV2;
+        euler.y = atan2f(rotation.m[1][0], rotation.m[0][0]);
+        euler.z = 0;
+    }
+    else
+    {
+        euler.x = asinf(-rotation.m[2][1]);
+        euler.y = atan2f(rotation.m[2][0], rotation.m[2][2]);
+        euler.z = atan2f(rotation.m[0][1], rotation.m[1][1]);
+    }
+    return euler;
+}
+
+DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4 quaternion)
+{
+    DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quaternion));
+    DirectX::XMFLOAT4X4 rotation;
+    DirectX::XMStoreFloat4x4(&rotation, Rotation);
+    return convert_quaternion_to_euler(rotation);
+}
 // 垂直移動更新処理
 void Character::UpdateVerticalMove(float elapsedTime)
 {
@@ -282,14 +308,42 @@ void Character::UpdateVerticalMove(float elapsedTime)
         groundedFlag = false;
     }
 
+#if 01
+    DirectX::XMVECTOR Normal = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
+    DirectX::XMVECTOR Up = DirectX::XMVectorSet(0, 1, 0, 0);
+    //  上ベクトルと法線から回転差分クォータニオンを算出
+    DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Normal, Up);
+    float dot = DirectX::XMVectorGetX(Dot);
+    DirectX::XMVECTOR NQ = DirectX::XMQuaternionIdentity();
+    DirectX::XMVECTOR QuaternionAdditional = DirectX::XMLoadFloat4(&quaternion_additional);
+    if (abs(dot) < 0.999f)
+    {
+        DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Up, Normal);
+        NQ = DirectX::XMQuaternionRotationAxis(Axis, acosf(DirectX::XMVectorGetX(Dot)));
+    }
+    NQ = DirectX::XMQuaternionSlerp(QuaternionAdditional, NQ, 0.1f);
+    //  今の姿勢に差分を適応
+    DirectX::XMVECTOR Quaternion = DirectX::XMLoadFloat4(&quaternion);
+    {
+        //  差分適応前に前回の回転量を打ち消す
+        QuaternionAdditional = DirectX::XMQuaternionInverse(QuaternionAdditional);
+        Quaternion = DirectX::XMQuaternionMultiply(Quaternion, QuaternionAdditional);
+        //  改めて乗算
+        Quaternion = DirectX::XMQuaternionMultiply(Quaternion, NQ);
+    }
+    //記録
+    DirectX::XMStoreFloat4(&quaternion, Quaternion);
+    DirectX::XMStoreFloat4(&quaternion_additional, NQ);
+#else
     //// 姿勢制御用法線ベクトルから x と z の角度を計算
     //// y 軸が姿勢制御用法線ベクトル方向に向くように角度を計算
     float angleX = atan2f(normal.z, normal.y);
     float angleZ = -atan2f(normal.x, normal.y);
 
     //// 線形補間で滑らかに回転
-    //quaternion.x = Mathf::Lerp(quaternion.x, angleX, 0.1f);
-    //quaternion.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
+    //angle.x = Mathf::Lerp(quaternion.x, angleX, 0.1f);
+    //angle.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
+#endif
 }
 
 // 水平速度更新処理

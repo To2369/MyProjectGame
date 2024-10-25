@@ -5,7 +5,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
 {
     height = 1.0f;
 
-    prim = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, DirectX::XMFLOAT3{ radius,radius,radius }, 6, 3, 3, DirectX::XMFLOAT3{ 0,0,0 });
+    prim = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ 0,0,0 });
     const float scale_fcator = 1.0f;	// モデルが大きいのでスケール調整
     scale = { scale_fcator, scale_fcator, scale_fcator };
     position = { 1,5,1 };
@@ -29,9 +29,9 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
     // 移動
     float speed = this->speed * elapsedTime;
     // 位置 += 方向 * 速さ
-    position.x += direction.x * speed;
+   /* position.x += direction.x * speed;
     position.y += direction.y * speed;
-    position.z += direction.z * speed;
+    position.z += direction.z * speed;*/
     // ワールド行列の更新
     UpdateTransform();
 }

@@ -12,7 +12,7 @@
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
-    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ 100,100,100 }, 6, 3, 3, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
+    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height*100, DirectX::XMFLOAT3{ radius*100,radius * 100,radius * 100 }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
     height=1.5f;
@@ -547,11 +547,11 @@ void Player::CollisionPlayerAndArts()
         DirectX::XMFLOAT3 outVec;
         direction.y = 1;
         DirectX::XMFLOAT3 plPos = position;
-        plPos.y +=0.5f;
+        plPos.y +=0.75f; 
         if (Collision::IntersectCapsuleAndCapsule(
             DirectX::XMLoadFloat3(&plPos),
             DirectX::XMLoadFloat3(&direction),
-            height/2,
+            height-0.75f,
             radius,
             DirectX::XMLoadFloat3(&arts->GetPosition()),
             DirectX::XMLoadFloat3(&arts->GetDirection()),

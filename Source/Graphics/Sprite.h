@@ -45,6 +45,12 @@ public:
 
     // テクスチャ高さ取得
     int GetTextureHeight() const { return textureHeight; }
+
+    // 頂点バッファの取得
+    const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const { return vertex_buffer; }
+
+    // シェーダーリソースビューの取得
+    const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetShaderResourceView() const { return shader_resource_view; }
 private:
     // 頂点シェーダー
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;

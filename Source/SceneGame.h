@@ -8,6 +8,10 @@
 #include "Graphics/Sprite.h"
 #include "Player.h"
 #include "Graphics/Light.h"
+#include "Graphics/ShadowMapCaster.h"
+#include "PostprocessingRenderer.h"
+#include "Graphics/ColorGrading.h"
+#include "Graphics/RenderContext.h"
 //タイトルシーン
 class SceneGame :public Scene
 {
@@ -39,13 +43,16 @@ public:
 private:
     std::unique_ptr<FrameBuffer> framebuffers[8];
     std::unique_ptr<FullScreenQuad> bit_block_transfer;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shaders[8];
 
     Camera* camera;
     std::unique_ptr<CameraController> cameraCtrl;
+    //std::unique_ptr<ShadowMapCaster> shadowMapCaster;
     std::unique_ptr<Sprite> lifegauge;
     std::unique_ptr<Sprite> skillEnergyGauge;
     std::unique_ptr<Sprite> spritEnergyGauge;
-
+    ColorGradingData colorGradingData;
+    std::unique_ptr<Sprite> sprite;
 private:
     // カメラの位置
     DirectX::XMFLOAT4 camera_position{ 0.0f,0.0f,-3.0f,1.0f };
@@ -63,4 +70,6 @@ private:
     std::unique_ptr<Stage> stage;
     std::unique_ptr<Player> player;
     std::unique_ptr<Light> light;
+    // ポストプロセス
+    std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 };

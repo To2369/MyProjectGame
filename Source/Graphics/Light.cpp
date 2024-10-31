@@ -3,8 +3,7 @@
 #include "Light.h"
 Light::Light(ID3D11Device* device)
 {
-	Graphics* graphics = Graphics::Instance();
-	CreateBuffer<Light::lightConstants>(graphics->GetDevice(), lightConstantBuffer.GetAddressOf());
+	CreateBuffer<Light::lightConstants>(device, lightConstantBuffer.GetAddressOf());
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
 	{
@@ -35,5 +34,8 @@ void Light::Update(float elapsedTIme)
 void Light::Render(ID3D11DeviceContext* dc)
 {
 	lightConstants lights{};
+	lights.ambientColor = ambientColor;
+	lights.directionalLightDirection = directionalLightDirection;
+	lights.directionalLightColor = directionalLightColor;
 	BindBuffer(dc, 2, lightConstantBuffer.GetAddressOf(), &lights);
 }

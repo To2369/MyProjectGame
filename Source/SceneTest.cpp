@@ -45,6 +45,9 @@ void SceneTest::Initialize()
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 
     gltf_models[0] = std::make_unique<GltfModel>(graphics->GetDevice(), ".\\Data\\glTF-Sample-Models-main\\2.0\\2CylinderEngine\\glTF\\2CylinderEngine.gltf");
+
+    ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\LuminanceExtractionPS.cso", pixel_shaders[0].GetAddressOf());
+    ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\BlurPS.cso", pixel_shaders[1].GetAddressOf());
 }
 
 //終了化
@@ -95,6 +98,8 @@ void SceneTest::Render()
 
     ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 
+    ID3D11ShaderResourceView* shaderResourceviews[2]
+    { framebuffers[0]->shader_resource_views[0].Get(),framebuffers[1]->shader_resource_views[0].Get() };
     //ビューポート取得
     D3D11_VIEWPORT viewport;
     UINT num_viewports{ 1 };
@@ -118,9 +123,9 @@ void SceneTest::Render()
     // 2D 描画
     {
         rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);
-      /*  sprite_batches[0]->Begin(dc, sprite_batches[0]->GetReplaced_pixel_shader(), sprite_batches[0]->GetReplaced_Shader_resource_view());
+        sprite_batches[0]->Begin(dc, sprite_batches[0]->GetReplaced_pixel_shader(), sprite_batches[0]->GetReplaced_Shader_resource_view());
         sprite_batches[0]->Render(dc, 0, 0, 1280, 720);
-        sprite_batches[0]->End(dc);*/
+        sprite_batches[0]->End(dc);
 
         dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
         spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
@@ -222,14 +227,24 @@ void SceneTest::Render()
             model[0]->UpdateAnimation(keyframe);
 #endif
 #endif
-            //model[0]->Render(dc, world, material_color, &keyframe);
+            model[0]->Render(dc, world, material_color);
             //gltf_models[0]->Render(dc, world);
             framebuffers[0]->Deactivate(dc);
-#if 1
+#if 0
             dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
             dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
             bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
 #endif
+            framebuffers[1]->Clear(dc);
+            framebuffers[1]->Activate(dc);
+            bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[0].GetAddressOf(), 0, 1, pixel_shaders[0].Get());
+            framebuffers[1]->Deactivate(dc);
+#if 0
+            bit_block_transfer->Blit(dc, framebuffers[1]->shader_resource_views[0].GetAddressOf(),
+                0, 1);
+#endif
+            bit_block_transfer->Blit(dc, shaderResourceviews, 0, 2, pixel_shaders[1].Get());
+
 #if 0
         //ジオメトリックプリミティブ描画
         {

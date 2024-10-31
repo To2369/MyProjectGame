@@ -204,6 +204,15 @@
     <ClInclude Include="Source\Graphics\Light.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\ShadowMapCaster.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PostprocessingRenderer.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\ColorGrading.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -353,6 +362,15 @@
     <ClCompile Include="Source\Graphics\Light.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\ShadowMapCaster.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PostprocessingRenderer.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\ColorGrading.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -380,6 +398,12 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\PhongShader.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\ColorFilter.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\FilterFunctions.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -439,6 +463,21 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\PhongShaderPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ShadowMapCasterVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\LuminanceExtractionPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\BlurPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ColorFilterVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ColorFilterPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

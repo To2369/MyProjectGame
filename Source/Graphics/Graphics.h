@@ -7,6 +7,30 @@
 #include "DebugRenderer.h"
 #include "LineRenderer.h"
 #include "DebugPrimitive.h"
+#include "Shader.h"
+
+enum class ModelShaderId
+{
+	Default,
+	Phong,
+	Toon,
+	ShadowmapCaster,
+
+	Max
+};
+
+enum class SpriteShaderId
+{
+	Default,
+	UVScroll,
+	Mask,
+	ColorGrading,
+	GaussianBlur,
+	LuminanceExtraction,
+	Finalpass,
+
+	Max
+};
 
 class Graphics
 {
@@ -48,8 +72,11 @@ public:
 	// デプスステンシルビュー取得
 	ID3D11DepthStencilView* GetDepthStencilView() const { return depth_stencil_view.Get(); }
 
-	//// シェーダー取得
-	//Shader* GetShader() const { return shader.get(); }
+	// モデルシェーダー取得
+	ModelShader* GetShader(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
+
+	// スプライトシェーダー取得
+	SpriteShader* GetShader(SpriteShaderId id) const { return spriteShaders[static_cast<int>(id)].get(); }
 
 	// スクリーン幅取得
 	float GetScreenWidth() const { return screenWidth; }
@@ -107,4 +134,7 @@ private:
 	std::unique_ptr<DebugPrimitive>					debugPrimitive;
 
 	std::unique_ptr<LineRenderer>					line_renderer;
+
+	std::unique_ptr<ModelShader>					modelShaders[static_cast<int>(ModelShaderId::Max)];
+	std::unique_ptr<SpriteShader>					spriteShaders[static_cast<int>(SpriteShaderId::Max)];
 };

@@ -1,6 +1,7 @@
 #include "../misc.h"
 #include"Graphics.h"
 
+#include "ColorGrading.h"
 // 初期化処理
 void Graphics::Initialize(HWND hwnd)
 {
@@ -131,6 +132,12 @@ void Graphics::Initialize(HWND hwnd)
 	// レンダーステート生成
 	render_state = std::make_unique<RenderState>(device.Get());
 
+	{
+
+	}
+	{
+		spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] = std::make_unique<ColorGraging>(device.Get());
+	}
 	// レンダラ
 	{
 		debug_renderer = std::make_unique<DebugRenderer>(device.Get());

@@ -67,6 +67,7 @@ bool Collision::IntersectCylinderAndCylinder(
 
     return true;
 }
+
 bool Collision::IntersectCapsuleAndCapsule(
     const DirectX::XMVECTOR& position1,	// 中心
     const DirectX::XMVECTOR& direction1,	// 向き（正規化）
@@ -91,11 +92,11 @@ bool Collision::IntersectCapsuleAndCapsule(
     float distSq = GetMinDistSq_SegmentSegment(point1A, point1B, point2A, point2B, &nearPoint1, &nearPoint2);
 
     // 半径の合計の二乗
-    float radiusSum = radius1 + radius2;
-    float radiusSumSq = radiusSum * radiusSum;
+    float radiusAdd = radius1 + radius2;
+    float radiusAddSq = radiusAdd * radiusAdd;
 
     // 交差判定
-    if (distSq > radiusSumSq)
+    if (distSq > radiusAddSq)
     {
         return false; // 交差していない
     }
@@ -106,16 +107,19 @@ bool Collision::IntersectCapsuleAndCapsule(
         result->pointA = nearPoint1;
         result->pointB = nearPoint2;
 
-        // 衝突法線ベクトル（B → A の方向）
+        // 衝突法線ベクトル
         DirectX::XMVECTOR collisionVector = DirectX::XMVectorSubtract(nearPoint1, nearPoint2);
         result->normal = DirectX::XMVector3Normalize(collisionVector);
 
         // めり込み量
-        result->penetration = radiusSum - sqrtf(distSq);
+        result->penetration = radiusAdd - sqrtf(distSq);
     }
 
     return true; // 交差している
+
+
     //// 各カプセルの中心線上の最近点算出
+    //向きの方向にしか伸びてないからこれはだめっだった
     //DirectX::XMVECTOR point1 = {}, point2 = {};
     //DirectX::XMVECTOR end1 = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
     //DirectX::XMVECTOR end2 = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));

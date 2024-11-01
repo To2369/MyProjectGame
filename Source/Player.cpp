@@ -141,6 +141,7 @@ void Player::DrawDebugGUI()
             quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
             ImGui::InputFloat4("quaternion", &quaternion.x);
             ImGui::SliderFloat("quaternion", &c,-1,1);
+            ImGui::InputFloat("pene", &L);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);
@@ -565,7 +566,7 @@ void Player::CollisionPlayerAndArts()
         if (Collision::IntersectCapsuleAndCapsule(
             DirectX::XMLoadFloat3(&plPos),
             DirectX::XMLoadFloat3(&direction),
-            height,
+            height/2,
             radius,
             DirectX::XMLoadFloat3(&arts->GetPosition()),
             DirectX::XMLoadFloat3(&arts->GetDirection()),
@@ -574,7 +575,14 @@ void Player::CollisionPlayerAndArts()
             &result))
         {
             a = 1;
-            //DirectX::XMStoreFloat3(&position,result.pointB);
+            L = result.penetration;
+
+            // プレイヤーが敵に押し出される処理
+            DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
+            DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
+            newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
+            DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
+
         }
         else
         {

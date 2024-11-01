@@ -135,6 +135,7 @@ void Graphics::Initialize(HWND hwnd)
 	{
 
 	}
+
 	{
 		spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] = std::make_unique<ColorGraging>(device.Get());
 	}

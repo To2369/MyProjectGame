@@ -24,12 +24,12 @@ FrameBuffer::FrameBuffer(ID3D11Device* device, uint32_t width, uint32_t height)
 	}
 
 	// オフスクリーンレンダリング用の描画先のレンダーターゲットビューを生成
-	D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desx{};
+	D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc{};
 	{
 		// 描画先のテクスチャとして上記で作成したテクスチャを設定
-		render_target_view_desx.Format = texture2d_desc.Format;
-		render_target_view_desx.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		hr = device->CreateRenderTargetView(render_target_buffer.Get(), &render_target_view_desx,
+		render_target_view_desc.Format = texture2d_desc.Format;
+		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		hr = device->CreateRenderTargetView(render_target_buffer.Get(), &render_target_view_desc,
 			render_target_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}

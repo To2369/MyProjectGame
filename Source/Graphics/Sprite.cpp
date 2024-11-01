@@ -208,6 +208,15 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
     immediate_context->Draw(4, 0);
 }
 
+
+// シェーダーリソースビューの設定
+void Sprite::SetShaderResourceView(const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& srv, int texWidth, int texHeight)
+{
+    shader_resource_view = srv;
+    textureWidth = texWidth;
+    textureHeight = texHeight;
+}
+
 // 画面に文字を出す
 void Sprite::Textout(ID3D11DeviceContext* immediate_context, std::string s,
     float x, float y, float w, float h,

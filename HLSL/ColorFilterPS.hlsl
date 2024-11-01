@@ -6,6 +6,7 @@ SamplerState color_sampler_state : register(s0);
 float4 main(VS_OUT pin) : SV_TARGET
 {
     float4 color = color_map.Sample(color_sampler_state, pin.texcoord) * pin.color;
+    return color;
 	// RGB > HSV‚É•ÏŠ·
     color.rgb = RGB2HSV(color.rgb);
 

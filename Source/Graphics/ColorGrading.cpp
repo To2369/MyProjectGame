@@ -59,7 +59,7 @@ ColorGraging::ColorGraging(ID3D11Device* device)
 		::memset(&desc, 0, sizeof(desc));
 		desc.DepthEnable = true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 
 		HRESULT hr = device->CreateDepthStencilState(&desc, depthStencilState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
@@ -155,7 +155,7 @@ void ColorGraging::Begin(const RenderContext& rc)
 	rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 }
 
-void ColorGraging::Draw(const RenderContext& rc, Sprite* sprite)
+void ColorGraging::Draw(const RenderContext& rc, const Sprite* sprite)
 {
 	colorFilter filter{};
 	filter.fueShift = color_filter_parameter.x;

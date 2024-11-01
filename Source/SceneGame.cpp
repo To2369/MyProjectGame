@@ -5,7 +5,6 @@
 #include "EnemyManager.h"
 #include "StageManager.h"
 
-#include "Graphics/Shader.h"
 //#include "Effect/EffectManager.h"
 //初期化
 void SceneGame::Initialize()
@@ -57,15 +56,6 @@ void SceneGame::Initialize()
 
     framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280 / 2, 720 / 2);
     sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\screenshot.jpg");
-    // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
-    bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
-    {
-        //postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
-    }
-    ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\LuminanceExtractionPS.cso", pixel_shaders[0].GetAddressOf());
-    ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\BlurPS.cso", pixel_shaders[1].GetAddressOf());
-    //ShaderManager::Instance()->CreateVsFromCso(graphics->GetDevice(),"")
-    //ShaderManager::Instance()->CreateVsFromCso(graphics->GetDevice());
 }
 
 //終了化
@@ -101,7 +91,6 @@ void SceneGame::Update(float elapsedTime)
 
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
-    ImGui::SliderFloat3("cameraPos", &camera_position.x, -100.0f, 100.0f);
     player->DrawDebugGUI();
     light->Update(elapsedTime);
     EnemyManager::Instance().DrawDebugGUI();
@@ -133,7 +122,6 @@ void SceneGame::Render()
     rc.view = camera->GetView();
     rc.projection = camera->GetProjection();
     rc.lightDirection = light_direction;	// ライト方向（下方向）
-#if 1
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
     // ビュー行列
@@ -142,27 +130,15 @@ void SceneGame::Render()
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, View * Projection);
     scene_data.lightDirection = rc.lightDirection;
-#else//ゲーム作成の時消す
-    float aspect_ratio{ viewport.Width / viewport.Height };//視野角計算
-    DirectX::XMMATRIX P{ DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30),aspect_ratio,0.1f,100.0f) };//透視行列（資料確認）
 
-    DirectX::XMVECTOR eye{ DirectX::XMLoadFloat4(&camera_position) };
-    DirectX::XMVECTOR focus{ DirectX::XMVectorSet(0.0f,0.0f,0.0f,1.0f) };
-    DirectX::XMVECTOR up{ DirectX::XMVectorSet(0.0f,1.0f,0.0f,0.0f) };
-    DirectX::XMMATRIX V{ DirectX::XMMatrixLookAtLH(eye,focus,up) };
-    Scene_constants scene_data{};
-    DirectX::XMStoreFloat4x4(&scene_data.viewProjection, V * P);
-    scene_data.lightDirection = light_direction;
-    scene_data.camera_position = camera_position;
-#endif
     // 3D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
 
-    /*framebuffers[0]->Clear(dc);
-    framebuffers[0]->Activate(dc);*/
+    framebuffers[0]->Clear(dc, 0,0,1,0);
+    framebuffers[0]->Activate(dc);
 
     // 3D 描画
     {
@@ -194,101 +170,93 @@ void SceneGame::Render()
 
     // フレームバッファ
     {
-        //framebuffers[0]->Deactivate(dc);
-#if 0
-        dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-        dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-        bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
-#endif
-      /*  dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-        dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));*/
-        // 2D 描画
-
-        
-        //postprocessingRenderer->Render(dc);
-      /*  dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-        framebuffers[1]->Clear(dc);
-        framebuffers[1]->Activate(dc);
-        bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[0].GetAddressOf(), 0, 1, pixel_shaders[0].Get());
-        framebuffers[1]->Deactivate(dc);
-        ID3D11ShaderResourceView* shaderResourceviews[2]
-        { framebuffers[0]->shader_resource_views[0].Get(),framebuffers[1]->shader_resource_views[0].Get() };
-        bit_block_transfer->Blit(dc, shaderResourceviews, 0, 2, pixel_shaders[1].Get());*/
+        framebuffers[0]->Deactivate(dc);
     }
 
-    // 2D 描画設定
+    // ポストエフェクト
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ADD), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    // 2D 描画
     {
         SpriteShader* shader = graphics->GetShader(SpriteShaderId::ColorGrading);
         shader->Begin(rc);
 
         rc.colorGradingData = colorGradingData;
+
+        sprite->SetShaderResourceView(framebuffers[0]->shader_resource_views[0], 1280, 720);
         shader->Draw(rc, sprite.get());
 
         shader->End(rc);
+    }
+
+    // 2D 描画設定
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    // 2D 描画
+    {
 #ifdef USE_IMGUI
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
-        // ゲージの長さ
-        const float lifegaugeWidth = 600.0f;
-        const float lifegaugeHeight = 50.0f;
-
-        const float spiritgaugeWidth = 500.0f;
-        const float spiritgaugeHeight = 25.0f;
-
-        const float skillgaugeWidth = 500.0f;
-        const float skillgaugeHeight = 25.0f;
-
-        float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
-        float spiritEnergyRate = player->GetSpritEnergy() / static_cast<float>(player->GetMaxSpritEnergy());
-        float skillEnergyRate = player->GetSkillEnergy() / static_cast<float>(player->GetMaxSkillEnergy());
-        // ゲージ描画
-        lifegauge->Render(
-            dc,
-            50,
-            25,
-            lifegaugeWidth * healthRate,
-            lifegaugeHeight,
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f,
-            0, 0,
-            static_cast<float>(lifegauge->GetTextureWidth()),
-            static_cast<float>(lifegauge->GetTextureHeight())
-        );
-        skillEnergyGauge->Render(
-            dc,
-            50,
-            75,
-            skillgaugeWidth * skillEnergyRate,
-            skillgaugeHeight,
-            1.0f, 1.0f, 0.0f, 1.0f,
-            0.0f,
-            0, 0,
-            static_cast<float>(skillEnergyGauge->GetTextureWidth()),
-            static_cast<float>(skillEnergyGauge->GetTextureHeight())
-        );
-        spritEnergyGauge->Render(
-            dc,
-            50,
-            100,
-            spiritgaugeWidth * spiritEnergyRate,
-            spiritgaugeHeight,
-            0.0f, 0.3f, 1.0f, 1.0f,
-            0.0f,
-            0, 0,
-            static_cast<float>(spritEnergyGauge->GetTextureWidth()),
-            static_cast<float>(spritEnergyGauge->GetTextureHeight())
-        );
+        DrawGauge(dc);
     }
     // 2DデバッグGUI描画
     {
 
 }
+}
+
+void SceneGame::DrawGauge(ID3D11DeviceContext* dc)
+{
+    // ゲージの長さ
+    const float lifegaugeWidth = 600.0f;
+    const float lifegaugeHeight = 50.0f;
+
+    const float spiritgaugeWidth = 500.0f;
+    const float spiritgaugeHeight = 25.0f;
+
+    const float skillgaugeWidth = 500.0f;
+    const float skillgaugeHeight = 25.0f;
+
+    float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
+    float spiritEnergyRate = player->GetSpritEnergy() / static_cast<float>(player->GetMaxSpritEnergy());
+    float skillEnergyRate = player->GetSkillEnergy() / static_cast<float>(player->GetMaxSkillEnergy());
+    // ゲージ描画
+    lifegauge->Render(
+        dc,
+        50,
+        25,
+        lifegaugeWidth * healthRate,
+        lifegaugeHeight,
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f,
+        0, 0,
+        static_cast<float>(lifegauge->GetTextureWidth()),
+        static_cast<float>(lifegauge->GetTextureHeight())
+    );
+    skillEnergyGauge->Render(
+        dc,
+        50,
+        75,
+        skillgaugeWidth * skillEnergyRate,
+        skillgaugeHeight,
+        1.0f, 1.0f, 0.0f, 1.0f,
+        0.0f,
+        0, 0,
+        static_cast<float>(skillEnergyGauge->GetTextureWidth()),
+        static_cast<float>(skillEnergyGauge->GetTextureHeight())
+    );
+    spritEnergyGauge->Render(
+        dc,
+        50,
+        100,
+        spiritgaugeWidth * spiritEnergyRate,
+        spiritgaugeHeight,
+        0.0f, 0.3f, 1.0f, 1.0f,
+        0.0f,
+        0, 0,
+        static_cast<float>(spritEnergyGauge->GetTextureWidth()),
+        static_cast<float>(spritEnergyGauge->GetTextureHeight())
+    );
 }

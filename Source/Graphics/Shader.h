@@ -3,6 +3,8 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "RenderContext.h"
+
+class Sprite;
 class ShaderManager
 {
 private:
@@ -49,7 +51,7 @@ public:
 	virtual void Begin(const RenderContext& rc) = 0;
 
 	// ï`âÊ
-	virtual void Draw(const RenderContext& rc, const Model* model) = 0;
+	virtual void Draw(const RenderContext& rc, Model* model) = 0;
 
 	// ï`âÊèIóπ
 	virtual void End(const RenderContext& rc) = 0;
@@ -65,7 +67,7 @@ public:
 	virtual void Begin(const RenderContext& rc) = 0;
 
 	// ï`âÊ
-	virtual void Draw(const RenderContext& rc, Sprite* sprite) = 0;
+	virtual void Draw(const RenderContext& rc, const Sprite* sprite) = 0;
 
 	// ï`âÊèIóπ
 	virtual void End(const RenderContext& rc) = 0;

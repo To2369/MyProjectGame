@@ -152,4 +152,14 @@ private:
 	// ヒットエフェクト
 	//std::unique_ptr<Effect> hitEffect;
 	float PIDIV180 = 0.017452f;
+
+
+	DirectX::XMFLOAT3 p = {0,0,0};
+	DirectX::XMFLOAT3 s = { 1,1,1 };
+	DirectX::XMFLOAT4X4 t = {
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	};
 };

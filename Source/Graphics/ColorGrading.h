@@ -19,7 +19,7 @@ public :
     ~ColorGraging()override {}
 
     void Begin(const RenderContext& rc)override;
-    void Draw(const RenderContext& rc, Sprite* sprite)override;
+    void Draw(const RenderContext& rc, const Sprite* sprite)override;
     void End(const RenderContext& rc)override;
 
     struct colorFilter

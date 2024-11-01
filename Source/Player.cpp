@@ -12,7 +12,7 @@
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
-    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height*100, DirectX::XMFLOAT3{ radius*100,radius * 100,radius * 100 }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
+    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
     height=1.5f;
@@ -67,15 +67,28 @@ void Player::Update(float elapsedTime)
     UpdateStatus(elapsedTime);
 	// ワールド行列更新
 	UpdateTransform();
+
+    p = position;
+    p.y += height / 2;
+    // スケール行列作成
+    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(s.x, s.y, s.z) };
+
+    // 位置行列作成
+    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(p.x, p.y, p.z) };
+
+    // 行列を組み合わせ、ワールド行列を作成
+    DirectX::XMMATRIX W = S * T;
+
+    // 計算したワールド行列をtransformに取り出す
+    DirectX::XMStoreFloat4x4(&t, W);
 }
-int a = 0;
+float a = 0;
 void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     bulletMgr.Render(dc);
     artsMgr.Render(dc);
-    if (a == 1)
-       geo->Render(dc, transform, { 0,0,1,1 });
+       geo->Render(dc, t, { 1,0,a,1 });
     ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
     artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
@@ -134,7 +147,7 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("spirit", &spiritEnergy);
             ImGui::InputInt("skill", &skillEnergy);
             ImGui::InputFloat("movespeed", &moveSpeed);
-            ImGui::InputInt("a", &a);
+            ImGui::InputFloat("a", &a);
             ImGui::Text(u8"State　%s", str.c_str());
             //ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
@@ -158,8 +171,8 @@ void Player::DrawDebugPrimitive()
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
     debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
     {
-        //if(a==1)
-        //debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });
+       /* if(a==1)
+        debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
@@ -543,15 +556,16 @@ void Player::CollisionPlayerAndArts()
     {
         Arts* arts = artsMgr.GetArts(i);
 
+        //プレイやー高さ1.5f
         // 衝突処理
         DirectX::XMFLOAT3 outVec;
         direction.y = 1;
         DirectX::XMFLOAT3 plPos = position;
-        plPos.y +=0.75f; 
+        plPos.y += height/2;
         if (Collision::IntersectCapsuleAndCapsule(
             DirectX::XMLoadFloat3(&plPos),
             DirectX::XMLoadFloat3(&direction),
-            height-0.75f,
+            height,
             radius,
             DirectX::XMLoadFloat3(&arts->GetPosition()),
             DirectX::XMLoadFloat3(&arts->GetDirection()),

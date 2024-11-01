@@ -51,6 +51,8 @@ public:
 
     // シェーダーリソースビューの取得
     const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetShaderResourceView() const { return shader_resource_view; }
+
+    void SetShaderResourceView(const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& srv, int texWidth, int texHeight);
 private:
     // 頂点シェーダー
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;

@@ -348,11 +348,18 @@ void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
             material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf());
         immediate_context->PSSetShaderResources(1, 1,
             material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf());
+#if 1
         // 定数バッファとして、ワールド行列とマテリアルカラーを設定
         constants data{ world,material_.Ka,material_.Kd,material_.Ks };
         // マテリアルカラーは読み込んだ色も反映
-        DirectX::XMStoreFloat4(&data.Kd,DirectX::XMVectorMultiply(
-            DirectX::XMLoadFloat4(&material_color),DirectX::XMLoadFloat4(&material_.Kd)));
+        DirectX::XMStoreFloat4(&data.Kd, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&material_color), DirectX::XMLoadFloat4(&material_.Kd)));
+# else
+        // 定数バッファとして、ワールド行列とマテリアルカラーを設定
+        constants data{ world,material_color };
+        // マテリアルカラーは読み込んだ色も反映
+        DirectX::XMStoreFloat4(&data.material_color, DirectX::XMVectorMultiply(
+            DirectX::XMLoadFloat4(&material_color), DirectX::XMLoadFloat4(&material_.Kd)));
+# endif
         immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
         // 定数(コンスタント)バッファオブジェクトの設定
         immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());

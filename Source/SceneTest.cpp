@@ -45,7 +45,7 @@ void SceneTest::Initialize()
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 
     gltf_models[0] = std::make_unique<GltfModel>(graphics->GetDevice(), ".\\Data\\glTF-Sample-Models-main\\2.0\\2CylinderEngine\\glTF\\2CylinderEngine.gltf");
-
+    light = std::make_unique<Light>(graphics->GetDevice());
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\LuminanceExtractionPS.cso", pixel_shaders[0].GetAddressOf());
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\BlurPS.cso", pixel_shaders[1].GetAddressOf());
 }
@@ -82,7 +82,7 @@ void SceneTest::Update(float elapsedTime)
     ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
 
     ImGui::ColorEdit4("material_color", reinterpret_cast<float*>(&material_color));
-    
+    light->Update(elapsedTime);
     ImGui::SliderFloat("neckangle", &factor[0], -1.5f, 1.5f);
     ImGui::SliderFloat("necklong", &factor[1], 0, 500.0f);
     ImGui::SliderFloat("animation", &factor[2], -1.0f,1.0f);
@@ -98,8 +98,8 @@ void SceneTest::Render()
 
     ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 
-    ID3D11ShaderResourceView* shaderResourceviews[2]
-    { framebuffers[0]->shader_resource_views[0].Get(),framebuffers[1]->shader_resource_views[0].Get() };
+   /* ID3D11ShaderResourceView* shaderResourceviews[2]
+    { framebuffers[0]->shader_resource_views[0].Get(),framebuffers[1]->shader_resource_views[0].Get() };*/
     //ビューポート取得
     D3D11_VIEWPORT viewport;
     UINT num_viewports{ 1 };
@@ -111,7 +111,7 @@ void SceneTest::Render()
     rc.renderState = renderState;
     rc.view = camera->GetView();
     rc.projection = camera->GetProjection();
-    rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
+    rc.lightDirection = light->directionalLightDirection;	// ライト方向（下方向）
 
     framebuffers[0]->Clear(dc);
     framebuffers[0]->Activate(dc);
@@ -230,20 +230,20 @@ void SceneTest::Render()
             model[0]->Render(dc, world, material_color);
             //gltf_models[0]->Render(dc, world);
             framebuffers[0]->Deactivate(dc);
-#if 0
+#if 1
             dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
             dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
             bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
 #endif
-            framebuffers[1]->Clear(dc);
+          /*  framebuffers[1]->Clear(dc);
             framebuffers[1]->Activate(dc);
             bit_block_transfer->Blit(dc, framebuffers[0]->shader_resource_views[0].GetAddressOf(), 0, 1, pixel_shaders[0].Get());
-            framebuffers[1]->Deactivate(dc);
+            framebuffers[1]->Deactivate(dc);*/
 #if 0
             bit_block_transfer->Blit(dc, framebuffers[1]->shader_resource_views[0].GetAddressOf(),
                 0, 1);
 #endif
-            bit_block_transfer->Blit(dc, shaderResourceviews, 0, 2, pixel_shaders[1].Get());
+            //bit_block_transfer->Blit(dc, shaderResourceviews, 0, 2, pixel_shaders[1].Get());
 
 #if 0
         //ジオメトリックプリミティブ描画
@@ -280,17 +280,17 @@ void SceneTest::Render()
 #endif
         //スタティックメッシュ描画
         {
-            ////拡大縮小行列
-            //DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
-            //// 回転行列
-            //DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
-            //// 平行移動行列
-            //DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x,tramslation.y,tramslation.z) };
-
-            //// ワールド変換行列
-            //DirectX::XMFLOAT4X4 world;
-            //DirectX::XMStoreFloat4x4(&world, S* R* T);
-            //static_mesh[0]->Render(dc, world, { 1.0f,1.0f,1.0f,1.0f },PIXEL_SHADER_STATE::DEFAULT);
+            //拡大縮小行列
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x,scaling.y,scaling.z) };
+            // 回転行列
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x,rotation.y,rotation.z) };
+            // 平行移動行列
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(tramslation.x,tramslation.y,tramslation.z) };
+            light->Render(dc);
+            // ワールド変換行列
+            DirectX::XMFLOAT4X4 world;
+            DirectX::XMStoreFloat4x4(&world, S* R* T);
+            static_mesh[0]->Render(dc, world, { 1.0f,1.0f,1.0f,1.0f },PIXEL_SHADER_STATE::DEFAULT);
             //{
             //    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::WIRE_CULLNONE));
             //    // バウンディングボックスの大きさを更新

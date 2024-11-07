@@ -133,7 +133,7 @@ void Graphics::Initialize(HWND hwnd)
 	render_state = std::make_unique<RenderState>(device.Get());
 
 	{
-
+		light = std::make_unique<Light>(device.Get());
 	}
 
 	{

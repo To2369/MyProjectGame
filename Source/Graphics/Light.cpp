@@ -1,10 +1,10 @@
+#include"..\misc.h"
 #include "Graphics.h"
 #include "Buffer.h"
 #include "Light.h"
 Light::Light(ID3D11Device* device)
 {
-	CreateBuffer<Light::lightConstants>(device, lightConstantBuffer.GetAddressOf());
-
+	HRESULT hr{ S_OK };
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -16,6 +16,58 @@ Light::Light(ID3D11Device* device)
 		inputElementDesc, ARRAYSIZE(inputElementDesc));
 	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\PhongShaderPS.cso",
 		meshPixelShader.GetAddressOf());
+
+	CreateBuffer<Light::lightConstants>(device, lightConstantBuffer.GetAddressOf());
+
+	// ブレンドステート
+	{
+		// アルファブレンド
+		D3D11_BLEND_DESC blend_desc{};
+		blend_desc.AlphaToCoverageEnable = FALSE;
+		blend_desc.IndependentBlendEnable = FALSE;
+		blend_desc.RenderTarget[0].BlendEnable = TRUE;
+		blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		hr = device->CreateBlendState(&blend_desc, blend_state.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+	}
+
+	// 深度ステンシルステート
+	{
+		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+		depth_stencil_desc.DepthEnable = TRUE;
+		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_state.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+	}
+
+	// ラスタライザーステート
+	{
+		D3D11_RASTERIZER_DESC rasterizer_desc{};
+		rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+		rasterizer_desc.CullMode = D3D11_CULL_BACK;
+		rasterizer_desc.FrontCounterClockwise = FALSE;
+		rasterizer_desc.DepthBias = 0;
+		rasterizer_desc.DepthBiasClamp = 0;
+		rasterizer_desc.SlopeScaledDepthBias = 0;
+		rasterizer_desc.DepthClipEnable = TRUE;
+		rasterizer_desc.ScissorEnable = FALSE;
+		rasterizer_desc.MultisampleEnable = FALSE;
+		rasterizer_desc.AntialiasedLineEnable = FALSE;
+		hr = device->CreateRasterizerState(&rasterizer_desc, rasterizer_state.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
+	}
+
+	// 頂点バッファ
+	{
+
+	}
 }
 
 void Light::Update(float elapsedTIme)
@@ -33,6 +85,10 @@ void Light::Update(float elapsedTIme)
 
 void Light::Render(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(meshInputLayout.Get());
+	dc->VSSetShader(meshVertexShader.Get(), nullptr, 0);
+	dc->PSSetShader(meshPixelShader.Get(), nullptr, 0);
+	//immediate_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 	lightConstants lights{};
 	lights.ambientColor = ambientColor;
 	lights.directionalLightDirection = directionalLightDirection;

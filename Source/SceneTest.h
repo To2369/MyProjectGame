@@ -10,6 +10,7 @@
 #include"Graphics/FrameBuffer.h"
 #include"Graphics/FullScreenQuad.h"
 #include"Graphics/GltfModel.h"
+#include "Graphics\Light.h"
 //タイトルシーン
 class SceneTest :public Scene
 {
@@ -78,4 +79,6 @@ private:
     float elapsedTime_ = 0;
 
     float factor[8] = {1.5f,300,0.5f};
+
+    std::unique_ptr<Light> light;
 };

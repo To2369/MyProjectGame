@@ -52,6 +52,7 @@ public:
 		DirectX::XMFLOAT4 Ka;
 		DirectX::XMFLOAT4 Kd;
 		DirectX::XMFLOAT4 Ks;
+		DirectX::XMFLOAT4 material_color;
 	};
 
 	// マテリアル名とDrawIndex()に必要な情報部分をサブセット化

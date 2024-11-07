@@ -8,6 +8,7 @@
 #include "LineRenderer.h"
 #include "DebugPrimitive.h"
 #include "Shader.h"
+#include "Light.h"
 
 enum class ModelShaderId
 {
@@ -93,6 +94,7 @@ public:
 	// ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰Žæ“¾
 	LineRenderer* GetLineRenderer() const { return line_renderer.get(); }
 
+	//Light* GetLight()const { return light.get(); }
 	//// ImGuiƒŒƒ“ƒ_ƒ‰Žæ“¾
 	//ImGuiRenderer* GetImGuiRenderer() const { return imguiRenderer.get(); }
 
@@ -135,6 +137,7 @@ private:
 
 	std::unique_ptr<LineRenderer>					line_renderer;
 
+	std::unique_ptr<Light> light;
 	std::unique_ptr<ModelShader>					modelShaders[static_cast<int>(ModelShaderId::Max)];
 	std::unique_ptr<SpriteShader>					spriteShaders[static_cast<int>(SpriteShaderId::Max)];
 };

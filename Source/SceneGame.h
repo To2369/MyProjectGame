@@ -59,7 +59,6 @@ private:
 
     std::unique_ptr<Stage> stage;
     std::unique_ptr<Player> player;
-    std::unique_ptr<Light> light;
     // ポストプロセス
     std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 };

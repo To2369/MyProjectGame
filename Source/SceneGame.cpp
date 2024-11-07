@@ -49,11 +49,9 @@ void SceneGame::Initialize()
     lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
     skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
     spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
-    light = std::make_unique<Light>(graphics->GetDevice());
     //shadowMapCaster = std::make_unique<ShadowMapCaster>(graphics->GetDevice());
     //colorGrading = std::make_unique<ColorGraging>(graphics->GetDevice());
     framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
-
     framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280 / 2, 720 / 2);
     sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\screenshot.jpg");
 }
@@ -92,7 +90,6 @@ void SceneGame::Update(float elapsedTime)
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
     player->DrawDebugGUI();
-    light->Update(elapsedTime);
     EnemyManager::Instance().DrawDebugGUI();
     ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
     ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
@@ -121,7 +118,6 @@ void SceneGame::Render()
     rc.renderState = renderState;
     rc.view = camera->GetView();
     rc.projection = camera->GetProjection();
-    rc.lightDirection = light_direction;	// ライト方向（下方向）
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
     // ビュー行列
@@ -129,7 +125,7 @@ void SceneGame::Render()
     // プロジェクション行列
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, View * Projection);
-    scene_data.lightDirection = rc.lightDirection;
+    scene_data.lightDirection = graphics->GetLight()->directionalLightDirection;
 
     // 3D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC);
@@ -166,6 +162,8 @@ void SceneGame::Render()
         player->DrawDebugPrimitive();
 
         EnemyManager::Instance().DrawDebugPrimitive();
+
+        graphics->GetLineRenderer()->Render(dc, rc.view, rc.projection);
     }
 
     // フレームバッファ
@@ -204,7 +202,7 @@ void SceneGame::Render()
     // 2DデバッグGUI描画
     {
 
-}
+    }
 }
 
 void SceneGame::DrawGauge(ID3D11DeviceContext* dc)

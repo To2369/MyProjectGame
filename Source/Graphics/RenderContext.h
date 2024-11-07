@@ -1,7 +1,6 @@
 #pragma once
 #include "RenderState.h"
 #include "..\Camera.h"
-
 struct DirectionalLightData
 {
 	DirectX::XMFLOAT4 direction;	// Œü‚«
@@ -23,7 +22,6 @@ struct RenderContext
 	const RenderState* renderState;
 	DirectX::XMFLOAT4X4 view;
 	DirectX::XMFLOAT4X4 projection;
-	DirectX::XMFLOAT4 lightDirection;	// Œü‚«
 	//F’²•â³î•ñ
 	ColorGradingData colorGradingData;
 	//GlitchNoiseData glitchnoiseData;

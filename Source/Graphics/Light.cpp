@@ -5,18 +5,6 @@
 Light::Light(ID3D11Device* device)
 {
 	HRESULT hr{ S_OK };
-	D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\PhongShaderVS.cso",
-		meshVertexShader.GetAddressOf(), meshInputLayout.GetAddressOf(),
-		inputElementDesc, ARRAYSIZE(inputElementDesc));
-	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\PhongShaderPS.cso",
-		meshPixelShader.GetAddressOf());
-
 	CreateBuffer<Light::lightConstants>(device, lightConstantBuffer.GetAddressOf());
 
 	// ブレンドステート
@@ -64,10 +52,38 @@ Light::Light(ID3D11Device* device)
 		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
 
-	// 頂点バッファ
+	// サンプラステート
 	{
+		D3D11_SAMPLER_DESC desc;
+		desc.MipLODBias = 0.0f;
+		desc.MaxAnisotropy = 1;
+		desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		desc.MinLOD = -FLT_MAX;
+		desc.MaxLOD = FLT_MAX;
+		desc.BorderColor[0] = 1.0f;
+		desc.BorderColor[1] = 1.0f;
+		desc.BorderColor[2] = 1.0f;
+		desc.BorderColor[3] = 1.0f;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 
+		HRESULT hr = device->CreateSamplerState(&desc, sampler_state.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 	}
+
+	D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\PhongShaderVS.cso",
+		meshVertexShader.GetAddressOf(), meshInputLayout.GetAddressOf(),
+		inputElementDesc, ARRAYSIZE(inputElementDesc));
+	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\PhongShaderPS.cso",
+		meshPixelShader.GetAddressOf());
 }
 
 void Light::Update(float elapsedTIme)
@@ -85,13 +101,30 @@ void Light::Update(float elapsedTIme)
 
 void Light::Render(ID3D11DeviceContext* dc)
 {
-	dc->IASetInputLayout(meshInputLayout.Get());
+	//描画コンテキスト
+	RenderContext rc;
+	rc.deviceContext = dc;
 	dc->VSSetShader(meshVertexShader.Get(), nullptr, 0);
 	dc->PSSetShader(meshPixelShader.Get(), nullptr, 0);
+	dc->IASetInputLayout(meshInputLayout.Get());
 	//immediate_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
+	// 3D 描画設定
+	ID3D11SamplerState* samplers[] =
+	{
+		rc.renderState->GetSamplerState(SAMPLER_STATE::POINT),
+		rc.renderState->GetSamplerState(SAMPLER_STATE::LINEAR),
+		rc.renderState->GetSamplerState(SAMPLER_STATE::ANISOTROPIC),
+	};
+	dc->PSSetSamplers(0, ARRAYSIZE(samplers), samplers);
+	const float blend_factor[4] = { 1,1,1,1 };
+	dc->OMSetBlendState(blend_state.Get(), blend_factor, 0xFFFFFFFF);
+	dc->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
+	dc->RSSetState(rasterizer_state.Get());
+
 	lightConstants lights{};
 	lights.ambientColor = ambientColor;
 	lights.directionalLightDirection = directionalLightDirection;
 	lights.directionalLightColor = directionalLightColor;
 	BindBuffer(dc, 2, lightConstantBuffer.GetAddressOf(), &lights);
+
 }

@@ -94,10 +94,9 @@ public:
 	// ラインレンダラ取得
 	LineRenderer* GetLineRenderer() const { return line_renderer.get(); }
 
-	//Light* GetLight()const { return light.get(); }
+	Light* GetLight()const { return light.get(); }
 	//// ImGuiレンダラ取得
 	//ImGuiRenderer* GetImGuiRenderer() const { return imguiRenderer.get(); }
-
 
 	// レンダーステート取得
 	RenderState* GetRenderState() { return render_state.get(); }

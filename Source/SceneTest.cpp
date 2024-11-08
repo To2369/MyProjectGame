@@ -111,7 +111,6 @@ void SceneTest::Render()
     rc.renderState = renderState;
     rc.view = camera->GetView();
     rc.projection = camera->GetProjection();
-    rc.lightDirection = light->directionalLightDirection;	// ライト方向（下方向）
 
     framebuffers[0]->Clear(dc);
     framebuffers[0]->Activate(dc);

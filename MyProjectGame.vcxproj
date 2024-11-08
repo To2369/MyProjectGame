@@ -285,21 +285,18 @@
     <None Include="HLSL\Debug.hlsli" />
     <None Include="HLSL\FilterFunctions.hlsli" />
     <None Include="HLSL\FullScreenQuad.hlsli" />
+    <None Include="HLSL\GaussianFiltering.hlsli" />
     <None Include="HLSL\GeometricPrimitive.hlsli" />
     <None Include="HLSL\GltfModel.hlsli" />
+    <None Include="HLSL\Lights.hlsli" />
     <None Include="HLSL\Line.hlsli" />
     <None Include="HLSL\Model.hlsli" />
     <None Include="HLSL\PhongShader.hlsli" />
+    <None Include="HLSL\ShadingFunctions.hlsli" />
     <None Include="HLSL\Sprite.hlsli" />
     <None Include="HLSL\StaticMesh.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="HLSL\BlurPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
     <FxCompile Include="HLSL\ColorFilterPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -341,6 +338,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HLSL\GaussianFilteringPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\GeometricPrimitivePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

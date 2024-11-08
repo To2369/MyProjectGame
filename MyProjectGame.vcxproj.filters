@@ -406,6 +406,15 @@
     <None Include="HLSL\FilterFunctions.hlsli">
       <Filter>HLSL</Filter>
     </None>
+    <None Include="HLSL\ShadingFunctions.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Lights.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\GaussianFiltering.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\SpriteVS.hlsl">
@@ -471,13 +480,13 @@
     <FxCompile Include="HLSL\LuminanceExtractionPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\BlurPS.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="HLSL\ColorFilterVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\ColorFilterPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GaussianFilteringPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

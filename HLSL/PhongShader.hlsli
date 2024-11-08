@@ -1,8 +1,12 @@
+#include "ShadingFunctions.hlsli"
+#include "Lights.hlsli"
 struct VS_OUT
 {
     float4 position : SV_POSITION;
     float4 world_position : POSITION;
-    float4 world_normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+    float3 normal : NORMAL;
     float2 texcoord : TEXCOORD;
 };
 
@@ -26,4 +30,20 @@ cbuffer LIGHT_CONSTANT_BUFFER : register(b2)
     float4 ambient_color;
     float4 directional_light_direction;
     float4 directional_light_color;
+    point_lights point_light[8];
+    spot_lights spot_light[8];
+};
+
+
+cbuffer HEMISPHERE_LLIGHT_CONSTANT_BUFFER : register(b4)
+{
+    float4 sky_color;
+    float4 ground_color;
+    float4 hemisphere_weight;
+};
+
+cbuffer FOG_CONSTANT_BUFFER : register(b5)
+{
+    float4 fog_color;
+    float4 fog_range;
 };

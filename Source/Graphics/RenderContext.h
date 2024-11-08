@@ -1,7 +1,7 @@
 #pragma once
 #include "RenderState.h"
 #include "..\Camera.h"
-struct DirectionalLightData
+struct LightData
 {
 	DirectX::XMFLOAT4 direction;	// å¸Ç´
 	DirectX::XMFLOAT4 color;	// êF
@@ -20,10 +20,13 @@ struct RenderContext
 {
 	ID3D11DeviceContext* deviceContext;
 	const RenderState* renderState;
+	DirectX::XMFLOAT4		viewPosition;
 	DirectX::XMFLOAT4X4 view;
 	DirectX::XMFLOAT4X4 projection;
+	DirectX::XMFLOAT4X4 viewProjection;
 	//êFí≤ï‚ê≥èÓïÒ
 	ColorGradingData colorGradingData;
+	LightData lightData;
 	//GlitchNoiseData glitchnoiseData;
 };
 

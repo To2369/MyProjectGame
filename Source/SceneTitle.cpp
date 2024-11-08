@@ -78,14 +78,13 @@ void SceneTitle::Render()
     rc.renderState = renderState;
     rc.view = camera->GetView();
     rc.projection = camera->GetProjection();
-    rc.lightDirection = { 0.0f, 0.0f, 1.0f, 0.0f };	// ライト方向（下方向）
 
     //3Dモデルの描画に必要な情報
     Scene_constants scene_data{};
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, DirectX::XMMatrixMultiply(
         DirectX::XMLoadFloat4x4(&rc.view),
         DirectX::XMLoadFloat4x4(&rc.projection)));
-    scene_data.lightDirection = rc.lightDirection;
+    scene_data.lightDirection = graphics->GetLight()->directionalLightDirection;
     
     // 2D 描画設定
     rc.renderState->GetSamplerState(SAMPLER_STATE::POINT);

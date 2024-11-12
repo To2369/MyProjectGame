@@ -64,7 +64,10 @@ void Player::Update(float elapsedTime)
     artsMgr.Update(elapsedTime);
     model->UpdateAnimation(elapsedTime);
 
+    Lock();
+
     UpdateStatus(elapsedTime);
+
 	// ワールド行列更新
 	UpdateTransform();
 
@@ -740,23 +743,35 @@ bool Player::InputDashTowardsEnemy(float elapsedTime)
             DirectX::XMVECTOR newPositionVec = DirectX::XMVectorAdd(playerPosVec, dashVec);
             DirectX::XMStoreFloat3(&position, newPositionVec);
 
-            // 常に敵の方向を向くように回転
-            DirectX::XMVECTOR forwardVec = DirectX::XMVectorSet(0, 0, 1, 0);  // プレイヤーの現在の前方ベクトル
-            DirectX::XMVECTOR rightVec = DirectX::XMVectorSet(1, 0, 0, 0);    // プレイヤーの右方向ベクトル
-            DirectX::XMVECTOR upVec = DirectX::XMVectorSet(0, 1, 0, 0);       // 上方向ベクトル
+            // 敵の方向を向くための回転クォータニオンを設定
+            DirectX::XMVECTOR cross = DirectX::XMVector3Cross(front, directionVec); // 前方とターゲット方向の外積
+            float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(front, directionVec)); // 前方とターゲット方向の内積
 
-            // 敵への方向ベクトルのY軸成分のみを使用して回転を計算（Y軸回転）
-            DirectX::XMVECTOR projectedDirectionVec = DirectX::XMVector3Normalize(
-                DirectX::XMVectorSet(DirectX::XMVectorGetX(directionVec), 0, DirectX::XMVectorGetZ(directionVec), 0)
-            );
+            if (!DirectX::XMVector3Equal(cross, DirectX::XMVectorZero()))
+            {
+                // 外積がゼロでない場合、通常の回転軸でクォータニオンを生成
+                float angleRadians = acosf(dot); // 内積から角度を求める
+                DirectX::XMVECTOR rotationQuaternion = DirectX::XMQuaternionRotationAxis(DirectX::XMVector3Normalize(cross), angleRadians);
 
-            // Y軸周りの回転角度を計算
-            float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(forwardVec, projectedDirectionVec));
-            float det = DirectX::XMVectorGetX(DirectX::XMVector3Dot(rightVec, projectedDirectionVec));
-            float angleRadians = atan2(det, dot);
-
-            // Y軸回転を更新
-            angle.y = angleRadians;
+                // プレイヤーの回転を更新（クォータニオンとして設定）
+                DirectX::XMStoreFloat4(&quaternion, rotationQuaternion);
+            }
+            else
+            {
+                // 外積がゼロの場合（完全に同方向または反対方向）
+                if (dot > 0.0f)
+                {
+                    // 同方向の場合、回転不要（単位クォータニオン）
+                    quaternion = { 0.0f, 0.0f, 0.0f, 1.0f };
+                }
+                else
+                {
+                    // 反対方向の場合、180度回転
+                    DirectX::XMVECTOR rotationQuaternion = DirectX::XMQuaternionRotationAxis(
+                        up, DirectX::XM_PI); // Y軸周りに180度回転
+                    DirectX::XMStoreFloat4(&quaternion, rotationQuaternion);
+                }
+            }
         }
         return true;
     }
@@ -817,6 +832,73 @@ bool Player::InputRecoverySkillEnergy(float elapsedTime)
     return false;
 }
 
+void Player::Lock()
+{
+    /// 一番近くの敵をターゲットに設定
+    float minDistance = FLT_MAX;
+    Enemy* closestEnemy = nullptr;
+    EnemyManager& enemyMgr = EnemyManager::Instance();
+    int enemyCount = enemyMgr.GetEnemyCount();
+
+    for (int i = 0; i < enemyCount; ++i)
+    {
+        Enemy* enemy = enemyMgr.GetEnemy(i);
+
+        // 敵との距離を計算
+        DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+        DirectX::XMVECTOR vecToEnemy = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+        DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vecToEnemy);
+
+        float distance;
+        DirectX::XMStoreFloat(&distance, lengthSqVec);
+        if (distance < minDistance)
+        {
+            minDistance = distance;
+            closestEnemy = enemy;
+        }
+    }
+
+    if (closestEnemy)
+    {
+        // 敵の方向を計算
+        DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
+        DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemyPos);
+        DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
+        directionVec = DirectX::XMVector3Normalize(directionVec);
+
+        // 敵の方向を向くための回転クォータニオンを設定
+        DirectX::XMVECTOR cross = DirectX::XMVector3Cross(front, directionVec);
+        float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(front, directionVec));
+
+        // ターゲット方向への回転クォータニオンを求める
+        DirectX::XMVECTOR targetQuaternion;
+        if (!DirectX::XMVector3Equal(cross, DirectX::XMVectorZero()))
+        {
+            // 外積がゼロでない場合、通常の回転軸でクォータニオンを生成
+            float angleRadians = acosf(dot);
+            targetQuaternion = DirectX::XMQuaternionRotationAxis(DirectX::XMVector3Normalize(cross), angleRadians);
+        }
+        else
+        {
+            // 外積がゼロの場合、完全に同方向または反対方向
+            if (dot > 0.0f)
+            {
+                targetQuaternion = DirectX::XMQuaternionIdentity();  // 同方向の場合、回転不要
+            }
+            else
+            {
+                targetQuaternion = DirectX::XMQuaternionRotationAxis(up, DirectX::XM_PI); // 反対方向の場合、180度回転
+            }
+        }
+
+        // スムーズに補間して回転を設定する（例えば0.1の割合で補間）
+        DirectX::XMVECTOR currentQuaternion = DirectX::XMLoadFloat4(&quaternion);
+        DirectX::XMVECTOR smoothedQuaternion = DirectX::XMQuaternionSlerp(currentQuaternion, targetQuaternion, 0.1f);
+        DirectX::XMStoreFloat4(&quaternion, smoothedQuaternion);
+    }
+}
 //待機ステートへ遷移
 void Player::TransitionIdleState()
 {

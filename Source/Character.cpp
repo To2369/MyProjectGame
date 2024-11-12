@@ -146,7 +146,7 @@ void Character::Turn(float elapsedTime, float vx, float vz, float speed)
 // ジャンプ処理
 void Character::Jump(float speed)
 {
-    // 上方向の力を設定z
+    // 上方向の力を設定
     velocity.y = speed;
 }
 // 速度処理更新

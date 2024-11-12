@@ -243,7 +243,7 @@ void SceneGame::Render()
 
         // 定数バッファの更新
         {
-            light_constants lights{};
+          /*  light_constants lights{};
             lights.ambient_color = ambient_color;
             lights.directional_light_direction = directional_light_direction;
             lights.directional_light_color = directional_light_color;
@@ -251,7 +251,7 @@ void SceneGame::Render()
             memcpy_s(lights.spot_light, sizeof(lights.spot_light), spot_light, sizeof(spot_light));
             dc->UpdateSubresource(light_constant_buffer.Get(), 0, 0, &lights, 0, 0);
             dc->VSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
-            dc->PSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
+            dc->PSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());*/
         }
     }
 
@@ -288,18 +288,18 @@ void SceneGame::Render()
 
         //rc.colorGradingData = colorGradingData;
 
-        //sprite->SetShaderResourceView(framebuffers[0]->shader_resource_views[0], 1280, 720);
-        //shader->Draw(rc, sprite.get());
+        sprite->SetShaderResourceView(framebuffers[0]->shader_resource_views[0], 1280, 720);
+        shader->Draw(rc, sprite.get());
         //sprite->Render(dc, 256, 128, 1280-256*2, 720-128*2, 1, 1, 1, 1, 0);
         //	ガウスフィルター
         {
-            gaussian_filter_data.textureSize = { 1280, 720 };
+          /*  gaussian_filter_data.textureSize = { 1280, 720 };
             calc_gaussian_filter_constant(gaussian_filter_constant, gaussian_filter_data);
             dc->UpdateSubresource(gaussian_filter_constant_buffer.Get(), 0, 0, &gaussian_filter_constant, 0, 0);
             dc->VSSetConstantBuffers(1, 1, gaussian_filter_constant_buffer.GetAddressOf());
             dc->PSSetConstantBuffers(1, 1, gaussian_filter_constant_buffer.GetAddressOf());
             dc->PSSetShader(gaussian_filter_pixel_shader.Get(), nullptr, 0);
-            sprite->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);
+            sprite->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);*/
         }
         shader->End(rc);
 

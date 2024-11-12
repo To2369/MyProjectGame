@@ -32,6 +32,7 @@ public:
 private:
 	DirectX::XMFLOAT3 GetMoveVec() const;
 
+	void Lock();
 	//‘€ìˆÚ“®
 	bool InputMove(float elapsedTime);
 

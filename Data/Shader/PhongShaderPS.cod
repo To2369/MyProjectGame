@@ -78,8 +78,8 @@
 // Name                                 Type  Format         Dim      HLSL Bind  Count
 // ------------------------------ ---------- ------- ----------- -------------- ------
 // color_sampler_states[2]           sampler      NA          NA             s2      1 
-// color_map                         texture  float4          2d             t0      1 
-// normal_map                        texture  float4          2d             t1      1 
+// color_map[0]                      texture  float4          2d             t0      1 
+// color_map[1]                      texture  float4          2d             t1      1 
 // OBJECT_CONSTANT_BUFFER            cbuffer      NA          NA            cb0      1 
 // SCENE_CONSTANT_BUFFER             cbuffer      NA          NA            cb1      1 
 // LIGHT_CONSTANT_BUFFER             cbuffer      NA          NA            cb2      1 

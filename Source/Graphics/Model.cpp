@@ -1073,17 +1073,18 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA, 0},
         { "WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         {"BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     // 頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\PhongShaderVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
             input_layout.ReleaseAndGetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     // ピクセルシェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\ModelPS.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\PhongShaderPS.cso",
             pixel_shader.ReleaseAndGetAddressOf());
     }
     

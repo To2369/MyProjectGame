@@ -52,6 +52,8 @@ private:
 
 	void CollisionArtsAndEnemies();
 	void CollisionPlayerAndArts();
+	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
+
 	void TeleportBehindEnemy();
 
 	bool InputDashTowardsEnemy(float elapsedTime);
@@ -59,6 +61,7 @@ private:
 	bool InputRecoverySkillEnergy(float elapsedTime);
 
 	bool InputDash(float elapsedTime);
+	bool InputAttack();
 private:
 	//待機ステート
 	void TransitionIdleState();
@@ -88,6 +91,9 @@ private:
 	void TransitionRecoverySkillEnergy();
 	// 技力回復更新処理
 	void UpdateRecoverySkillEnergyState(float elapsedTime);
+
+	void TransitionAttackState();
+	void UpdateAttackState(float elapsedTime);
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;

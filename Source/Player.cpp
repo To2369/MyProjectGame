@@ -40,6 +40,7 @@ void Player::Update(float elapsedTime)
     case State::Dash:UpdateDashState(elapsedTime); break;
     case State::DashToEnemy:UpdateDashToEnemyState(elapsedTime); break;
     case State::RecoverySkillEnergy:UpdateRecoverySkillEnergyState(elapsedTime); break;
+    case State::Attack:UpdateAttackState(elapsedTime); break;
     }
     // 速度処理更新
     UpdateVelocity(elapsedTime);
@@ -64,7 +65,7 @@ void Player::Update(float elapsedTime)
     artsMgr.Update(elapsedTime);
     model->UpdateAnimation(elapsedTime);
 
-    Lock();
+    //Lock();
 
     UpdateStatus(elapsedTime);
 
@@ -595,6 +596,69 @@ void Player::CollisionPlayerAndArts()
     }
 }
 
+void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+{
+    ////ノード取得
+    //Model::Node* node = model->FindNode(nodeName);
+
+    ////ノード位置取得
+    //DirectX::XMFLOAT3 nodePosition;
+    //nodePosition.x = node->worldTransform._41;
+    //nodePosition.y = node->worldTransform._42;
+    //nodePosition.z = node->worldTransform._43;
+    //EnemyManager& enemy = EnemyManager::Instance();
+    //int count = EnemyManager::Instance().GetEnemyCount();
+
+    //for (int i = 0; i < count; i++)
+    //{
+    //    Enemy* enemys = enemy.GetEnemy(i);
+
+    //    //衝突処理
+    //    DirectX::XMFLOAT3 outPosition;
+    //    if (Collision::IntersectSphereVsCylinder(
+    //        nodePosition,
+    //        nodeRadius,
+    //        enemys->GetPosition(),
+    //        enemys->GetRadius(),
+    //        enemys->GetHeight(),
+    //        outPosition
+    //    ))
+    //    {
+    //        {
+    //            //吹き飛ばす移動方向の速度ベクトル
+    //            DirectX::XMFLOAT3 impulse;
+    //            //吹き飛ばす力
+    //            const float power = 10.0f;
+
+    //            //敵の位置
+    //            DirectX::XMVECTOR enemyVec = DirectX::XMLoadFloat3(&enemys->GetPosition());
+    //            //弾の位置
+    //            DirectX::XMVECTOR projectileVec = DirectX::XMLoadFloat3(&nodePosition);
+    //            //弾から敵への方向ベクトルを計算(敵-弾
+    //            auto Vec = DirectX::XMVectorSubtract(enemyVec, projectileVec);
+    //            //方向ベクトルを正規化
+    //            Vec = DirectX::XMVector3Normalize(Vec);
+    //            DirectX::XMFLOAT3 v;
+    //            DirectX::XMStoreFloat3(&v, Vec);
+
+    //            //吹き飛ばす移動方向の速度ベクトルに設定
+    //            impulse.x = power * v.x;
+    //            impulse.y = power * 0.5f;
+    //            impulse.z = power * v.z;
+
+    //            enemys->AddImpulse(impulse);
+    //        }
+    //        //ヒットエフェクト再生
+    //        if (enemys->ApplyDamage(1, 0.5f))
+    //        {
+    //            DirectX::XMFLOAT3 e = enemys->GetPosition();
+    //            e.y += enemys->GetHeight() * 0.5f;
+    //            //hitEffect->Play(e);
+    //        }
+    //    }
+    //}
+}
+
 void Player::TeleportBehindEnemy()
 {
     int useEnergy = 200;
@@ -832,6 +896,11 @@ bool Player::InputRecoverySkillEnergy(float elapsedTime)
     return false;
 }
 
+bool Player::InputAttack()
+{
+    return false;
+}
+
 void Player::Lock()
 {
     /// 一番近くの敵をターゲットに設定
@@ -941,12 +1010,12 @@ void Player::UpdateIdleState(float elapsedTime)
     //    TransitionJumpState();
     //}
 
-    ////攻撃入力処理
-    //InputAttack();
-    //if (InputAttack())
-    //{
-    //    TransitionAttackState();
-    //}
+    //攻撃入力処理
+    InputAttack();
+    if (InputAttack())
+    {
+        TransitionAttackState();
+    }
     ////弾丸入力処理
     //InputProjectile();
 }
@@ -1059,4 +1128,14 @@ void Player::UpdateRecoverySkillEnergyState(float elapsedTime)
     {
         TransitionIdleState();
     }
+}
+
+void Player::TransitionAttackState()
+{
+    state = State::Attack;
+}
+
+void Player::UpdateAttackState(float elapsedTime)
+{
+
 }

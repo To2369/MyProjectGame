@@ -11,7 +11,7 @@
 #include "ArtsSkillStraightBallet.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\resources\\nico.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\p.fbx");
     geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };

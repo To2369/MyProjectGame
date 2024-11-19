@@ -1078,13 +1078,13 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
 
     // 頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\PhongShaderVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\ModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
             input_layout.ReleaseAndGetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
     }
 
     // ピクセルシェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\PhongShaderPS.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\ModelPS.cso",
             pixel_shader.ReleaseAndGetAddressOf());
     }
     

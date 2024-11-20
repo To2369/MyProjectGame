@@ -63,6 +63,7 @@ void Player::Update(float elapsedTime)
     // 弾更新処理
     bulletMgr.Update(elapsedTime);
     artsMgr.Update(elapsedTime);
+
     model->UpdateAnimation(elapsedTime);
 
     //Lock();
@@ -92,7 +93,7 @@ void Player::Render(ID3D11DeviceContext* dc)
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     bulletMgr.Render(dc);
     artsMgr.Render(dc);
-       geo->Render(dc, t, { 1,0,a,1 });
+      // geo->Render(dc, t, { 1,0,a,1 });
     ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
     artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
@@ -1026,7 +1027,7 @@ void Player::TransitionMoveState()
     state = State::Move;
 
     //アニメーション再生
-    //model->PlayAnimation(0, true);
+    model->PlayAnimation(0, true);
 }
 
 //移動ステート更新処理

@@ -113,7 +113,7 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, f
         // fbxマネージャーを生成
         FbxManager* fbx_manager{ FbxManager::Create() };
         // fbxシーンを生成
-        FbxScene* fbx_scene{ FbxScene::Create(fbx_manager,"") };
+        fbx_scene = { FbxScene::Create(fbx_manager,"") };
 
         // fbxインポーターの生成
         FbxImporter* fbx_importer{ FbxImporter::Create(fbx_manager,"") };
@@ -1114,4 +1114,43 @@ bool Model::IsPlayAnimation()const
     if (currentAnimationIndex < 0)return false;
     if (currentAnimationIndex >= animation_clips.size())return false;
     return true;
+}
+
+fbxsdk::FbxNode* Model::FindNode(const char* name)
+{
+    //const size_t nodeCount{ scene_view.nodes.size() };
+    //for (size_t index = 0; index < nodeCount; index++)
+    //{
+    //    FbxNode* fbx_node{ fbx_scene->FindNodeByName(scene_view.nodes.at(node_index).name.c_str()) };
+    //    if(std::strcmp(FbxNode*fbxnode))
+    //}
+
+    for (const scene::node& node : scene_view.nodes)
+    {
+        //ノード名でノードを検索し取得
+        FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
+        if (std::strcmp(fbx_node->GetName(), name) == 0)
+        {
+            return fbx_node;
+    }
+
+    //const size_t node_count{ scene_view.nodes.size() };
+    //keyframe.nodes.resize(node_count);
+    //for (size_t node_index = 0; node_index < node_count; ++node_index)
+    //{
+    //    scene::nodes
+    //    FbxNode* fbx_node{ fbx_scene->FindNodeByName(scene_view.nodes.at(node_index).name.c_str()) };
+    //    if (fbx_node)
+    //    {
+    //        animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
+    //        //アニメーション時間からアニメーション行列を取得
+    //        node.global_transform = ToXmFloat4x4(fbx_node->EvaluateGlobalTransform(time));
+
+    //        // 'local_transform'は、親のローカル座標系に関するノードの変換行列です
+    //        const FbxAMatrix& local_transform{ fbx_node->EvaluateLocalTransform(time) };
+    //        node.scaling = ToXmFloat3(local_transform.GetS());
+    //        node.rotation = ToXmFloat4(local_transform.GetQ());
+    //        node.translation = ToXmFloat3(local_transform.GetT());
+    //    }
+    //}
 }

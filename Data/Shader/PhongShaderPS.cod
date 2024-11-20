@@ -133,7 +133,7 @@ dcl_temps 17
 //   v5.x <- pin.texcoord.x; v5.y <- pin.texcoord.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 11 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 11 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v5.xyxx, t0.xyzw, s2  // r0.x <- diffuse_color.x; r0.y <- diffuse_color.y; r0.z <- diffuse_color.z; r0.w <- diffuse_color.w
 
 #line 13
@@ -194,7 +194,7 @@ mov r6.xyz, cb4[0].xyzx
 mov r7.xyz, cb4[1].xyzx
 mov r1.w, cb4[2].x
 
-#line 98 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 98 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
 dp3 r2.w, r3.xyzx, r5.xyzx
 mul r2.w, r2.w, l(0.500000)
 add r2.w, r2.w, l(0.500000)  // r2.w <- factor
@@ -206,7 +206,7 @@ mul r5.xyz, r2.wwww, r5.xyzx
 add r5.xyz, r5.xyzx, r7.xyzx
 mul r5.xyz, r1.wwww, r5.xyzx  // r5.x <- <CalcHemiSphereLight return value>.x; r5.y <- <CalcHemiSphereLight return value>.y; r5.z <- <CalcHemiSphereLight return value>.z
 
-#line 22 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 22 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
 add r4.xyz, r4.xyzx, r5.xyzx
 
 #line 25
@@ -216,7 +216,7 @@ mov r2.xyz, r2.xyzx
 mov r5.xyz, cb2[2].xyzx
 mov r6.xyz, cb0[5].xyzx
 
-#line 39 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 39 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
 mov r7.xyz, -r2.xyzx
 dp3 r1.w, r3.xyzx, r7.xyzx
 mul r1.w, r1.w, l(0.500000)
@@ -228,7 +228,7 @@ min r1.w, r1.w, l(1.000000)  // r1.w <- D
 mul r5.xyz, r1.wwww, r5.xyzx
 mul r5.xyz, r6.xyzx, r5.xyzx  // r5.x <- <ClacHalfLambert return value>.x; r5.y <- <ClacHalfLambert return value>.y; r5.z <- <ClacHalfLambert return value>.z
 
-#line 25 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 25 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
 mov r5.xyz, r5.xyzx  // r5.x <- directional_diffuse.x; r5.y <- directional_diffuse.y; r5.z <- directional_diffuse.z
 
 #line 26
@@ -239,7 +239,7 @@ mov r1.xyz, r1.xyzx
 mov r6.xyz, cb2[2].xyzx
 mov r7.xyz, cb0[6].xyzx
 
-#line 24 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 24 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
 dp3 r1.w, r2.xyzx, r3.xyzx
 add r1.w, r1.w, r1.w
 mov r1.w, -r1.w
@@ -262,7 +262,7 @@ exp r1.w, r1.w  // r1.w <- power
 mul r2.xyz, r1.wwww, r6.xyzx
 mul r2.xyz, r7.xyzx, r2.xyzx  // r2.x <- <CalcPhongSpecular return value>.x; r2.y <- <CalcPhongSpecular return value>.y; r2.z <- <CalcPhongSpecular return value>.z
 
-#line 26 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 26 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
 mov r2.xyz, r2.xyzx  // r2.x <- directional_specular.x; r2.y <- directional_specular.y; r2.z <- directional_specular.z
 
 #line 29
@@ -321,7 +321,7 @@ loop
   mov r12.xyz, cb2[r3.w + 4].xyzx
   mov r13.xyz, cb0[5].xyzx
 
-#line 10 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 10 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
   mov r14.xyz, -r10.xyzx
   dp3 r3.w, r11.xyzx, r14.xyzx
   max r3.w, r3.w, l(0.000000)
@@ -331,7 +331,7 @@ loop
   mul r11.xyz, r3.wwww, r12.xyzx
   mul r11.xyz, r13.xyzx, r11.xyzx  // r11.x <- <CalcLambert return value>.x; r11.y <- <CalcLambert return value>.y; r11.z <- <CalcLambert return value>.z
 
-#line 40 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 40 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
   mul r11.xyz, r4.wwww, r11.xyzx
   add r8.xyz, r8.xyzx, r11.xyzx
 
@@ -344,7 +344,7 @@ loop
   mov r13.xyz, cb2[r3.w + 4].xyzx
   mov r14.xyz, cb0[6].xyzx
 
-#line 24 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 24 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
   dp3 r3.w, r10.xyzx, r11.xyzx
   add r3.w, r3.w, r3.w
   mov r3.w, -r3.w
@@ -367,7 +367,7 @@ loop
   mul r10.xyz, r3.wwww, r13.xyzx
   mul r10.xyz, r14.xyzx, r10.xyzx  // r10.x <- <CalcPhongSpecular return value>.x; r10.y <- <CalcPhongSpecular return value>.y; r10.z <- <CalcPhongSpecular return value>.z
 
-#line 41 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 41 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
   mul r10.xyz, r4.wwww, r10.xyzx
   add r9.xyz, r9.xyzx, r10.xyzx
 
@@ -459,7 +459,7 @@ loop
   mov r14.xyz, cb2[r4.w + 29].xyzx
   mov r15.xyz, cb0[5].xyzx
 
-#line 10 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 10 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
   mov r16.xyz, -r12.xyzx
   dp3 r4.w, r13.xyzx, r16.xyzx
   max r4.w, r4.w, l(0.000000)
@@ -469,7 +469,7 @@ loop
   mul r13.xyz, r4.wwww, r14.xyzx
   mul r13.xyz, r15.xyzx, r13.xyzx  // r13.x <- <CalcLambert return value>.x; r13.y <- <CalcLambert return value>.y; r13.z <- <CalcLambert return value>.z
 
-#line 60 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 60 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
   mul r13.xyz, r3.wwww, r13.xyzx
   add r10.xyz, r10.xyzx, r13.xyzx
 
@@ -482,7 +482,7 @@ loop
   mov r15.xyz, cb2[r4.w + 29].xyzx
   mov r16.xyz, cb0[6].xyzx
 
-#line 24 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 24 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
   dp3 r4.w, r12.xyzx, r13.xyzx
   add r4.w, r4.w, r4.w
   mov r4.w, -r4.w
@@ -505,7 +505,7 @@ loop
   mul r12.xyz, r4.wwww, r15.xyzx
   mul r12.xyz, r16.xyzx, r12.xyzx  // r12.x <- <CalcPhongSpecular return value>.x; r12.y <- <CalcPhongSpecular return value>.y; r12.z <- <CalcPhongSpecular return value>.z
 
-#line 61 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 61 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
   mul r12.xyz, r3.wwww, r12.xyzx
   add r11.xyz, r11.xyzx, r12.xyzx
 
@@ -541,7 +541,7 @@ add r3.xyz, r3.xyzx, v1.xyzx
 dp3 r2.z, r3.xyzx, r3.xyzx
 sqrt r2.z, r2.z
 
-#line 111 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadingFunctions.hlsli"
+#line 111 "C:\Users\2220082\OneDrive - yamaguchigakuen\デスクトップ\MyProjectGame\HLSL\ShadingFunctions.hlsli"
 mov r2.w, -r2.x
 add r2.z, r2.w, r2.z
 mov r2.x, -r2.x
@@ -556,7 +556,7 @@ add r1.xyzw, r1.xyzw, r3.xyzw
 mul r1.xyzw, r1.xyzw, r2.xxxx
 add r0.xyzw, r0.xyzw, r1.xyzw  // r0.x <- <CalcFog return value>.x; r0.y <- <CalcFog return value>.y; r0.z <- <CalcFog return value>.z; r0.w <- <CalcFog return value>.w
 
-#line 73 "C:\Users\Center\Desktop\MyProjectGame\HLSL\PhongShaderPS.hlsl"
+#line 73 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\PhongShaderPS.hlsl"
 mov r0.xyzw, r0.xyzw  // r0.w <- color.w; r0.x <- color.x; r0.y <- color.y; r0.z <- color.z
 
 #line 74

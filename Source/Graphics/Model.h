@@ -338,6 +338,10 @@ public:
 
 	//アニメーション再生中かどうか
 	bool IsPlayAnimation() const;
+
+	fbxsdk::FbxNode* FindNode(const char* name);
+
+	animation::keyframe GetKeyframe() const { return keyframe; }
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
@@ -352,6 +356,7 @@ private:
 	float animationBlendTime;
 	float animationBlendSeconds;
 	animation::keyframe keyframe;
+	FbxScene* fbx_scene{};
 protected:
 	// このfbxの親シーン
 	scene scene_view;

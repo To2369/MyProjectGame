@@ -60,7 +60,7 @@ dcl_temps 5
 //   v2.x <- texcoord.x; v2.y <- texcoord.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 5 "C:\Users\Center\Desktop\MyProjectGame\HLSL\ShadowMapCasterVS.hlsl"
+#line 5 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\ShadowMapCasterVS.hlsl"
 mul r0.xyzw, cb0[0].xxxx, cb1[0].xyzw
 mul r1.xyzw, cb0[0].yyyy, cb1[1].xyzw
 add r0.xyzw, r0.xyzw, r1.xyzw

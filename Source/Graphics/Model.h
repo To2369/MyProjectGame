@@ -341,6 +341,8 @@ public:
 
 	fbxsdk::FbxNode* FindNode(const char* name);
 
+	float GetCurrentAnimationSeconds()const { return currentAnimationSeconds; }
+
 	animation::keyframe GetKeyframe() const { return keyframe; }
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー

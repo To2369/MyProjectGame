@@ -11,7 +11,7 @@
 #include "ArtsSkillStraightBallet.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\p.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.fbx");
     geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
@@ -53,6 +53,7 @@ void Player::Update(float elapsedTime)
 
     InputArts();
 
+    InputAttack();
     // ƒvƒŒƒCƒ„[‚Æ“G‚Æ‚ÌÕ“Ëˆ’u
     CollisionPlayerAndEnemies();
     // ’e‚Æ“G‚ÌÕ“Ëˆ—
@@ -153,7 +154,7 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("spirit", &spiritEnergy);
             ImGui::InputInt("skill", &skillEnergy);
             ImGui::InputFloat("movespeed", &moveSpeed);
-            ImGui::InputFloat("a", &a);
+            ImGui::InputInt("a", &attackCount);
             ImGui::Text(u8"State@%s", str.c_str());
             //ImGui::Text(u8"Subtate@%s", subStr.c_str());
         }
@@ -899,6 +900,11 @@ bool Player::InputRecoverySkillEnergy(float elapsedTime)
 
 bool Player::InputAttack()
 {
+    Mouse* mouse = InputManager::Instance()->getMouse();
+    if (mouse->GetButtonDown() & Mouse::BTN_LEFT)
+    {
+        return true;
+    }
     return false;
 }
 
@@ -1134,9 +1140,41 @@ void Player::UpdateRecoverySkillEnergyState(float elapsedTime)
 void Player::TransitionAttackState()
 {
     state = State::Attack;
+    switch (attackCount)
+    {
+    case 0:model->PlayAnimation(AnimConbo01_1, false,0); break;
+    case 1:model->PlayAnimation(AnimConbo01_2, false,0); break;
+    case 2:model->PlayAnimation(AnimConbo01_3, false,0); break;
+    case 3:model->PlayAnimation(AnimConbo01_4, false,0); break;
+    case 4:attackCount = 0; break;
+    }
 }
 
 void Player::UpdateAttackState(float elapsedTime)
 {
+    float animationTime = model->GetCurrentAnimationSeconds();
+   /* if (InputAttack())
+    {
+        attackCount++;
+        TransitionAttackState();
+    }*/
+    if (!model->IsPlayAnimation())
+    {
+        attackCount++;
+        TransitionAttackState();
+    }
 
+    //if (attackFlag)
+    //{
+    //    if (!model->IsPlayAnimation())
+    //    {
+    //        attackCount++;
+    //        attackFlag = false;
+    //        TransitionAttackState();
+    //    }
+    //}
+    //else if (!attackFlag&&!model->IsPlayAnimation())
+    //{
+    //    TransitionIdleState();
+    //}
 }

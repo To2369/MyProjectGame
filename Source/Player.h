@@ -121,18 +121,40 @@ private:
 	//アニメーション
 	enum Animation
 	{
-		Anim_Attack,
-		Anim_Death,
-		Anim_Falling,
-		Anim_GetHit1,
-		Anim_GetHit2,
-		Anim_Idle,
-		Anim_jump,
-		Anim_jump_Flip,
-		Anim_Landing,
-		Anim_Revive,
-		Anim_Running,
-		Anim_Walking
+		AnimIdle,
+		AnimConbatIdle,
+		AnimConbatToIdle,
+		AnimIdleToConbat,
+		AnimConbo01_1,
+		AnimConbo01_2,
+		AnimConbo01_3,
+		AnimConbo01_4,
+		AnimConbo02_1,
+		AnimConbo02_2,
+		AnimConbo02_3,
+		AnimConbo02_4,
+		AnimConbo03_1,
+		AnimConbo03_2,
+		AnimConbo03_3,
+		AnimConbo03_4,
+		AnimConbo04_1,
+		AnimConbo04_2,
+		AnimConbo04_3,
+		AnimConbo04_4,
+		AnimBuff,
+		AnimChargeAttackStart,
+		AnimChargeAttackEnd,
+		AnimWalk,
+		AnimRun,
+		AnimJumpStart,
+		AnimJumpEnd,
+		AnimStep,
+		AnimHit,
+		AnimDeathHit,
+		AnimHitHeavyStart,
+		AnimHitHeavyEnd,
+		AnimGetUp,
+		BlockHit,
 	};
 	enum class State
 	{
@@ -170,4 +192,7 @@ private:
 		0,0,0,1
 	};
 	float L = {};
+
+	int attackCount = 0;
+	bool attackFlag = false;
 };

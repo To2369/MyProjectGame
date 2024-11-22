@@ -441,3 +441,51 @@ bool Collision::IntersectRayAndModel(
 
     return hit;
 }
+
+//球と円柱の交差判定
+bool Collision::IntersectSphereVsCylinder(
+    const DirectX::XMFLOAT3& spherePosition,
+    float sphereRadius,
+    const DirectX::XMFLOAT3& cylinderPosition,
+    float cylinderRadius,
+    float cylinderHeight,
+    DirectX::XMFLOAT3& outCylinderPosition
+)
+{
+    //XZ平面での範囲チェック
+    DirectX::XMFLOAT2 posA(spherePosition.x, spherePosition.z);
+    DirectX::XMFLOAT2 posB(cylinderPosition.x, cylinderPosition.z);
+
+    //posAをXMVECTORに変換
+    DirectX::XMVECTOR PositionA = DirectX::XMLoadFloat2(&posA);
+    //posBをXMVECTORに変換
+    DirectX::XMVECTOR PositionB = DirectX::XMLoadFloat2(&posB);
+
+    DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(PositionB, PositionA);
+    DirectX::XMVECTOR LengthSq = DirectX::XMVector2LengthSq(Vec);
+    float lengthSq;
+    DirectX::XMStoreFloat(&lengthSq, LengthSq);
+
+    //距離判定
+    float range = cylinderRadius + sphereRadius;
+    if (lengthSq > range * range)
+    {
+        return false;
+    }
+
+    //Vec方向の単位ベクトルを取得
+    Vec = DirectX::XMVector2Normalize(Vec);
+    //上記ベクトルをrange分スケール
+    Vec = DirectX::XMVectorScale(Vec, range);
+    //そのベクトル位置Aからの足した位置に移動
+    PositionB = DirectX::XMVectorAdd(PositionA, Vec);
+    //出力用の位置に代入
+    DirectX::XMFLOAT2 resultPos;
+    DirectX::XMStoreFloat2(&resultPos, Vec);
+
+    outCylinderPosition.x = spherePosition.x + resultPos.x;
+    outCylinderPosition.y = outCylinderPosition.y;
+    outCylinderPosition.z = spherePosition.z + resultPos.y;
+
+    return true;
+}

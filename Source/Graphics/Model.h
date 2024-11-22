@@ -6,6 +6,8 @@
 #include<string>
 #include<fbxsdk.h>
 #include<unordered_map>
+#include<optional>
+#include<stdlib.h>
 #include <cereal/archives/binary.hpp>
 #include<cereal/types/memory.hpp>
 #include<cereal/types/vector.hpp>
@@ -339,17 +341,19 @@ public:
 	//アニメーション再生中かどうか
 	bool IsPlayAnimation() const;
 
-	fbxsdk::FbxNode* FindNode(const char* name);
-
 	float GetCurrentAnimationSeconds()const { return currentAnimationSeconds; }
 
 	animation::keyframe GetKeyframe() const { return keyframe; }
+
+	FbxNode* FindNode(const char* name);
+
+	DirectX::XMFLOAT4X4 GetTrans()const { return trans; }
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		// 入力レイアウト
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
-
+public:
 	// 前回のアニメーションの番号
 	int currentAnimationIndex = -1;
 	float currentAnimationSeconds = 0.0f;
@@ -359,6 +363,8 @@ private:
 	float animationBlendSeconds;
 	animation::keyframe keyframe;
 	FbxScene* fbx_scene{};
+	FbxNode* fbx_node{};
+	DirectX::XMFLOAT4X4 trans = {};
 protected:
 	// このfbxの親シーン
 	scene scene_view;

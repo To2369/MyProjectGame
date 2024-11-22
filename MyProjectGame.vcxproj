@@ -201,7 +201,6 @@
     <ClInclude Include="Source\Graphics\RenderState.h" />
     <ClInclude Include="Source\Graphics\RenderContext.h" />
     <ClInclude Include="Source\Graphics\Shader.h" />
-    <ClInclude Include="Source\Graphics\ShadowMapCaster.h" />
     <ClInclude Include="Source\Graphics\Sprite.h" />
     <ClInclude Include="Source\Graphics\SpriteBatch.h" />
     <ClInclude Include="Source\Graphics\StaticMesh.h" />
@@ -257,7 +256,6 @@
     <ClCompile Include="Source\Graphics\Model.cpp" />
     <ClCompile Include="Source\Graphics\RenderState.cpp" />
     <ClCompile Include="Source\Graphics\Shader.cpp" />
-    <ClCompile Include="Source\Graphics\ShadowMapCaster.cpp" />
     <ClCompile Include="Source\Graphics\Sprite.cpp" />
     <ClCompile Include="Source\Graphics\SpriteBatch.cpp" />
     <ClCompile Include="Source\Graphics\StaticMesh.cpp" />

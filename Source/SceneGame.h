@@ -8,7 +8,6 @@
 #include "Graphics/Sprite.h"
 #include "Player.h"
 #include "Graphics/Light.h"
-#include "Graphics/ShadowMapCaster.h"
 #include "PostprocessingRenderer.h"
 #include "Graphics/ColorGrading.h"
 #include "Graphics/RenderContext.h"

@@ -11,7 +11,7 @@
 #include "ArtsSkillStraightBallet.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.cereal");
     geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ angle.x,angle.y,angle.z });
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
@@ -155,12 +155,26 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("skill", &skillEnergy);
             ImGui::InputFloat("movespeed", &moveSpeed);
             ImGui::InputInt("a", &attackCount);
+            ImGui::InputFloat("currentAnimationSeconds", &model->currentAnimationSeconds);
             ImGui::Text(u8"State　%s", str.c_str());
             //ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
     }
     ImGui::End();
 #endif
+}
+// FbxAMatrixからXMFLOAT４X4に変換
+inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
+{
+    DirectX::XMFLOAT4X4 xmfloat4x4;
+    for (int row = 0; row < 4; row++)
+    {
+        for (int column = 0; column < 4; column++)
+        {
+            xmfloat4x4.m[row][column] = static_cast<float>(fbxamatrix[row][column]);
+        }
+    }
+    return xmfloat4x4;
 }
 
 void Player::DrawDebugPrimitive()
@@ -181,6 +195,14 @@ void Player::DrawDebugPrimitive()
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
+    model->FindNode("ik_hand_l");
+    debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
+        model->GetTrans()._41,
+        model->GetTrans()._42,
+        model->GetTrans()._43),
+        70.0f,
+        DirectX::XMFLOAT4(0, 1, 0, 1)
+    );
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
     artsMgr.DrawDebugPrimitive();
@@ -602,15 +624,20 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
 {
     ////ノード取得
     //Model::Node* node = model->FindNode(nodeName);
-
-    ////ノード位置取得
+    //animation::keyframe::node node = model->FindAnimationNode(nodeName);
+    //////ノード位置取得
+    ////DirectX::XMFLOAT3 nodePosition;
+    ////nodePosition.x = node->worldTransform._41;
+    ////nodePosition.y = node->worldTransform._42;
+    ////nodePosition.z = node->worldTransform._43;
+    ////EnemyManager& enemy = EnemyManager::Instance();
+    ////int count = EnemyManager::Instance().GetEnemyCount();
     //DirectX::XMFLOAT3 nodePosition;
-    //nodePosition.x = node->worldTransform._41;
-    //nodePosition.y = node->worldTransform._42;
-    //nodePosition.z = node->worldTransform._43;
+    //nodePosition.x = node.global_transform._41;
+    //nodePosition.y = node.global_transform._42;
+    //nodePosition.z = node.global_transform._43;
     //EnemyManager& enemy = EnemyManager::Instance();
     //int count = EnemyManager::Instance().GetEnemyCount();
-
     //for (int i = 0; i < count; i++)
     //{
     //    Enemy* enemys = enemy.GetEnemy(i);
@@ -1140,13 +1167,17 @@ void Player::UpdateRecoverySkillEnergyState(float elapsedTime)
 void Player::TransitionAttackState()
 {
     state = State::Attack;
+    model->PlayAnimation(AnimConbo01_1, false);
     switch (attackCount)
     {
-    case 0:model->PlayAnimation(AnimConbo01_1, false,0); break;
-    case 1:model->PlayAnimation(AnimConbo01_2, false,0); break;
-    case 2:model->PlayAnimation(AnimConbo01_3, false,0); break;
-    case 3:model->PlayAnimation(AnimConbo01_4, false,0); break;
-    case 4:attackCount = 0; break;
+    case 0:model->PlayAnimation(AnimConbo01_1, false); break;
+    case 1:model->PlayAnimation(AnimConbo01_2, false); break;
+    case 2:model->PlayAnimation(AnimConbo01_3, false); break;
+    case 3:model->PlayAnimation(AnimConbo01_4, false); break;
+    }
+    if (attackCount >= 4)
+    {
+        attackCount = 0;
     }
 }
 
@@ -1158,12 +1189,20 @@ void Player::UpdateAttackState(float elapsedTime)
         attackCount++;
         TransitionAttackState();
     }*/
-    if (!model->IsPlayAnimation())
+   /* if (!model->IsPlayAnimation())
     {
         attackCount++;
+        if (attackCount >= 4)
+        {
+            attackCount = 0;
+        }
         TransitionAttackState();
+    }*/
+    Mouse* mouse = InputManager::Instance()->getMouse();
+    if (mouse->GetButtonDown() & Mouse::BTN_LEFT)
+    {
+        attackCount++;
     }
-
     //if (attackFlag)
     //{
     //    if (!model->IsPlayAnimation())
@@ -1173,8 +1212,10 @@ void Player::UpdateAttackState(float elapsedTime)
     //        TransitionAttackState();
     //    }
     //}
-    //else if (!attackFlag&&!model->IsPlayAnimation())
-    //{
-    //    TransitionIdleState();
-    //}
+    else if (!attackFlag&&!model->IsPlayAnimation())
+    {
+        attackCount++;
+        TransitionAttackState();
+    }
+    CollisionNodeVsEnemies("ik_hand_l", 5.0f);
 }

@@ -157,6 +157,12 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, f
         };
         // ルートノードから解析開始
         traverse(fbx_scene->GetRootNode());
+        for (const scene::node& node : scene_view.nodes)
+        {
+            //ノード名でノードを検索し取得
+            fbx_node={ fbx_scene->FindNodeByName(node.name.c_str()) };
+            //出力ウィンドウにデバッグデータを表示
+        }
 
 #if 0
         //シーンに取り付けたすべてのノードの情報を表示
@@ -175,7 +181,6 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, f
             OutputDebugStringA(debug_string.str().c_str());
         }
 #endif
-        traverse(fbx_scene->GetRootNode());
 
         FetchMeshes(fbx_scene, meshes);
 
@@ -407,9 +412,10 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 void Model::UpdateAnimation(float elapsedTime)
 {
     //再生中でないなら処理しない
-    if (!IsPlayAnimation())return;
+    if (!IsPlayAnimation())
+        return;
 
-    // ブレンド補間にかかる時間（0.5f）を 0.0 から 1.0 に変更
+    // ブレンド補間にかかる時間
     float blendRate = 1.0f;
     if (animationBlendTime < animationBlendSeconds)
     {
@@ -422,21 +428,32 @@ void Model::UpdateAnimation(float elapsedTime)
         blendRate *= blendRate;
     }
 
+    // アニメーションの番号
+    int clip_index{ currentAnimationIndex };
+
+    int frame_index{ 0 };
+    animation& animation{ animation_clips.at(clip_index) };
+    frame_index = static_cast<int>(currentAnimationSeconds * animation.sampling_rate);
+    if (frame_index > animation.sequence.size() - 1)
+    {
+        frame_index = animation.sequence.size() - 1;
+    }
+
     if (blendRate < 1.0f)
     {
         // ブレンド再生
-
-        animation::keyframe outkeyframe;
         const animation::keyframe* keyframes[2]{
             &keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &animation_clips.at(currentAnimationIndex).sequence.at(0),
+            &animation_clips.at(clip_index).sequence.at(frame_index),
         };
 
         // ブレンド補間
-        BlendAnimations(keyframes, blendRate, outkeyframe);
+        BlendAnimations(keyframes, blendRate, keyframe);
         // キーフレームに存在するすべてのノードを更新する
         size_t node_count{ keyframe.nodes.size() };
+
+        /*いらないかも*/
         keyframe.nodes.resize(node_count);
         for (size_t node_index = 0; node_index < node_count; ++node_index)
         {
@@ -457,23 +474,6 @@ void Model::UpdateAnimation(float elapsedTime)
     else
     {
         // 通常再生
-
-        // アニメーションの番号
-        int clip_index{ currentAnimationIndex };
-
-        int frame_index{ 0 };
-        static float animation_tick{ 0 };
-        animation& animation{ animation_clips.at(clip_index) };
-        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
-        if (frame_index > animation.sequence.size() - 1)
-        {
-            frame_index = 0;
-            animation_tick = 0;
-        }
-        else
-        {
-            animation_tick += elapsedTime;
-        }
         keyframe = animation.sequence.at(frame_index);
 
         // キーフレームに存在するすべてのノードを更新する
@@ -1072,7 +1072,7 @@ void Model::CreateComObjects(ID3D11Device* device, const char* fbx_filename)
         {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA, 0},
         { "WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         {"BONES",0,DXGI_FORMAT_R32G32B32A32_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     // 頂点シェーダーオブジェクトの生成
@@ -1105,6 +1105,7 @@ void Model::PlayAnimation(int index, bool loop, float blendSeconds)
     // ブレンド用トータル時間をリセット
     animationBlendTime = 0.0f;
     animationBlendSeconds = blendSeconds;
+    animationBlendSeconds = 1;
 }
 
 //アニメーション再生中か
@@ -1115,41 +1116,15 @@ bool Model::IsPlayAnimation()const
     return true;
 }
 
-//fbxsdk::FbxNode* Model::FindNode(const char* name)
-//{
-//    //const size_t nodeCount{ scene_view.nodes.size() };
-//    //for (size_t index = 0; index < nodeCount; index++)
-//    //{
-//    //    FbxNode* fbx_node{ fbx_scene->FindNodeByName(scene_view.nodes.at(node_index).name.c_str()) };
-//    //    if(std::strcmp(FbxNode*fbxnode))
-//    //}
-//
-//    for (const scene::node& node : scene_view.nodes)
-//    {
-//        //ノード名でノードを検索し取得
-//        FbxNode* fbx_node{ fbx_scene->FindNodeByName(node.name.c_str()) };
-//        if (std::strcmp(fbx_node->GetName(), name) == 0)
-//        {
-//            return fbx_node;
-//    }
-//
-//    //const size_t node_count{ scene_view.nodes.size() };
-//    //keyframe.nodes.resize(node_count);
-//    //for (size_t node_index = 0; node_index < node_count; ++node_index)
-//    //{
-//    //    scene::nodes
-//    //    FbxNode* fbx_node{ fbx_scene->FindNodeByName(scene_view.nodes.at(node_index).name.c_str()) };
-//    //    if (fbx_node)
-//    //    {
-//    //        animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
-//    //        //アニメーション時間からアニメーション行列を取得
-//    //        node.global_transform = ToXmFloat4x4(fbx_node->EvaluateGlobalTransform(time));
-//
-//    //        // 'local_transform'は、親のローカル座標系に関するノードの変換行列です
-//    //        const FbxAMatrix& local_transform{ fbx_node->EvaluateLocalTransform(time) };
-//    //        node.scaling = ToXmFloat3(local_transform.GetS());
-//    //        node.rotation = ToXmFloat4(local_transform.GetQ());
-//    //        node.translation = ToXmFloat3(local_transform.GetT());
-//    //    }
-//    //}
-//}
+FbxNode* Model::FindNode(const char* name)
+{
+    for (const scene::node& node : scene_view.nodes)
+    {
+        if (name == fbx_node->GetName())
+        {
+            FbxAMatrix global_transform = fbx_node->EvaluateGlobalTransform();
+            trans = ToXmFloat4x4(global_transform);
+            return fbx_node;
+        }
+    }
+}

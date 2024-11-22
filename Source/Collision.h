@@ -77,4 +77,14 @@ public:
 		const DirectX::XMFLOAT3& end,
 		const Model* model,
 		HitResult& result);
+
+	//‹…‚Æ‰~’Œ‚ÌŒğ·”»’è
+	static bool IntersectSphereVsCylinder(
+		const DirectX::XMFLOAT3& spherePosition,    //‹…ˆÊ’u
+		float sphereRadius,                         //‹…‚Ì”¼Œa
+		const DirectX::XMFLOAT3& cylinderPosition,  //‰~’ŒˆÊ’u
+		float cylinderRadius,                       //‰~’Œ‚Ì”¼Œa
+		float cylinderHeight,                       //‰~’Œ‚Ì‚‚³
+		DirectX::XMFLOAT3& outCylinderPosition
+	);
 };

@@ -34,7 +34,7 @@
     <Filter Include="Sources\Skill">
       <UniqueIdentifier>{85ecbfb4-69a7-4c82-a2f9-d8beb87bb9db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Graphics\Scene">
+    <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -64,13 +64,13 @@
       <Filter>Sources\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneManager.h">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneTitle.h">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\Sprite.h">
       <Filter>Sources\Graphics</Filter>
@@ -112,7 +112,7 @@
       <Filter>Sources\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneTest.h">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\StaticMesh.h">
       <Filter>Sources\Graphics</Filter>
@@ -130,7 +130,7 @@
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneGame.h">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Stage.h">
       <Filter>Sources\Stage</Filter>
@@ -204,9 +204,6 @@
     <ClInclude Include="Source\Graphics\Light.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\ShadowMapCaster.h">
-      <Filter>Sources\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\PostprocessingRenderer.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -234,10 +231,10 @@
       <Filter>Sources\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneManeger.cpp">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneTitle.cpp">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Sprite.cpp">
       <Filter>Sources\Graphics</Filter>
@@ -270,7 +267,7 @@
       <Filter>Sources\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneTest.cpp">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\StaticMesh.cpp">
       <Filter>Sources\Graphics</Filter>
@@ -288,7 +285,7 @@
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneGame.cpp">
-      <Filter>Sources\Graphics\Scene</Filter>
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Stage.cpp">
       <Filter>Sources\Stage</Filter>
@@ -360,9 +357,6 @@
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Light.cpp">
-      <Filter>Sources\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\ShadowMapCaster.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\PostprocessingRenderer.cpp">

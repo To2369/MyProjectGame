@@ -1118,12 +1118,11 @@ bool Model::IsPlayAnimation()const
 
 FbxNode* Model::FindNode(const char* name)
 {
-    for (const scene::node& node : scene_view.nodes)
+    int nodeCount= static_cast<int>(scene_view.nodes.size());
+    for (int index = 0; index < nodeCount; index++)
     {
-        if (name == fbx_node->GetName())
+        if (std::strcmp(scene_view.nodes[index].name.c_str(), name))
         {
-            FbxAMatrix global_transform = fbx_node->EvaluateGlobalTransform();
-            trans = ToXmFloat4x4(global_transform);
             return fbx_node;
         }
     }

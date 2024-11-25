@@ -348,6 +348,8 @@ public:
 	FbxNode* FindNode(const char* name);
 
 	DirectX::XMFLOAT4X4 GetTrans()const { return trans; }
+
+	skeleton::bone* FindBNode(const char* name);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー

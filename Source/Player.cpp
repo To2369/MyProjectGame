@@ -9,6 +9,7 @@
 #include "HomingBullet.h"
 #include "ArtsSpiritExplosion.h"
 #include "ArtsSkillStraightBallet.h"
+#include "fbxsdk.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.cereal");
@@ -195,11 +196,11 @@ void Player::DrawDebugPrimitive()
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
-    model->FindNode("ik_hand_l");
+    FbxNode*node = model->FindNode("ik_hand_l");
     debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
-        model->GetTrans()._41,
-        model->GetTrans()._42,
-        model->GetTrans()._43),
+        node-._41,
+        node->GetTransform()._42,
+        node->GetTransform()._43),
         70.0f,
         DirectX::XMFLOAT4(0, 1, 0, 1)
     );

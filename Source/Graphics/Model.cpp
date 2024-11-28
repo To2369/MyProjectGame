@@ -160,7 +160,7 @@ Model::Model(ID3D11Device* device, const char* fbx_filename, bool triangulate, f
         for (const scene::node& node : scene_view.nodes)
         {
             //ノード名でノードを検索し取得
-            fbx_node={ fbx_scene->FindNodeByName(node.name.c_str()) };
+            FbxNode* fbx_node={ fbx_scene->FindNodeByName(node.name.c_str()) };
             //出力ウィンドウにデバッグデータを表示
         }
 
@@ -251,7 +251,7 @@ Model::Model(ID3D11Device* device, std::vector<std::string>& animation_filenames
             [&](FbxNode* fbx_node)
             {
                 // scene_view.nodes に新しくノードを取り付け、取り付けたノードをローカルの node に代入し値を設定していく
-                scene::node& node_{scene_view.nodes.emplace_back()};
+                scene::node& node_={scene_view.nodes.emplace_back()};
                 node_.attribute = fbx_node->GetNodeAttribute() ?
                     fbx_node->GetNodeAttribute()->GetAttributeType() : FbxNodeAttribute::EType::eUnknown;
                 node_.name = fbx_node->GetName();
@@ -265,8 +265,6 @@ Model::Model(ID3D11Device* device, std::vector<std::string>& animation_filenames
                 }
             }
         };
-        // ルートノードから解析開始
-        traverse(fbx_scene->GetRootNode());
 
 #if 0
         //シーンに取り付けたすべてのノードの情報を表示
@@ -285,6 +283,7 @@ Model::Model(ID3D11Device* device, std::vector<std::string>& animation_filenames
             OutputDebugStringA(debug_string.str().c_str());
         }
 #endif
+        // ルートノードから解析開始
         traverse(fbx_scene->GetRootNode());
 
         FetchMeshes(fbx_scene, meshes);
@@ -452,9 +451,7 @@ void Model::UpdateAnimation(float elapsedTime)
         BlendAnimations(keyframes, blendRate, keyframe);
         // キーフレームに存在するすべてのノードを更新する
         size_t node_count{ keyframe.nodes.size() };
-
-        /*いらないかも*/
-        keyframe.nodes.resize(node_count);
+        //keyframe.nodes.resize(node_count);
         for (size_t node_index = 0; node_index < node_count; ++node_index)
         {
             // ローカル行列を設定
@@ -493,6 +490,14 @@ void Model::UpdateAnimation(float elapsedTime)
 
             // ローカル行列 * 親のグローバル行列
             DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
+        }
+    }
+
+    {
+        float oldAnimationSeconds = 0;
+        if (oldAnimationSeconds > currentAnimationSeconds)
+        {
+
         }
     }
 
@@ -1116,14 +1121,19 @@ bool Model::IsPlayAnimation()const
     return true;
 }
 
-FbxNode* Model::FindNode(const char* name)
+skeleton::bone* Model::FindNode(const char* name)
 {
-    int nodeCount= static_cast<int>(scene_view.nodes.size());
-    for (int index = 0; index < nodeCount; index++)
+    // すべてのメッシュをループ
+    for (auto& mesh : meshes)
     {
-        if (std::strcmp(scene_view.nodes[index].name.c_str(), name))
+        // 各メッシュのボーンリストをループ
+        for (auto& bone : mesh.bind_pose.bones)
         {
-            return fbx_node;
+            if (bone.name == name) // 名前が一致するか確認
+            {
+                return &bone; // ボーンのポインタを返す
+            }
         }
     }
+    return nullptr; // 見つからなかった場合
 }

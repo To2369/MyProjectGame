@@ -195,4 +195,5 @@ private:
 
 	int attackCount = 0;
 	bool attackFlag = false;
+	DirectX::XMFLOAT3 nodepos = {};
 };

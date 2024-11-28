@@ -9,7 +9,6 @@
 #include "HomingBullet.h"
 #include "ArtsSpiritExplosion.h"
 #include "ArtsSkillStraightBallet.h"
-#include "fbxsdk.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.cereal");
@@ -132,7 +131,7 @@ void Player::DrawDebugGUI()
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             //位置
-            ImGui::InputFloat3("Position", &position.x);
+            ImGui::InputFloat3("Position", &nodepos.x);
             ImGui::SliderFloat("Position", &position.y,-10,10);
             //回転
             DirectX::XMVECTOR p = DirectX::XMQuaternionRotationAxis(right, c);
@@ -164,19 +163,6 @@ void Player::DrawDebugGUI()
     ImGui::End();
 #endif
 }
-// FbxAMatrixからXMFLOAT４X4に変換
-inline DirectX::XMFLOAT4X4 ToXmFloat4x4(const FbxAMatrix& fbxamatrix)
-{
-    DirectX::XMFLOAT4X4 xmfloat4x4;
-    for (int row = 0; row < 4; row++)
-    {
-        for (int column = 0; column < 4; column++)
-        {
-            xmfloat4x4.m[row][column] = static_cast<float>(fbxamatrix[row][column]);
-        }
-    }
-    return xmfloat4x4;
-}
 
 void Player::DrawDebugPrimitive()
 {
@@ -196,14 +182,22 @@ void Player::DrawDebugPrimitive()
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
-    FbxNode*node = model->FindNode("ik_hand_l");
-    debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
-        node-._41,
-        node->GetTransform()._42,
-        node->GetTransform()._43),
-        70.0f,
-        DirectX::XMFLOAT4(0, 1, 0, 1)
-    );
+    skeleton::bone* bone = model->FindNode("ik_hand_l");
+    if (bone && !model->keyframe.nodes.empty())
+    {
+        //  外套のボーンのノードの市政情報を取得
+        auto& node = model->keyframe.nodes[bone->node_index];
+        auto WorldTransform = DirectX::XMLoadFloat4x4(&node.global_transform) * DirectX::XMLoadFloat4x4(&transform);
+        DirectX::XMFLOAT4X4 worldTransform;
+        DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
+        debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
+            worldTransform._41,
+            worldTransform._42,
+            worldTransform._43),
+            0.1f,
+            DirectX::XMFLOAT4(0, 1, 0, 1)
+        );
+    }
     // 弾デバッグプリミティブ描画
     bulletMgr.DrawDebugPrimitive();
     artsMgr.DrawDebugPrimitive();

@@ -62,6 +62,8 @@ private:
 
 	bool InputDash(float elapsedTime);
 	bool InputAttack();
+
+	void UpdateAnimation(float elapsedTime);
 private:
 	//待機ステート
 	void TransitionIdleState();
@@ -196,4 +198,7 @@ private:
 	int attackCount = 0;
 	bool attackFlag = false;
 	DirectX::XMFLOAT3 nodepos = {};
+
+
+	float totalAnimationTime = 0;
 };

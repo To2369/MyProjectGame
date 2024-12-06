@@ -320,6 +320,8 @@ public:
 	// アニメーションの連結
 	void BlendAnimations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe);
 
+	void BlendAnimations(const animation::keyframe* keyframes[2], int nodeIndex, float rate, animation::keyframe& keyframe);
+
 	// メッシュ情報の取り出し
 	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
 
@@ -344,6 +346,8 @@ public:
 	float GetCurrentAnimationSeconds()const { return currentAnimationSeconds; }
 
 	skeleton::bone* FindNode(const char* node);
+
+	mesh* FindMesh(const char* name);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
@@ -353,6 +357,7 @@ public:
 	// 前回のアニメーションの番号
 	int currentAnimationIndex = -1;
 	float currentAnimationSeconds = 0.0f;
+	float oldAnimationSeconds = 0.0f;
 	bool animLoop = false;
 	bool animationEndFlag = false;
 	float animationBlendTime;
@@ -360,7 +365,10 @@ public:
 	animation::keyframe keyframe;
 	FbxScene* fbx_scene{};
 	DirectX::XMFLOAT4X4 trans = {};
+	scene scene_view;
+private:
+	float blendRate = 0;
 protected:
 	// このfbxの親シーン
-	scene scene_view;
+	//scene scene_view;
 };

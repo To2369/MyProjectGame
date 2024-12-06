@@ -65,6 +65,12 @@ void Player::Update(float elapsedTime)
     bulletMgr.Update(elapsedTime);
     artsMgr.Update(elapsedTime);
 
+    {
+
+        
+      
+    }
+    UpdateAnimation(elapsedTime);
     model->UpdateAnimation(elapsedTime);
 
     //Lock();
@@ -88,7 +94,195 @@ void Player::Update(float elapsedTime)
     // 計算したワールド行列をtransformに取り出す
     DirectX::XMStoreFloat4x4(&t, W);
 }
-float a = 0;
+void Player::UpdateAnimation(float elapsedTime)
+{
+    //再生中でないなら処理しない
+    if (!model->IsPlayAnimation())
+        return;
+
+    // ブレンド補間にかかる時間
+    float blendRate = 1.0f;
+    if (model->animationBlendTime < model->animationBlendSeconds)
+    {
+        model->animationBlendTime += elapsedTime;
+        if (model->animationBlendTime >= model->animationBlendSeconds)
+        {
+            model->animationBlendTime = model->animationBlendSeconds;
+        }
+        blendRate = model->animationBlendTime / model->animationBlendSeconds;
+        blendRate *= blendRate;
+    }
+
+    // アニメーションの番号
+    int clip_index{ model->currentAnimationIndex };
+
+    int frame_index{ 0 };
+    animation& animation{ model->animation_clips.at(clip_index) };
+    frame_index = static_cast<int>(model->currentAnimationSeconds * animation.sampling_rate);
+    if (frame_index > animation.sequence.size() - 1)
+    {
+        frame_index = animation.sequence.size() - 1;
+    }
+
+    animation::keyframe beginPose, oldPose, newPose;
+    animation::keyframe endPose;
+    if (blendRate < 1.0f)
+    {
+        // ブレンド再生
+        const animation::keyframe* keyframes[2]{
+            &model->keyframe,
+            // 今回アニメーションの最初のフレームを最後として補完
+            &model->animation_clips.at(clip_index).sequence.at(frame_index),
+        };
+
+        // ブレンド補間
+        model->BlendAnimations(keyframes, blendRate, model->keyframe);
+        model->BlendAnimations(keyframes, 0, beginPose);
+        model->BlendAnimations(keyframes, model->oldAnimationSeconds, oldPose);
+        model->BlendAnimations(keyframes, model->currentAnimationSeconds, newPose);
+        model->BlendAnimations(keyframes, totalAnimationTime, endPose);
+    }
+    else
+    {
+        // 通常再生
+        model->keyframe = animation.sequence.at(frame_index);
+        // ブレンド再生
+        const animation::keyframe* keyframes[2]{
+            &model->animation_clips.at(clip_index).sequence.at(frame_index),
+            &model->animation_clips.at(clip_index).sequence.at(frame_index),
+        };
+        model->BlendAnimations(keyframes, 0, beginPose);
+        model->BlendAnimations(keyframes, model->oldAnimationSeconds, oldPose);
+        model->BlendAnimations(keyframes, model->currentAnimationSeconds, newPose);
+        model->BlendAnimations(keyframes, totalAnimationTime, endPose);
+    }
+
+    {
+        // キーフレームに存在するすべてのノードを更新する
+        size_t node_count{ model->keyframe.nodes.size() };
+        model->keyframe.nodes.resize(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index)
+        {
+            // ローカル行列を設定
+            animation::keyframe::node& node{ model->keyframe.nodes.at(node_index) };
+            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scaling.x,node.scaling.y,node.scaling.z) };
+            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&node.rotation)) };
+            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
+
+            // 親のグローバル行列を取得
+            int64_t parent_index{ model->scene_view.nodes.at(node_index).parent_index };
+            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&model->keyframe.nodes.at(parent_index).global_transform) };
+
+            // ローカル行列 * 親のグローバル行列
+            DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
+        }
+    }
+
+    //ルートモーション
+    {
+        const Model::mesh* mesh = model->FindMesh("root");
+        const skeleton::bone* bone = model->FindNode("root");
+        if (bone && !model->keyframe.nodes.empty())
+        {
+            const int rootMotionIndex = bone->node_index;
+            DirectX::XMFLOAT3 localTranslation{};
+            if (model->oldAnimationSeconds > model->currentAnimationSeconds)
+            {
+                //終端位置
+                DirectX::XMVECTOR EndPos =
+                    DirectX::XMLoadFloat3(&endPose.nodes[rootMotionIndex].translation);
+                //前回位置
+                DirectX::XMVECTOR oldPos =
+                    DirectX::XMLoadFloat3(&oldPose.nodes[rootMotionIndex].translation);
+                //今回位置
+                DirectX::XMVECTOR newPos =
+                    DirectX::XMLoadFloat3(&newPose.nodes[rootMotionIndex].translation);
+                //初回位置
+                DirectX::XMVECTOR beginPos =
+                    DirectX::XMLoadFloat3(&beginPose.nodes[rootMotionIndex].translation);
+
+                DirectX::XMVECTOR endToOldPos = DirectX::XMVectorSubtract(oldPos, EndPos);
+                DirectX::XMVECTOR beginToNowPos = DirectX::XMVectorSubtract(beginPos, newPos);
+                DirectX::XMStoreFloat3(&localTranslation,
+                    DirectX::XMVectorAdd(endToOldPos, beginToNowPos));
+            }
+            else
+            {
+                //前回位置
+                DirectX::XMVECTOR oldPos = DirectX::XMLoadFloat3(&oldPose.nodes[rootMotionIndex].translation);
+
+                DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&newPose.nodes[rootMotionIndex].translation);
+                DirectX::XMVECTOR newPosToOldPos = DirectX::XMVectorSubtract(newPos, oldPos);
+                DirectX::XMStoreFloat3(&localTranslation, newPosToOldPos);
+            }
+
+            //親ノード取得
+            const skeleton::bone& rootmotionNode = mesh->bind_pose.bones[bone->parent_index];
+
+            //rootmotionNodeの親ノード(parent)からグローバル行列を取得できるので
+            //ローカル移動量をグローバル空間に移動させる
+            DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMLoadFloat4x4(&model->keyframe.nodes[rootmotionNode.node_index].global_transform);
+            DirectX::XMVECTOR GlobalTransform;
+            DirectX::XMVECTOR LocalTransform;
+            GlobalTransform = DirectX::XMVector3TransformNormal(XMLoadFloat3(&localTranslation), ParentGlobalTransform);
+
+            {
+                GlobalTransform = DirectX::XMVectorSetY(GlobalTransform, 0);
+                DirectX::XMVECTOR LocalPos, GlobalPos;
+                LocalPos = DirectX::XMLoadFloat3(&newPose.nodes[rootMotionIndex].translation);
+                GlobalPos = DirectX::XMVector3Transform(LocalPos, ParentGlobalTransform);
+                GlobalPos = DirectX::XMVectorSetX(GlobalPos, 0);
+                GlobalPos = DirectX::XMVectorSetZ(GlobalPos, 0);
+                DirectX::XMMATRIX InverceParentGlobalTransform;
+                InverceParentGlobalTransform = XMMatrixInverse(nullptr, ParentGlobalTransform);
+                LocalPos = XMVector3Transform(GlobalPos, InverceParentGlobalTransform);
+                DirectX::XMStoreFloat3(&model->keyframe.nodes[bone->node_index].translation, LocalPos);
+
+                DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&transform);
+                DirectX::XMFLOAT3 worldTranslation;
+                DirectX::XMVECTOR ConvertWordtransform;
+                ConvertWordtransform = DirectX::XMVector3TransformNormal(GlobalTransform, WorldTransform);
+                DirectX::XMStoreFloat3(&worldTranslation, ConvertWordtransform);
+
+                position.x += worldTranslation.x;
+                position.y += worldTranslation.y;
+                position.z += worldTranslation.z;
+            }
+        }
+    }
+
+    //最終フレーム処理
+    if (model->animationEndFlag)
+    {
+        model->animationEndFlag = false;
+        model->currentAnimationIndex = -1;
+        return;
+    }
+    //時間経過
+    model->oldAnimationSeconds = model->currentAnimationSeconds;
+    model->currentAnimationSeconds += elapsedTime;
+
+    // アニメーション全体の長さを計算
+    totalAnimationTime =
+        model->animation_clips.at(model->currentAnimationIndex).sequence.size() *
+        (1.0f / model->animation_clips.at(model->currentAnimationIndex).sampling_rate);
+    //再生時間が終端時間を超えたら
+    if (model->currentAnimationSeconds >= totalAnimationTime)
+    {
+        //再生時間を巻き戻す
+        if (model->animLoop)
+        {
+            model->currentAnimationSeconds -= totalAnimationTime;
+        }
+        else
+        {
+            model->currentAnimationSeconds = totalAnimationTime;
+            model->animationEndFlag = true;
+        }
+    }
+}
+
+
 void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
@@ -131,7 +325,7 @@ void Player::DrawDebugGUI()
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             //位置
-            ImGui::InputFloat3("Position", &nodepos.x);
+            ImGui::InputFloat3("Position", &position.x);
             ImGui::SliderFloat("Position", &position.y,-10,10);
             //回転
             DirectX::XMVECTOR p = DirectX::XMQuaternionRotationAxis(right, c);
@@ -597,7 +791,6 @@ void Player::CollisionPlayerAndArts()
             arts->GetRadius(),
             &result))
         {
-            a = 1;
             L = result.penetration;
 
             // プレイヤーが敵に押し出される処理
@@ -609,7 +802,6 @@ void Player::CollisionPlayerAndArts()
         }
         else
         {
-            a = 0;
         }
         
     }

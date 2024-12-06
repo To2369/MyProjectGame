@@ -410,125 +410,7 @@ void Model::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOA
 // アニメーションの更新
 void Model::UpdateAnimation(float elapsedTime)
 {
-    //再生中でないなら処理しない
-    if (!IsPlayAnimation())
-        return;
-
-    // ブレンド補間にかかる時間
-    float blendRate = 1.0f;
-    if (animationBlendTime < animationBlendSeconds)
-    {
-        animationBlendTime += elapsedTime;
-        if (animationBlendTime >= animationBlendSeconds)
-        {
-            animationBlendTime = animationBlendSeconds;
-        }
-        blendRate = animationBlendTime / animationBlendSeconds;
-        blendRate *= blendRate;
-    }
-
-    // アニメーションの番号
-    int clip_index{ currentAnimationIndex };
-
-    int frame_index{ 0 };
-    animation& animation{ animation_clips.at(clip_index) };
-    frame_index = static_cast<int>(currentAnimationSeconds * animation.sampling_rate);
-    if (frame_index > animation.sequence.size() - 1)
-    {
-        frame_index = animation.sequence.size() - 1;
-    }
-
-    if (blendRate < 1.0f)
-    {
-        // ブレンド再生
-        const animation::keyframe* keyframes[2]{
-            &keyframe,
-            // 今回アニメーションの最初のフレームを最後として補完
-            &animation_clips.at(clip_index).sequence.at(frame_index),
-        };
-
-        // ブレンド補間
-        BlendAnimations(keyframes, blendRate, keyframe);
-        // キーフレームに存在するすべてのノードを更新する
-        size_t node_count{ keyframe.nodes.size() };
-        //keyframe.nodes.resize(node_count);
-        for (size_t node_index = 0; node_index < node_count; ++node_index)
-        {
-            // ローカル行列を設定
-            animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
-            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scaling.x,node.scaling.y,node.scaling.z) };
-            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&node.rotation)) };
-            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
-
-            // 親のグローバル行列を取得
-            int64_t parent_index{ scene_view.nodes.at(node_index).parent_index };
-            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
-
-            // ローカル行列 * 親のグローバル行列
-            DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
-        }
-    }
-    else
-    {
-        // 通常再生
-        keyframe = animation.sequence.at(frame_index);
-
-        // キーフレームに存在するすべてのノードを更新する
-        size_t node_count{ keyframe.nodes.size() };
-        keyframe.nodes.resize(node_count);
-        for (size_t node_index = 0; node_index < node_count; ++node_index)
-        {
-            // ローカル行列を設定
-            animation::keyframe::node& node{ keyframe.nodes.at(node_index) };
-            DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scaling.x,node.scaling.y,node.scaling.z) };
-            DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&node.rotation)) };
-            DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
-
-            // 親のグローバル行列を取得
-            int64_t parent_index{ scene_view.nodes.at(node_index).parent_index };
-            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&keyframe.nodes.at(parent_index).global_transform) };
-
-            // ローカル行列 * 親のグローバル行列
-            DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
-        }
-    }
-
-    {
-        float oldAnimationSeconds = 0;
-        if (oldAnimationSeconds > currentAnimationSeconds)
-        {
-
-        }
-    }
-
-    //最終フレーム処理
-    if (animationEndFlag)
-    {
-        animationEndFlag = false;
-        currentAnimationIndex = -1;
-        return;
-    }
-    //時間経過
-    currentAnimationSeconds += elapsedTime;
-
-    // アニメーション全体の長さを計算
-    float totalAnimationTime = 
-        animation_clips.at(currentAnimationIndex).sequence.size() *
-        (1.0f / animation_clips.at(currentAnimationIndex).sampling_rate);
-    //再生時間が終端時間を超えたら
-    if (currentAnimationSeconds >= totalAnimationTime)
-    {
-        //再生時間を巻き戻す
-        if (animLoop)
-        {
-            currentAnimationSeconds -= totalAnimationTime;
-        }
-        else
-        {
-            currentAnimationSeconds = totalAnimationTime;
-            animationEndFlag = true;
-        }
-    }
+    
 }
 
 // アニメーションの追加
@@ -572,6 +454,29 @@ void Model::BlendAnimations(const animation::keyframe* keyframes[2], float facto
             DirectX::XMLoadFloat3(&keyframes[0]->nodes.at(node_index).translation),
             DirectX::XMLoadFloat3(&keyframes[1]->nodes.at(node_index).translation) };
         DirectX::XMStoreFloat3(&keyframe.nodes.at(node_index).translation, DirectX::XMVectorLerp(T[0], T[1], factor));
+    }
+}
+
+void Model::BlendAnimations(const animation::keyframe* keyframes[2], int nodeIndex, float rate, animation::keyframe& keyframe)
+{
+    size_t node_count{ keyframes[0]->nodes.size() };
+    keyframe.nodes.resize(node_count);
+    for (size_t node_index = 0; node_index < node_count; ++node_index)
+    {
+        DirectX::XMVECTOR S[2]{
+            DirectX::XMLoadFloat3(&keyframes[0]->nodes.at(node_index).scaling),
+            DirectX::XMLoadFloat3(&keyframes[1]->nodes.at(node_index).scaling) };
+        DirectX::XMStoreFloat3(&keyframe.nodes.at(node_index).scaling, DirectX::XMVectorLerp(S[0], S[1], rate));
+
+        DirectX::XMVECTOR R[2]{
+            DirectX::XMLoadFloat4(&keyframes[0]->nodes.at(node_index).rotation),
+            DirectX::XMLoadFloat4(&keyframes[1]->nodes.at(node_index).rotation) };
+        DirectX::XMStoreFloat4(&keyframe.nodes.at(node_index).rotation, DirectX::XMQuaternionSlerp(R[0], R[1], rate));
+
+        DirectX::XMVECTOR T[2]{
+            DirectX::XMLoadFloat3(&keyframes[0]->nodes.at(node_index).translation),
+            DirectX::XMLoadFloat3(&keyframes[1]->nodes.at(node_index).translation) };
+        DirectX::XMStoreFloat3(&keyframe.nodes.at(node_index).translation, DirectX::XMVectorLerp(T[0], T[1], rate));
     }
 }
 
@@ -1132,6 +1037,23 @@ skeleton::bone* Model::FindNode(const char* name)
             if (bone.name == name) // 名前が一致するか確認
             {
                 return &bone; // ボーンのポインタを返す
+            }
+        }
+    }
+    return nullptr; // 見つからなかった場合
+}
+
+Model::mesh* Model::FindMesh(const char* name)
+{
+    // すべてのメッシュをループ
+    for (auto& mesh : meshes)
+    {
+        // 各メッシュのボーンリストをループ
+        for (auto& bone : mesh.bind_pose.bones)
+        {
+            if (bone.name == name) // 名前が一致するか確認
+            {
+                return &mesh; // メッシュのポインタを返す
             }
         }
     }

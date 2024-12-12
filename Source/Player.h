@@ -157,6 +157,7 @@ private:
 		AnimHitHeavyEnd,
 		AnimGetUp,
 		BlockHit,
+		FullAttack
 	};
 	enum class State
 	{
@@ -193,11 +194,6 @@ private:
 		0,0,1,0,
 		0,0,0,1
 	};
-	float L = {};
-
-	int attackCount = 0;
-	bool attackFlag = false;
-	DirectX::XMFLOAT3 nodepos = {};
 
 
 	float totalAnimationTime = 0;

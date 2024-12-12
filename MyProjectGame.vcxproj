@@ -222,6 +222,9 @@
     <ClInclude Include="Source\ArtsManager.h" />
     <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\StageManager.h" />
+    <ClInclude Include="Source\StateBase.h" />
+    <ClInclude Include="Source\StateDerived.h" />
+    <ClInclude Include="Source\StateMachine.h" />
     <ClInclude Include="Source\StraightBullet.h" />
     <ClInclude Include="Source\ArtsSpiritExplosion.h" />
   </ItemGroup>
@@ -276,6 +279,7 @@
     <ClCompile Include="Source\ArtsSkillStraightBallet.cpp" />
     <ClCompile Include="Source\Stage.cpp" />
     <ClCompile Include="Source\StageManager.cpp" />
+    <ClCompile Include="Source\StateMachine.cpp" />
     <ClCompile Include="Source\StraightBullet.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1015,7 +1015,6 @@ void Model::PlayAnimation(int index, bool loop, float blendSeconds)
     // ブレンド用トータル時間をリセット
     animationBlendTime = 0.0f;
     animationBlendSeconds = blendSeconds;
-    animationBlendSeconds = 1;
 }
 
 //アニメーション再生中か

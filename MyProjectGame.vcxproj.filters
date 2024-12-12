@@ -210,6 +210,15 @@
     <ClInclude Include="Source\Graphics\ColorGrading.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\StateBase.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateDerived.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateMachine.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -364,6 +373,9 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\ColorGrading.cpp">
       <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateMachine.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

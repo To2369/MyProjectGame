@@ -42,6 +42,7 @@ public:
 		float heightB,
 		DirectX::XMFLOAT3& outVec);
 
+	// カプセルとカプセルの交差判定
 	static bool IntersectCapsuleAndCapsule(
 		const DirectX::XMVECTOR& position1,	// 中心
 		const DirectX::XMVECTOR& direction1,	// 向き（正規化）
@@ -78,7 +79,7 @@ public:
 		const Model* model,
 		HitResult& result);
 
-	//球と円柱の交差判定
+	// 球と円柱の交差判定
 	static bool IntersectSphereVsCylinder(
 		const DirectX::XMFLOAT3& spherePosition,    //球位置
 		float sphereRadius,                         //球の半径
@@ -87,4 +88,5 @@ public:
 		float cylinderHeight,                       //円柱の高さ
 		DirectX::XMFLOAT3& outCylinderPosition
 	);
+		
 };

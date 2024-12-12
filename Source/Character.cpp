@@ -224,7 +224,7 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    //velocity.y += gravity * elapsedTime * 60.0f;
+    velocity.y += gravity * elapsedTime * 60.0f;
 }
 
 DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)

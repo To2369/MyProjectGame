@@ -7,8 +7,7 @@ class State
 {
 public:
 	// コンストラクタ
-	
-	State(TypeCharacter *enemy) :owner(enemy) {}
+	State(TypeCharacter *character) :owner(character) {}
 	virtual ~State() {}
 	// 全て継承先で実装させる必要があるため純粋仮想関数で実装
 	// ステートに入った時のメソッド
@@ -25,7 +24,7 @@ template<typename TypeCharacter>
 class HierarchicalState :public State<TypeCharacter>
 {
 public:
-	HierarchicalState(TypeCharacter* enemy) :State<TypeCharacter>(enemy) {}
+	HierarchicalState(TypeCharacter* character) :State<TypeCharacter>(character) {}
 	virtual ~HierarchicalState() {}
 	// ステートに入った時のメソッド
 	virtual void Enter() = 0;
@@ -50,48 +49,3 @@ protected:
 	std::vector<State<TypeCharacter>*>subStatePool;
 	State<TypeCharacter>*subState;
 };
-
-
-
-
-// TODO 03_02 HierarchicalStateクラスの関数定義を行う
-// 2層目ステートセット
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::SetSubState(int newState)
-{
-	// TODO 03_02 前回のSetState関数を参考に記述しなさい
-	subState =subStatePool.at(newState);
-	subState->Enter();
-}
-
-// 2層目のステート切り替え
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::ChangeSubState(int newState)
-{
-	// TODO 03_02 前回のChangeState関数を参考に記述しなさい
-	subState->Exit();
-	subState = subStatePool.at(newState);
-	subState->Enter();
-
-}
-// サブステート登録
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::RegisterSubState(State<TypeCharacter>* state)
-{
-	subStatePool.emplace_back(state);
-}
-
-// サブステートの番号取得
-template<typename TypeCharacter>
-int HierarchicalState<TypeCharacter>::GetSubStateIndex()
-{
-	int i = 0;
-	for (int i = 0; i < subStatePool.size(); ++i) {
-		if (subStatePool[i] == subState) {
-			return i;
-		}
-	}
-	return i;
-}
-
-

@@ -176,6 +176,7 @@
     <ClInclude Include="Imgui\imstb_textedit.h" />
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="Source\ArtsSkillStraightBallet.h" />
+    <ClInclude Include="Source\BehaviorTree.h" />
     <ClInclude Include="Source\Bullet.h" />
     <ClInclude Include="Source\BulletManager.h" />
     <ClInclude Include="Source\Camera.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="Imgui\imgui_ja_gryph_ranges.cpp" />
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\ArtsSpiritExplosion.cpp" />
+    <ClCompile Include="Source\BehaviorTree.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\BulletManager.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
@@ -269,6 +271,7 @@
     <ClCompile Include="Source\Mathf.cpp" />
     <ClCompile Include="Source\Misc.cpp" />
     <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\PlayerStateDerived.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneManeger.cpp" />
@@ -279,6 +282,8 @@
     <ClCompile Include="Source\ArtsSkillStraightBallet.cpp" />
     <ClCompile Include="Source\Stage.cpp" />
     <ClCompile Include="Source\StageManager.cpp" />
+    <ClCompile Include="Source\StateBase.cpp" />
+    <ClCompile Include="Source\StateDerived.cpp" />
     <ClCompile Include="Source\StateMachine.cpp" />
     <ClCompile Include="Source\StraightBullet.cpp" />
   </ItemGroup>

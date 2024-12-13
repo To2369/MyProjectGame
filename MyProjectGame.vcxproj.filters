@@ -219,6 +219,9 @@
     <ClInclude Include="Source\StateMachine.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\BehaviorTree.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -376,6 +379,18 @@
     </ClCompile>
     <ClCompile Include="Source\StateMachine.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateBase.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateDerived.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BehaviorTree.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlayerStateDerived.cpp">
+      <Filter>Sources\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

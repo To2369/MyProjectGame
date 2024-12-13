@@ -5,8 +5,49 @@
 #include "BulletManager.h"
 #include "ArtsManager.h"
 #include "Graphics/GeometricPrimitive.h"
+#include "StateMachine.h"
 //#include "Effect/Effect.h"
 
+
+//アニメーション
+enum Animation
+{
+	AnimIdle,
+	AnimConbatIdle,
+	AnimConbatToIdle,
+	AnimIdleToConbat,
+	AnimConbo01_1,
+	AnimConbo01_2,
+	AnimConbo01_3,
+	AnimConbo01_4,
+	AnimConbo02_1,
+	AnimConbo02_2,
+	AnimConbo02_3,
+	AnimConbo02_4,
+	AnimConbo03_1,
+	AnimConbo03_2,
+	AnimConbo03_3,
+	AnimConbo03_4,
+	AnimConbo04_1,
+	AnimConbo04_2,
+	AnimConbo04_3,
+	AnimConbo04_4,
+	AnimBuff,
+	AnimChargeAttackStart,
+	AnimChargeAttackEnd,
+	AnimWalk,
+	AnimRun,
+	AnimJumpStart,
+	AnimJumpEnd,
+	AnimStep,
+	AnimHit,
+	AnimDeathHit,
+	AnimHitHeavyStart,
+	AnimHitHeavyEnd,
+	AnimGetUp,
+	BlockHit,
+	FullAttack
+};
 // プレイヤー
 class Player :public Character
 {
@@ -23,6 +64,7 @@ public:
 
 	// デバッグプリミティブ表示
 	void DrawDebugPrimitive();
+	Model* GetModel() { return model.get(); }
 public:
 	static Player* Instance()
 	{
@@ -64,6 +106,7 @@ private:
 	bool InputAttack();
 
 	void UpdateAnimation(float elapsedTime);
+
 private:
 	//待機ステート
 	void TransitionIdleState();
@@ -120,65 +163,38 @@ private:
 	BulletManager bulletMgr;
 	ArtsManager artsMgr;
 	float elapsedTime_ = 0;
-	//アニメーション
-	enum Animation
-	{
-		AnimIdle,
-		AnimConbatIdle,
-		AnimConbatToIdle,
-		AnimIdleToConbat,
-		AnimConbo01_1,
-		AnimConbo01_2,
-		AnimConbo01_3,
-		AnimConbo01_4,
-		AnimConbo02_1,
-		AnimConbo02_2,
-		AnimConbo02_3,
-		AnimConbo02_4,
-		AnimConbo03_1,
-		AnimConbo03_2,
-		AnimConbo03_3,
-		AnimConbo03_4,
-		AnimConbo04_1,
-		AnimConbo04_2,
-		AnimConbo04_3,
-		AnimConbo04_4,
-		AnimBuff,
-		AnimChargeAttackStart,
-		AnimChargeAttackEnd,
-		AnimWalk,
-		AnimRun,
-		AnimJumpStart,
-		AnimJumpEnd,
-		AnimStep,
-		AnimHit,
-		AnimDeathHit,
-		AnimHitHeavyStart,
-		AnimHitHeavyEnd,
-		AnimGetUp,
-		BlockHit,
-		FullAttack
-	};
 	enum class State
+	{
+		Movement,
+		Battle,
+		HitDamege,
+	};
+	enum class Movement
 	{
 		Idle,
 		Move,
-		Jump,
 		Dash,
-		DashToEnemy,
-		RecoverySkillEnergy,
+		Jump,
 		Land,
+	};
+	enum class Battle
+	{
 		Attack,
-		Damage,
+		RecoverySkillEnergy,
+		DashToEnemy,
+	};
+	enum class HitDamege
+	{
+		Damege,
 		Death,
-		Revive,
 	};
 	enum class Skill
 	{
 		SpiritBlast,
 		SkillMax,
 	};
-	State state = State::Idle;
+	std::unique_ptr<StateMachine<Player>> stateMachine;
+	//State state = State::Idle;
 	Skill skill = Skill::SkillMax;
 	bool dashTowardEnemyFlag = false;
 	// ヒットエフェクト

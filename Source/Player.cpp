@@ -9,6 +9,7 @@
 #include "HomingBullet.h"
 #include "ArtsSpiritExplosion.h"
 #include "ArtsSkillStraightBallet.h"
+#include "StateDerived.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.fbx");
@@ -16,6 +17,23 @@ Player::Player()
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
     height=1.5f;
+    stateMachine = std::make_unique<StateMachine<Player>>();
+
+    stateMachine->RegisterState(new MovementState<Player>(this));
+    stateMachine->RegisterState(new BattleState<Player>(this));
+    stateMachine->RegisterState(new HitDamegeState<Player>(this));
+
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new IdleState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new MoveState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new DashState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new JumpState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new LandState<Player>(this));
+
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new AttackState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new RecoverySkillEnergyState<Player>(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new DashToEnemyState<Player>(this));
+
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::HitDamege), new DamegeState<Player>(this))
     //bulletMgr = std::make_unique<BulletManager>();
 
     // ヒットエフェクト読み込み
@@ -33,15 +51,7 @@ Player::~Player()
 void Player::Update(float elapsedTime)
 {
     //ステート毎の処理
-    switch (state)
-    {
-    case State::Idle:UpdateIdleState(elapsedTime); break;
-    case State::Move:UpdateMoveState(elapsedTime); break;
-    case State::Dash:UpdateDashState(elapsedTime); break;
-    case State::DashToEnemy:UpdateDashToEnemyState(elapsedTime); break;
-    case State::RecoverySkillEnergy:UpdateRecoverySkillEnergyState(elapsedTime); break;
-    case State::Attack:UpdateAttackState(elapsedTime); break;
-    }
+    stateMachine->Update(elapsedTime);
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
@@ -900,7 +910,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 enemys->AddImpulse(impulse);
             }
             //ヒットエフェクト再生
-            if (enemys->ApplyDamage(1, 0.5f))
+            if (enemys->ApplyDamage(1, 1))
             {
                 DirectX::XMFLOAT3 e = enemys->GetPosition();
                 e.y += enemys->GetHeight() * 0.5f;
@@ -1224,14 +1234,6 @@ void Player::Lock()
         DirectX::XMStoreFloat4(&quaternion, smoothedQuaternion);
     }
 }
-//待機ステートへ遷移
-void Player::TransitionIdleState()
-{
-    state = State::Idle;
-
-    //待機アニメーション再生
-    model->PlayAnimation(0, true);
-}
 
 //待機ステート更新処理
 void Player::UpdateIdleState(float elapsedTime)
@@ -1276,6 +1278,13 @@ void Player::UpdateIdleState(float elapsedTime)
     //InputProjectile();
 }
 
+void IdleState<Player>::Enter()
+{
+    this->owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimIdle), true);
+}
+void IdleState<Player>::Execute(float elapsedTime)
+{
+}
 //移動ステート
 void Player::TransitionMoveState()
 {

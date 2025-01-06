@@ -1,38 +1,36 @@
 #include "StateBase.h"
 
+// TODO 03_02 HierarchicalStateクラスの関数定義を行う
 // 2層目ステートセット
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::SetSubState(int newState)
+void HierarchicalState::SetSubState(int newState)
 {
+	// TODO 03_02 前回のSetState関数を参考に記述しなさい
 	subState = subStatePool.at(newState);
 	subState->Enter();
 }
 
 // 2層目のステート切り替え
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::ChangeSubState(int newState)
+void HierarchicalState::ChangeSubState(int newState)
 {
+	// TODO 03_02 前回のChangeState関数を参考に記述しなさい
 	subState->Exit();
 	subState = subStatePool.at(newState);
 	subState->Enter();
 }
-
 // サブステート登録
-template<typename TypeCharacter>
-void HierarchicalState<TypeCharacter>::RegisterSubState(State<TypeCharacter>* state)
+void HierarchicalState::RegisterSubState(State* state)
 {
 	subStatePool.emplace_back(state);
 }
 
 // サブステートの番号取得
-template<typename TypeCharacter>
-int HierarchicalState<TypeCharacter>::GetSubStateIndex()
+int HierarchicalState::GetSubStateIndex()
 {
 	int i = 0;
-	for (int i = 0; i < subStatePool.size(); ++i) {
-		if (subStatePool[i] == subState) {
-			return i;
-		}
+	for (State* state : subStatePool)
+	{
+		if (subState == state)return i;
+		++i;
 	}
 	return i;
 }

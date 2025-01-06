@@ -5,6 +5,12 @@
 // 弾管理の前方宣言
 class ArtsManager;
 
+enum BalletType
+{
+    Normal,
+    SkillStraight,
+    SpiritExplosion,
+};
 // 弾
 class  Arts
 {
@@ -41,6 +47,7 @@ public:
     int GetUseSpiritEnergy() const { return useSpiritEnergy; }
     int GetUseSkillEnergy() const { return useSkillEnergy; }
     int GetDamage() const { return damage; }
+    virtual BalletType GetType() = 0;
 protected:
     // 行列更新処理
     void UpdateTransform();

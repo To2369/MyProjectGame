@@ -1,155 +1,203 @@
 #pragma once
-#include"StateBase.h"
-//template<typename TypeCharacter>
-//class SearchState : public HierarchicalState<TypeCharacter>
-//{
-//public:
-//	// コンストラクタ
-//	SearchState(TypeCharacter* character) :HierarchicalState<TypeCharacter>(character) {}
-//	~SearchState()
-//	{
-//		for (State<TypeCharacter>* state : this->subStatePool)
-//		{
-//			delete state;
-//		}
-//		this->subStatePool.clear();
-//	};
-//	// ステートに入った時のメソッド
-//	virtual void Enter()override {this->owner->MainEnterSearch();};
-//	// ステートで実行するメソッド
-//	virtual void Execute(float elapsedTime)override { this->owner->MainExecutionSearch(elapsedTime); };
-//	// ステートから出ていくときのメソッド
-//	virtual void Exit()override {};
-//};
+#include "Player.h"
 
-template<typename TypeCharacter>
-class MovementState :public HierarchicalState<TypeCharacter>
+/*メインステート*/
+class MovementState :public HierarchicalState
 {
 public:
-	MovementState(TypeCharacter* character) :HierarchicalState<TypeCharacter>(character) {}
-	~MovementState() {};
-	virtual void Enter() override {};
-	virtual void Execute(float elapsedTime) override {};
-	virtual void Exit()override {};
+	//コンストラクタ
+	MovementState(Player* enemy) :HierarchicalState(enemy) {}
+	~MovementState();
+	//ステートに入った時のメソッド
+	void Enter();
+	//ステートで実行するメソッド
+	void Execute(float elapsedTime);
+	//ステートからでていくときのメソッド
+	void Exit();
 };
 
-template<typename TypeCharacter>
-class BattleState :public HierarchicalState<TypeCharacter>
+class BattleState :public HierarchicalState
 {
 public:
-	BattleState(TypeCharacter*character):HierarchicalState<TypeCharacter>(character){}
-	~BattleState() {};
-	virtual void Enter() override {};
-	virtual void Execute(float elapsedTime) override {};
-	virtual void Exit()override {};
+	//コンストラクタ
+	BattleState(Player* enemy) :HierarchicalState(enemy) {}
+	~BattleState();
+	//ステートに入った時のメソッド
+	void Enter();
+	//ステートで実行するメソッド
+	void Execute(float elapsedTime);
+	//ステートからでていくときのメソッド
+	void Exit();
 };
-
-template<typename TypeCharacter>
-class HitDamegeState :public HierarchicalState<TypeCharacter>
+//メタAIからメッセージ受信を受信したときに呼ばれる
+class HitDamegeState :public HierarchicalState
 {
 public:
-	HitDamegeState(TypeCharacter* character) :HierarchicalState<TypeCharacter>(character) {}
-	~HitDamegeState() {};
-	virtual void Enter() override {};
-	virtual void Execute(float elapsedTime) override {};
-	virtual void Exit()override {};
+	//コンストラクタ
+	HitDamegeState(Player* enemy) :HierarchicalState(enemy) {}
+	~HitDamegeState();
+	//ステートに入った時のメソッド
+	void Enter();
+	//ステートで実行するメソッド
+	void Execute(float elapsedTime);
+	//ステートからでていくときのメソッド
+	void Exit();
 };
+/***********************************************************************************************/
 
-template<typename TypeCharacter>
-class IdleState : public State<TypeCharacter>
+// 待機ステートオブジェクト
+class IdleState : public State
 {
 public:
-	IdleState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	IdleState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~IdleState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class MoveState : public State<TypeCharacter>
+// 追跡ステートオブジェクト
+class MoveState : public State
 {
 public:
-	MoveState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	MoveState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~MoveState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class DashState : public State<TypeCharacter>
+// 追跡ステートオブジェクト
+class DashState : public State
 {
 public:
-	DashState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	DashState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~DashState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class JumpState : public State<TypeCharacter>
+// 追跡ステートオブジェクト
+class JumpState: public State
 {
 public:
-	JumpState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	JumpState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~JumpState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class LandState : public State<TypeCharacter>
+// 追跡ステートオブジェクト
+class LandState : public State
 {
 public:
-	LandState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	LandState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~LandState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class AttackState : public State<TypeCharacter>
+// 攻撃ステートオブジェクト
+class AttackState : public State
 {
 public:
-	AttackState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	AttackState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~AttackState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
 
-template<typename TypeCharacter>
-class RecoverySkillEnergyState : public State<TypeCharacter>
+//他のエネミーから呼ばれたとき
+class RecoverySkillEnergyState : public State
 {
 public:
-	RecoverySkillEnergyState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	RecoverySkillEnergyState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~RecoverySkillEnergyState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
-
-template<typename TypeCharacter>
-class DashToEnemyState : public State<TypeCharacter>
+//戦闘待機
+class DashToEnemyState : public State
 {
 public:
-	DashToEnemyState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	DashToEnemyState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~DashToEnemyState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };
-
-template<typename TypeCharacter>
-class DamegeState : public State<TypeCharacter>
+//戦闘待機
+class DamegeState : public State
 {
 public:
-	DamegeState(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// コンストラクタ
+	DamegeState(Player* enemy) :State(enemy) {};
+	// デストラクタ
 	~DamegeState() {}
-	virtual void Enter()override {};
-	virtual void Execute(float elapsedTime)override {};
-	virtual void Exit()override {};
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+
+class DeathState : public State
+{
+public:
+	// コンストラクタ
+	DeathState(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~DeathState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
 };

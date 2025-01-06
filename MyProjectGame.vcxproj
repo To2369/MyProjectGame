@@ -177,8 +177,6 @@
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="Source\ArtsSkillStraightBallet.h" />
     <ClInclude Include="Source\BehaviorTree.h" />
-    <ClInclude Include="Source\Bullet.h" />
-    <ClInclude Include="Source\BulletManager.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraController.h" />
     <ClInclude Include="Source\Character.h" />
@@ -206,12 +204,12 @@
     <ClInclude Include="Source\Graphics\SpriteBatch.h" />
     <ClInclude Include="Source\Graphics\StaticMesh.h" />
     <ClInclude Include="Source\High_resolution_timer.h" />
-    <ClInclude Include="Source\HomingBullet.h" />
     <ClInclude Include="Source\Input\GamePad.h" />
     <ClInclude Include="Source\Input\InputManager.h" />
     <ClInclude Include="Source\Input\Mouse.h" />
     <ClInclude Include="Source\Mathf.h" />
     <ClInclude Include="Source\Misc.h" />
+    <ClInclude Include="Source\NormalBallet.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -226,7 +224,6 @@
     <ClInclude Include="Source\StateBase.h" />
     <ClInclude Include="Source\StateDerived.h" />
     <ClInclude Include="Source\StateMachine.h" />
-    <ClInclude Include="Source\StraightBullet.h" />
     <ClInclude Include="Source\ArtsSpiritExplosion.h" />
   </ItemGroup>
   <ItemGroup>
@@ -238,8 +235,6 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\ArtsSpiritExplosion.cpp" />
     <ClCompile Include="Source\BehaviorTree.cpp" />
-    <ClCompile Include="Source\Bullet.cpp" />
-    <ClCompile Include="Source\BulletManager.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\CameraController.cpp" />
     <ClCompile Include="Source\Character.cpp" />
@@ -264,12 +259,12 @@
     <ClCompile Include="Source\Graphics\Sprite.cpp" />
     <ClCompile Include="Source\Graphics\SpriteBatch.cpp" />
     <ClCompile Include="Source\Graphics\StaticMesh.cpp" />
-    <ClCompile Include="Source\HomingBullet.cpp" />
     <ClCompile Include="Source\Input\GamePad.cpp" />
     <ClCompile Include="Source\Input\InputManager.cpp" />
     <ClCompile Include="Source\Input\Mouse.cpp" />
     <ClCompile Include="Source\Mathf.cpp" />
     <ClCompile Include="Source\Misc.cpp" />
+    <ClCompile Include="Source\NormalBallet.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PlayerStateDerived.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
@@ -285,7 +280,6 @@
     <ClCompile Include="Source\StateBase.cpp" />
     <ClCompile Include="Source\StateDerived.cpp" />
     <ClCompile Include="Source\StateMachine.cpp" />
-    <ClCompile Include="Source\StraightBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\ColorFilter.hlsli" />

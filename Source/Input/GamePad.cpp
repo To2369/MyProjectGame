@@ -141,14 +141,22 @@ void GamePad::Update()
 		if (GetAsyncKeyState('J') & 0x8000) rx = -1.0f;
 		if (GetAsyncKeyState('K') & 0x8000) ry = -1.0f;
 		if (GetAsyncKeyState('L') & 0x8000) rx = 1.0f;
-		if (GetAsyncKeyState('Z') & 0x8000) newButtonState |= BTN_A;
-		if (GetAsyncKeyState('X') & 0x8000) newButtonState |= BTN_B;
-		if (GetAsyncKeyState('C') & 0x8000) newButtonState |= BTN_X;
-		if (GetAsyncKeyState('V') & 0x8000) newButtonState |= BTN_Y;
+
+		if (GetAsyncKeyState(' ') & 0x8000) newButtonState |= BTN_A;
+		if (GetAsyncKeyState('Q') & 0x8000) newButtonState |= BTN_B;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) newButtonState |= BTN_X;
+		if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) newButtonState |= BTN_Y;
+
 		if (GetAsyncKeyState(VK_UP) & 0x8000)	newButtonState |= BTN_UP;
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	newButtonState |= BTN_RIGHT;
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000)	newButtonState |= BTN_DOWN;
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)	newButtonState |= BTN_LEFT;
+
+		if (GetAsyncKeyState('F') & 0x8000) newButtonState |= BTN_RIGHT_TRIGGER;
+		if (GetAsyncKeyState('R') & 0x8000)
+		{
+			newButtonState |= BTN_LEFT_TRIGGER;
+		}
 
 #if 1
 		if (newButtonState & BTN_UP)    ly = 1.0f;

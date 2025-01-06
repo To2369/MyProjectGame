@@ -96,6 +96,7 @@ protected:
 	void Turn(float elapsedTime, float vx, float vz, float speed);
 	// ジャンプ処理
 	void Jump(float speed);
+	void Fly(float speed);
 	// 速度処理更新
 	void UpdateVelocity(float elpasedTime);
 

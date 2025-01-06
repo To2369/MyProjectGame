@@ -22,5 +22,6 @@ public:
         const DirectX::XMFLOAT3& position);
 private:
     std::unique_ptr<Model> model;
+    BalletType GetType()override { return BalletType::SpiritExplosion; }
     float lifeTimer = 2.0f; // Žõ–½
 };

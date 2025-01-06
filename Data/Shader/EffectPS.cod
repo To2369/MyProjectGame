@@ -40,7 +40,7 @@ dcl_temps 1
 //   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 10 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\EffectPS.hlsl"
+#line 10 "C:\Users\Center\Desktop\MyProjectGame\HLSL\EffectPS.hlsl"
 lt r0.x, v2.y, l(0.250000)
 if_nz r0.x
 

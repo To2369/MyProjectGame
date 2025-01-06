@@ -149,6 +149,11 @@ void Character::Jump(float speed)
     // 上方向の力を設定
     velocity.y = speed;
 }
+void Character::Fly(float speed)
+{
+    // 上方向の力を設定
+    velocity.y = speed;
+}
 // 速度処理更新
 void Character::UpdateVelocity(float elapsedTime)
 {
@@ -223,8 +228,9 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 // 垂直速度更新処理
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
-    // 重力処理（フレーム単位で計算）
-    velocity.y += gravity * elapsedTime * 60.0f;
+        // 重力処理（フレーム単位で計算）
+        velocity.y += gravity * elapsedTime * 60.0f;
+   
 }
 
 DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)
@@ -258,7 +264,6 @@ void Character::UpdateVerticalMove(float elapsedTime)
 {
     // 垂直方向の移動量
     float moveY = velocity.y * elapsedTime;
-
     slopeRate = 0.0f;
 
     // 姿勢制御用法線ベクトル（デフォルトは上方向）
@@ -303,7 +308,6 @@ void Character::UpdateVerticalMove(float elapsedTime)
     }
     else if (moveY > 0.0f)
     {
-        // 上昇中
         position.y += moveY;
         groundedFlag = false;
     }

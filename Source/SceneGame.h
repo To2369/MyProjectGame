@@ -32,6 +32,10 @@ public:
     void Render()override;
 
     void DrawGauge(ID3D11DeviceContext* dc);
+
+    void DrawUltimetArtsSelect(ID3D11DeviceContext* dc);
+
+    void DrawSkillArtsSelect(ID3D11DeviceContext* dc, RenderContext* rc);
 public:
     // シーン定数
     struct Scene_constants
@@ -106,8 +110,9 @@ private:
     std::unique_ptr<Sprite> lifegauge;
     std::unique_ptr<Sprite> skillEnergyGauge;
     std::unique_ptr<Sprite> spritEnergyGauge;
-    ColorGradingData colorGradingData;
     std::unique_ptr<Sprite> sprite;
+
+    std::unique_ptr<Sprite> skillArtsSellect;
 private:
     //ライトの方向
     DirectX::XMFLOAT4 light_direction{ 0.0f,-1.0f,0.0f,0.0f };

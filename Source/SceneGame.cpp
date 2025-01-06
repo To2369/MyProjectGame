@@ -9,48 +9,6 @@
 //初期化
 void SceneGame::Initialize()
 {
-    // ポイントライト・スポットライトの初期位置設定
-    {
-        point_light[0].position.x = 10;
-        point_light[0].position.y = 1;
-        point_light[0].range = 10;
-        point_light[0].color = { 1, 0, 0, 1 };
-        point_light[1].position.x = -10;
-        point_light[1].position.y = 1;
-        point_light[1].range = 10;
-        point_light[1].color = { 0, 1, 0, 1 };
-        point_light[2].position.y = 1;
-        point_light[2].position.z = 10;
-        point_light[2].range = 10;
-        point_light[2].position.y = 1;
-        point_light[2].color = { 0, 0, 1, 1 };
-        point_light[3].position.y = 1;
-        point_light[3].position.z = -10;
-        point_light[3].range = 10;
-        point_light[3].color = { 1, 1, 1, 1 };
-        point_light[4].range = 10;
-        point_light[4].color = { 1, 1, 1, 1 };
-        ZeroMemory(&point_light[5], sizeof(point_lights) * 3);
-
-        spot_light[0].position = { 15, 3, 15, 0 };
-        spot_light[0].direction = { -1, -1, -1, 0 };
-        spot_light[0].range = 100;
-        spot_light[0].color = { 1, 0, 0, 1 };
-        spot_light[1].position = { -15, 3, 15, 0 };
-        spot_light[1].direction = { +1, -1, -1, 0 };
-        spot_light[1].range = 100;
-        spot_light[1].color = { 0, 1, 0, 1 };
-        spot_light[2].position = { 15, 3, -15, 0 };
-        spot_light[2].direction = { -1, -1, +1, 0 };
-        spot_light[2].range = 100;
-        spot_light[2].color = { 0, 0, 1, 1 };
-        spot_light[3].position = { -15, 3, -15, 0 };
-        spot_light[3].direction = { +1, -1, +1, 0 };
-        spot_light[3].range = 100;
-        spot_light[3].color = { 1, 1, 1, 1 };
-        ZeroMemory(&spot_light[4], sizeof(spot_lights) * 4);
-    }
-
 
     Graphics* graphics = Graphics::Instance();
 
@@ -97,7 +55,7 @@ void SceneGame::Initialize()
     framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280 / 2, 720 / 2);
     sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\screenshot.jpg");
-
+    skillArtsSellect = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Fonts\\font4.png");
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
         gaussian_filter_pixel_shader.GetAddressOf());
 }
@@ -138,9 +96,6 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Begin("ImGUI");
     player->DrawDebugGUI();
     EnemyManager::Instance().DrawDebugGUI();
-    ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
-    ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
-    ImGui::SliderFloat("brightness", &colorGradingData.brightness, 0.0f, +2.0f);
     ImGui::SliderFloat4("light_direction", &graphics->GetLight()->directionalLightDirection.x, -1.0f, +1.0f);
     
     if (ImGui::TreeNode("points"))
@@ -316,6 +271,10 @@ void SceneGame::Render()
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
         DrawGauge(dc);
+        if (player->ArtskillReady)
+        {
+            DrawSkillArtsSelect(dc, &rc);
+        }
     }
     // 2DデバッグGUI描画
     {
@@ -406,4 +365,12 @@ void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constan
         constant.weights[i].z /= sum;
     }
 
+}
+
+void SceneGame::DrawSkillArtsSelect(ID3D11DeviceContext* dc,RenderContext*rc)
+{
+    dc->OMSetBlendState(rc->renderState->GetBlendStates(BLEND_STATE::ADD), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(rc->renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(rc->renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    skillArtsSellect->Textout(dc, "normalskill", 1000, 500, 16, 16, 1, 1, 1, 1);
 }

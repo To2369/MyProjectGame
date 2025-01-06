@@ -9,6 +9,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     const float scale_fcator = 1.0f;	// モデルが大きいのでスケール調整
     scale = { scale_fcator, scale_fcator, scale_fcator };
     position = { 1,5,1 };
+    damage = 1;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 
@@ -29,9 +30,9 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
     // 移動
     float speed = this->speed * elapsedTime;
     // 位置 += 方向 * 速さ
-   /* position.x += direction.x * speed;
+    position.x += direction.x * speed;
     position.y += direction.y * speed;
-    position.z += direction.z * speed;*/
+    position.z += direction.z * speed;
     // ワールド行列の更新
     UpdateTransform();
 }

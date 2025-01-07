@@ -28,7 +28,6 @@ public:
 
     //ƒV[ƒ“Ø‚è‘Ö‚¦
     void ChangeScene(Scene* scene);
-
 private:
     Scene* currentScene = nullptr;
     Scene* nextScene = nullptr;

@@ -43,13 +43,13 @@ void ArtsManager::Render(ID3D11DeviceContext* dc)
 }
 
 // デバッグプリミティブ描画
-void ArtsManager::DrawDebugPrimitive()
-{
-    for (Arts* arts : artses)
-    {
-        arts->DrawDebugPrimitive();
-    }
-}
+//void ArtsManager::DrawDebugPrimitive()
+//{
+//    for (Arts* arts : artses)
+//    {
+//        arts->DrawDebugPrimitive();
+//    }
+//}
 
 // 弾登録
 void ArtsManager::Regist(Arts* arts)

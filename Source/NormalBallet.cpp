@@ -1,15 +1,11 @@
 #include "NormalBallet.h"
 #include "Graphics/Graphics.h"
-
 NormalBallet::NormalBallet(ArtsManager* manager) : Arts(manager)
 {
-    height = 1.0f;
-
-    prim = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ 0,0,0 });
-    const float scale_fcator = 1.0f;	// モデルが大きいのでスケール調整
-    scale = { scale_fcator, scale_fcator, scale_fcator };
     position = { 1,5,1 };
     damage = 1;
+    useSkillEnergy = 2;
+    radius = 0.5f;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 
@@ -74,7 +70,9 @@ void NormalBallet::Update(float elapsedTime)
 // 描画処理
 void NormalBallet::Render(ID3D11DeviceContext* dc)
 {
-    prim->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
+    //衝突判定用のデバッグ球を描画
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    debugPrimitive->DrawSphere(position, radius, { 0,1,0,1 });
 }
 
 //発射

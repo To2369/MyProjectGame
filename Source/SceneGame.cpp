@@ -5,11 +5,11 @@
 #include "EnemyManager.h"
 #include "StageManager.h"
 #include "Graphics\Shader.h"
+#include "Input/InputManager.h"
 //#include "Effect/EffectManager.h"
 //初期化
 void SceneGame::Initialize()
 {
-
     Graphics* graphics = Graphics::Instance();
 
     //定数バッファの作成
@@ -20,16 +20,17 @@ void SceneGame::Initialize()
     float x, y;
     x = static_cast<float>(graphics->GetScreenWidth());
     y = static_cast<float>(graphics->GetScreenHeight());
+    aspect = x / y;
     camera->SetLookAt(
-        DirectX::XMFLOAT3(0, 10, -10),		//カメラの視点(位置)
-        DirectX::XMFLOAT3(0, 0, 0),			//カメラの注視点(ターゲット)
-        DirectX::XMFLOAT3(0, 1, 0)			//カメラの上方向
+        cameraEye,		//カメラの視点(位置)
+        cameraFocus,			//カメラの注視点(ターゲット)
+        cameraUp			//カメラの上方向
     );
     camera->SetPerspectiveFov(
-        DirectX::XMConvertToRadians(45),
-        x / y,
-        0.1f,
-        1000.0f
+        cameraFovY,
+        aspect,
+        nearZ,
+        farZ
     );
     cameraCtrl = std::make_unique<CameraController>();
     std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
@@ -69,17 +70,50 @@ void SceneGame::Finalize()
 //更新処理
 void SceneGame::Update(float elapsedTime)
 {
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+
     player->Update(elapsedTime);
 
     EnemyManager::Instance().Update(elapsedTime);
 
     // エフェクト更新処理
     //EffectManager::Instance().Update(elapsedTime);
-
     DirectX::XMFLOAT3 target = player->GetPosition();
     target.y += 0.5f;
     cameraCtrl->SetTarget(target);
     cameraCtrl->Update(elapsedTime);
+
+#ifdef USE_IMGUI
+    // 視点移動のONOFF
+    if (GetAsyncKeyState('P') & 1)
+    {
+        if (!mouseMoveFlag)
+        {
+            mouseMoveFlag = true;
+        }
+        else
+        {
+            mouseMoveFlag = false;
+        }
+    }
+
+    cameraCtrl->SetMouseMoveFlag(mouseMoveFlag);
+
+    // カメラ移動テスト
+    if (GetAsyncKeyState('1') & 1)
+    {
+        if (!play)
+        {
+            play = true;
+        }
+        else
+        {
+            play = false;
+        }
+
+    }
+    cameraCtrl->SetCutInFlag(play);
+#endif
 
     stage->Update(elapsedTime);
 
@@ -96,8 +130,8 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Begin("ImGUI");
     player->DrawDebugGUI();
     EnemyManager::Instance().DrawDebugGUI();
+    cameraCtrl->DrawDebugGUI();
     ImGui::SliderFloat4("light_direction", &graphics->GetLight()->directionalLightDirection.x, -1.0f, +1.0f);
-    
     if (ImGui::TreeNode("points"))
     {
         for (int i = 0; i < 8; ++i)

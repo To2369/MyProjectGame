@@ -12,7 +12,7 @@ DebugPrimitive::DebugPrimitive(ID3D11Device*device)
         std::make_unique<GeometricSphere>(device,1.0f,32,32);
 
     geometricPrimitives[static_cast<int>(FORM_STATE::Capsule)] =
-        std::make_unique<GeometricCapsule>(device, 1.0f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3, DirectX::XMFLOAT3{ 0,0,0 });
+        std::make_unique<GeometricCapsule>(device, 0.0f, DirectX::XMFLOAT3{ 1.0f,1.0f,1.0f }, 6, 3, 3, DirectX::XMFLOAT3{ 0,0,0 });
     
 }
 
@@ -73,7 +73,7 @@ void DebugPrimitive::Render(ID3D11DeviceContext* immediate_context)
     // ƒJƒvƒZƒ‹
     for (const Capsule& capsule : capsules)
     {
-        UpdateTransform(capsule.position, { capsule.radius.x,capsule.height,capsule.radius.z });
+        UpdateTransform(capsule.position, { capsule.radius,capsule.height,capsule.radius });
         materialColor = capsule.color;
         geometricPrimitives[static_cast<int>(FORM_STATE::Capsule)]->Render(immediate_context, transform, materialColor);
     }
@@ -109,7 +109,7 @@ void DebugPrimitive::DrawSphere(const DirectX::XMFLOAT3& center, float radius, c
     spheres.emplace_back(sphere);
 }
 
-void DebugPrimitive::DrawCapsule(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3 radius, float height, const DirectX::XMFLOAT4& color)
+void DebugPrimitive::DrawCapsule(const DirectX::XMFLOAT3& position, float radius, float height, const DirectX::XMFLOAT4& color)
 {
     Capsule capsule;
     capsule.position = position;

@@ -339,8 +339,8 @@ void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     artsMgr.Render(dc);
-    //ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-    //artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
+    ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+    artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 float c = 0;
 void Player::DrawDebugGUI()
@@ -398,6 +398,7 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("skill", &skillEnergy);
             ImGui::InputFloat("movespeed", &moveSpeed);
             ImGui::InputFloat("currentAnimationSeconds", &model->currentAnimationSeconds);
+            ImGui::InputInt("hit", &hit);
             ImGui::Text(u8"State　%s", str.c_str());
             //ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
@@ -440,7 +441,7 @@ void Player::DrawDebugPrimitive()
             DirectX::XMFLOAT4(0, 1, 0, 1)
         );
     }
-    artsMgr.DrawDebugPrimitive();
+    //artsMgr.DrawDebugPrimitive();
 }
 
 //入力値から移動ベクトルを取得
@@ -579,6 +580,7 @@ void Player::InputArts()
             // 発射
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
             artsSkillStraightBallet->Launch(dir, pos);
+            skillEnergy -= artsSkillStraightBallet->GetUseSpiritEnergy();
         }
     }
     //　通常弾
@@ -631,6 +633,7 @@ void Player::InputArts()
         NormalBallet* normalBallet = new NormalBallet(&artsMgr);
         normalBallet->Launch(dir, pos,target);
         normalBallet->LockonTarget(target);
+        skillEnergy -= normalBallet->GetUseSpiritEnergy();
     }
 }
 
@@ -781,42 +784,43 @@ void Player::CollisionArtsAndEnemies()
 
 void Player::CollisionPlayerAndArts()
 {
-    //// 全ての弾と全ての敵を総当たりで衝突処理
-    //int artsCount = artsMgr.GetArtsCount();
-    //IntersectionResult result;
-    //for (int i = 0; i < artsCount; ++i)
-    //{
-    //    Arts* arts = artsMgr.GetArts(i);
+    // 全ての弾と全ての敵を総当たりで衝突処理
+    int artsCount = artsMgr.GetArtsCount();
+    IntersectionResult result;
+    for (int i = 0; i < artsCount; ++i)
+    {
+        Arts* arts = artsMgr.GetArts(i);
 
-    //    //プレイやー高さ1.5f
-    //    // 衝突処理
-    //    DirectX::XMFLOAT3 outVec;
-    //    direction.y = 1;
-    //    DirectX::XMFLOAT3 plPos = position;
-    //    plPos.y += height/2;
-    //    if (Collision::IntersectCapsuleAndCapsule(
-    //        DirectX::XMLoadFloat3(&plPos),
-    //        DirectX::XMLoadFloat3(&direction),
-    //        height/2,
-    //        radius,
-    //        DirectX::XMLoadFloat3(&arts->GetPosition()),
-    //        DirectX::XMLoadFloat3(&arts->GetDirection()),
-    //        arts->GetHeight(),
-    //        arts->GetRadius(),
-    //        &result))
-    //    {
-    //        // プレイヤーが敵に押し出される処理
-    //        DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
-    //        DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
-    //        newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
-    //        DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
-
-    //    }
-    //    else
-    //    {
-    //    }
-    //    
-    //}
+        //プレイやー高さ1.5f
+        // 衝突処理
+        DirectX::XMFLOAT3 outVec;
+        direction.y = 1;
+        DirectX::XMFLOAT3 plPos = position;
+        plPos.y += height/2;
+        if (Collision::IntersectCapsuleAndCapsule(
+            DirectX::XMLoadFloat3(&plPos),
+            DirectX::XMLoadFloat3(&direction),
+            height,
+            radius,
+            DirectX::XMLoadFloat3(&arts->GetPosition()),
+            DirectX::XMLoadFloat3(&arts->GetDirection()),
+            arts->GetHeight(),
+            arts->GetRadius(),
+            &result))
+        {
+            // プレイヤーが敵に押し出される処理
+            //DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
+            //DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
+            //newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
+            //DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
+            hit = 1;
+        }
+        else
+        {
+            hit = 0;
+        }
+        
+    }
 }
 
 void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)

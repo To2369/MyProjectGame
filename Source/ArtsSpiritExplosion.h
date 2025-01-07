@@ -10,7 +10,7 @@ public:
     ArtsSpiritExplosion(ArtsManager* manager);
     ~ArtsSpiritExplosion()override;
 
-    void DrawDebugPrimitive() override;
+    //void DrawDebugPrimitive() override;
 
     // XVˆ—
     void Update(float elapsedTime) override;

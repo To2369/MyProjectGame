@@ -3,9 +3,6 @@
 
 ArtsSpiritExplosion::ArtsSpiritExplosion(ArtsManager* manager) : Arts(manager)
 {
-    model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".//Data//Model//Sword//Sword.fbx");
-    const float scale_fcator = 0.0f;	// モデルが大きいのでスケール調整
-    scale = { scale_fcator, scale_fcator, scale_fcator };
     useSpiritEnergy = 300;
     radius = 2;
     damage = 1;
@@ -14,14 +11,6 @@ ArtsSpiritExplosion::ArtsSpiritExplosion(ArtsManager* manager) : Arts(manager)
 
 ArtsSpiritExplosion::~ArtsSpiritExplosion()
 {
-}
-
-// デバッグプリミティブ描画
-void ArtsSpiritExplosion::DrawDebugPrimitive()
-{
-    //衝突判定用のデバッグ球を描画
-    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
 }
 
 void ArtsSpiritExplosion::Update(float elapsedTime)
@@ -40,7 +29,9 @@ void ArtsSpiritExplosion::Update(float elapsedTime)
 // 描画処理
 void ArtsSpiritExplosion::Render(ID3D11DeviceContext* dc)
 {
-    model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
+    //衝突判定用のデバッグ球を描画
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
 }
 
 //発射

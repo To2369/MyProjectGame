@@ -181,4 +181,6 @@ private:
 
 
 	float totalAnimationTime = 0;
+
+	int hit = 0;
 };

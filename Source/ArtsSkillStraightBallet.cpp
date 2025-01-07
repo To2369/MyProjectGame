@@ -3,13 +3,10 @@
 
 ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(manager)
 {
-    height = 1.0f;
-
-    prim = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6, DirectX::XMFLOAT3{ 0,0,0 });
-    const float scale_fcator = 1.0f;	// モデルが大きいのでスケール調整
-    scale = { scale_fcator, scale_fcator, scale_fcator };
-    position = { 1,5,1 };
+    position = { 1,0,1 };
     damage = 1;
+    useSkillEnergy = 100;
+    height = 5;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 
@@ -28,11 +25,11 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
     }
     //angle.x = DirectX::XMConvertToRadians(90);
     // 移動
-    float speed = this->speed * elapsedTime;
-    // 位置 += 方向 * 速さ
-    position.x += direction.x * speed;
-    position.y += direction.y * speed;
-    position.z += direction.z * speed;
+    //float speed = this->speed * elapsedTime;
+    //// 位置 += 方向 * 速さ
+    //position.x += direction.x * speed;
+    //position.y += direction.y * speed;
+    //position.z += direction.z * speed;
     // ワールド行列の更新
     UpdateTransform();
 }
@@ -40,7 +37,9 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
 // 描画処理
 void ArtsSkillStraightBallet::Render(ID3D11DeviceContext* dc)
 {
-    prim->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
+    //衝突判定用のデバッグ球を描画
+    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+    debugPrimitive->DrawCapsule(position, radius,height, { 1, 0, 0, 1 });
 }
 
 //発射

@@ -121,4 +121,17 @@ private:
     std::unique_ptr<Player> player;
     // ポストプロセス
     std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
+
+    // カメラ関係
+    DirectX::XMFLOAT3 cameraEye = { 0,10,-10 };
+    DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };
+    DirectX::XMFLOAT3 cameraUp = { 0,1,0 };
+
+    float cameraFovY = DirectX::XMConvertToRadians(45);
+    float aspect = 0;
+    float nearZ = 0.1f;
+    float farZ = 1000.0f;
+
+    bool mouseMoveFlag = true;
+    bool play = false;
 };

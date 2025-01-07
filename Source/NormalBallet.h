@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/GeometricPrimitive.h"
 #include "Arts.h"
 #include<memory>
 // ãCíeãZíºêi
@@ -26,7 +25,6 @@ public:
         UpdateTransform();
     }
 private:
-    std::unique_ptr<GeometricPrimitive> prim;
     BalletType GetType()override { return BalletType::Normal; }
     DirectX::XMFLOAT3 target = { 0,0,0 };
     float turnSpeed = DirectX::XMConvertToRadians(180);

@@ -23,7 +23,7 @@ public:
     virtual void Render(ID3D11DeviceContext* dc) = 0;
 
     // デバッグプリミティブ描画
-    virtual void DrawDebugPrimitive() {};
+    //virtual void DrawDebugPrimitive() {};
 
     void Destroy();
 

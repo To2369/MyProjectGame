@@ -20,6 +20,7 @@ void SceneManager::Update(float elapsedTime)
     {
         currentScene->Update(elapsedTime);
     }
+
 }
 
 //•`‰æˆ—

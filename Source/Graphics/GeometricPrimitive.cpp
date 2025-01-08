@@ -654,8 +654,7 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     const DirectX::XMFLOAT3& radius,
     uint32_t slices,
     uint32_t ellipsoid_stacks,
-    uint32_t mantle_stacks,
-    const DirectX::XMFLOAT3& rotationAngle) :GeometricPrimitive(device)
+    uint32_t mantle_stacks) :GeometricPrimitive(device)
 {
     std::vector<vertex> vertices;
     std::vector<uint32_t> indices;
@@ -682,11 +681,6 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     DirectX::XMFLOAT2 texcoord;
 
     float angle = 0.0f;
-    // 回転行列の作成
-    DirectX::XMMATRIX rotation_matrix_x = DirectX::XMMatrixRotationX(rotationAngle.x);
-    DirectX::XMMATRIX rotation_matrix_y = DirectX::XMMatrixRotationY(rotationAngle.y);
-    DirectX::XMMATRIX rotation_matrix_z = DirectX::XMMatrixRotationZ(rotationAngle.z);
-    DirectX::XMMATRIX rotation_matrix = rotation_matrix_x * rotation_matrix_y * rotation_matrix_z;
     
     // マントル部分の頂点生成ループ
     for (uint32_t u = 0; u <= slices; ++u)
@@ -720,9 +714,9 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             position.y = half_height * (1 - texcoord.y) + -half_height * texcoord.y;
 #endif
             // 頂点の座標に回転を適用
-            DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
+         /*   DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
             pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
-            DirectX::XMStoreFloat3(&position, pos_vector);
+            DirectX::XMStoreFloat3(&position, pos_vector);*/
 
             vertices.push_back({ position, normal });
         }
@@ -772,9 +766,9 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
                 position.y += half_height * cover_side[i];
 
                 // 頂点の座標に回転を適用
-                DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
+            /*    DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
                 pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
-                DirectX::XMStoreFloat3(&position, pos_vector);
+                DirectX::XMStoreFloat3(&position, pos_vector);*/
 
                 vertices.push_back({ position, normal });
             }

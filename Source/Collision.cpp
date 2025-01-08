@@ -80,12 +80,12 @@ bool Collision::IntersectCapsuleAndCapsule(
     IntersectionResult* result)
 {
     // カプセル1の終端点
-    DirectX::XMVECTOR point1A = DirectX::XMVectorSubtract(position1, DirectX::XMVectorScale(direction1, length1 * 0.5f));
-    DirectX::XMVECTOR point1B = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1 * 0.5f));
+    DirectX::XMVECTOR point1A = DirectX::XMVectorSubtract(position1, DirectX::XMVectorScale(direction1, length1));
+    DirectX::XMVECTOR point1B = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
 
     // カプセル2の終端点
-    DirectX::XMVECTOR point2A = DirectX::XMVectorSubtract(position2, DirectX::XMVectorScale(direction2, length2 * 0.5f));
-    DirectX::XMVECTOR point2B = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2 * 0.5f));
+    DirectX::XMVECTOR point2A = DirectX::XMVectorSubtract(position2, DirectX::XMVectorScale(direction2, length2));
+    DirectX::XMVECTOR point2B = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));
 
     // 線分間の最短距離の二乗を求める
     DirectX::XMVECTOR nearPoint1, nearPoint2;

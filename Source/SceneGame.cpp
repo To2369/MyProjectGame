@@ -305,7 +305,7 @@ void SceneGame::Render()
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
         DrawGauge(dc);
-        if (player->ArtskillReady)
+        if (player->artSkillReady)
         {
             DrawSkillArtsSelect(dc, &rc);
         }

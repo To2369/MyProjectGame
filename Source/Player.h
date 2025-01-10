@@ -12,41 +12,46 @@
 //アニメーション
 enum Animation
 {
+	AnimTpose,
 	AnimIdle,
 	AnimConbatIdle,
-	AnimConbatToIdle,
-	AnimIdleToConbat,
 	AnimConbo01_1,
 	AnimConbo01_2,
 	AnimConbo01_3,
 	AnimConbo01_4,
+	AnimConbo01_5,
+	AnimConbo01_6,
 	AnimConbo02_1,
 	AnimConbo02_2,
 	AnimConbo02_3,
-	AnimConbo02_4,
-	AnimConbo03_1,
-	AnimConbo03_2,
-	AnimConbo03_3,
-	AnimConbo03_4,
-	AnimConbo04_1,
-	AnimConbo04_2,
-	AnimConbo04_3,
-	AnimConbo04_4,
-	AnimBuff,
-	AnimChargeAttackStart,
-	AnimChargeAttackEnd,
-	AnimWalk,
-	AnimRun,
+	AnimAttack01,
+	AnimAttack02,
+	AnimAttack03,
+	AnimAttack04,
+	AnimAttack05,
+	AnimAttack06,
+	AnimAttack07,
+	AnimAttack08,
+	AnimDefense,
+	AnimDead,
+	AnimDownEnd,
+	AnimDownStart,
+	AnimAvoidBack,
+	AnimAvoidFront,
+	AnimAvoidLeft,
+	AnimAvoidRight,
+	AnimHitBack,
+	AnimHitFront,
+	AnimHitLeft,
+	AnimHitRight,
+	AnimJumpFalling,
+	AnimJumpLanding,
 	AnimJumpStart,
-	AnimJumpEnd,
-	AnimStep,
-	AnimHit,
-	AnimDeathHit,
-	AnimHitHeavyStart,
-	AnimHitHeavyEnd,
-	AnimGetUp,
-	BlockHit,
-	FullAttack
+	AnimRun,
+	AnimWalk,
+	AnimRise,
+	AnimConbo01,
+	AnimConbo02,
 };
 // プレイヤー
 class Player :public Character
@@ -76,7 +81,8 @@ public:
 	enum class State
 	{
 		Movement,
-		Battle,
+		WeakAttack,
+		UseSkill,
 		HitDamege,
 	};
 	enum class Movement
@@ -87,13 +93,19 @@ public:
 		Jump,
 		Land,
 	};
-	enum class Battle
+	enum class WeakAttack
 	{
-		Attack,
-		RecoverySkillEnergy,
-		DashToEnemy,
+		WeakAttack01,
+		WeakAttack02,
+		WeakAttack03,
+		WeakAttack04,
+		WeakAttack05,
+		WeakAttack06,
 	};
-
+	enum class UseSkill
+	{
+		SkillSelect,
+	};
 	enum class HitDamege
 	{
 		Damege,
@@ -104,18 +116,16 @@ public:
 	bool InputMove(float elapsedTime);
 
 	// ジャンプ入力処理
-	void InputJump();
+	bool InputJump();
 
-	void InputArts();
+	bool InputArts(float elapsedTime);
 
 	bool InputDashTowardsEnemy(float elapsedTime);
-
-	bool InputRecoverySkillEnergy(float elapsedTime);
 
 	bool InputDash(float elapsedTime);
 	bool InputAttack();
 
-	bool ArtskillReady = false;
+	bool artSkillReady = false;
 	void InputFlying(float elapsedTime);
 private:
 	DirectX::XMFLOAT3 GetMoveVec() const;

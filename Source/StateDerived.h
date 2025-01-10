@@ -16,12 +16,12 @@ public:
 	void Exit();
 };
 
-class BattleState :public HierarchicalState
+class WeakAttackState :public HierarchicalState
 {
 public:
 	//コンストラクタ
-	BattleState(Player* enemy) :HierarchicalState(enemy) {}
-	~BattleState();
+	WeakAttackState(Player* enemy) :HierarchicalState(enemy) {}
+	~WeakAttackState();
 	//ステートに入った時のメソッド
 	void Enter();
 	//ステートで実行するメソッド
@@ -29,7 +29,21 @@ public:
 	//ステートからでていくときのメソッド
 	void Exit();
 };
-//メタAIからメッセージ受信を受信したときに呼ばれる
+
+class UseSkillState :public HierarchicalState
+{
+public:
+	//コンストラクタ
+	UseSkillState(Player* enemy) :HierarchicalState(enemy) {}
+	~UseSkillState();
+	//ステートに入った時のメソッド
+	void Enter();
+	//ステートで実行するメソッド
+	void Execute(float elapsedTime);
+	//ステートからでていくときのメソッド
+	void Exit();
+};
+
 class HitDamegeState :public HierarchicalState
 {
 public:
@@ -126,13 +140,13 @@ public:
 };
 
 // 攻撃ステートオブジェクト
-class AttackState : public State
+class WeakAttackState01 : public State
 {
 public:
 	// コンストラクタ
-	AttackState(Player* enemy) :State(enemy) {};
+	WeakAttackState01(Player* enemy) :State(enemy) {};
 	// デストラクタ
-	~AttackState() {}
+	~WeakAttackState01() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド
@@ -141,14 +155,74 @@ public:
 	void Exit()override;
 };
 
-//他のエネミーから呼ばれたとき
-class RecoverySkillEnergyState : public State
+// 攻撃ステートオブジェクト
+class WeakAttackState02 : public State
 {
 public:
 	// コンストラクタ
-	RecoverySkillEnergyState(Player* enemy) :State(enemy) {};
+	WeakAttackState02(Player* enemy) :State(enemy) {};
 	// デストラクタ
-	~RecoverySkillEnergyState() {}
+	~WeakAttackState02() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+// 攻撃ステートオブジェクト
+class WeakAttackState03 : public State
+{
+public:
+	// コンストラクタ
+	WeakAttackState03(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~WeakAttackState03() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+// 攻撃ステートオブジェクト
+class WeakAttackState04 : public State
+{
+public:
+	// コンストラクタ
+	WeakAttackState04(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~WeakAttackState04() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+// 攻撃ステートオブジェクト
+class WeakAttackState05 : public State
+{
+public:
+	// コンストラクタ
+	WeakAttackState05(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~WeakAttackState05() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+// 攻撃ステートオブジェクト
+class WeakAttackState06 : public State
+{
+public:
+	// コンストラクタ
+	WeakAttackState06(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~WeakAttackState06() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド
@@ -164,6 +238,21 @@ public:
 	DashToEnemyState(Player* enemy) :State(enemy) {};
 	// デストラクタ
 	~DashToEnemyState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+};
+
+class SkillSelectState :public State
+{
+public:
+	// コンストラクタ
+	SkillSelectState(Player* enemy) :State(enemy) {};
+	// デストラクタ
+	~SkillSelectState() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド

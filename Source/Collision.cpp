@@ -1,6 +1,6 @@
 #include "Collision.h"
 #include <algorithm>
-
+using namespace DirectX;
 // 球と球の交差判定
 bool Collision::IntersectSphereAndSphere(
 	const DirectX::XMFLOAT3& positionA,
@@ -96,26 +96,26 @@ bool Collision::IntersectCapsuleAndCapsule(
     float radiusAddSq = radiusAdd * radiusAdd;
 
     // 交差判定
-    if (distSq > radiusAddSq)
+    if (distSq <= radiusAddSq)
     {
-        return false; // 交差していない
+        // 交差している場合は、結果を設定
+        if (result)
+        {
+            result->pointA = nearPoint1;
+            result->pointB = nearPoint2;
+
+            // 衝突法線ベクトル
+            DirectX::XMVECTOR collisionVector = DirectX::XMVectorSubtract(nearPoint1, nearPoint2);
+            result->normal = DirectX::XMVector3Normalize(collisionVector);
+
+            // めり込み量
+            result->penetration = radiusAdd - sqrtf(distSq);
+        }
+
+        return true; // 交差している
     }
 
-    // 交差している場合は、結果を設定
-    if (result)
-    {
-        result->pointA = nearPoint1;
-        result->pointB = nearPoint2;
-
-        // 衝突法線ベクトル
-        DirectX::XMVECTOR collisionVector = DirectX::XMVectorSubtract(nearPoint1, nearPoint2);
-        result->normal = DirectX::XMVector3Normalize(collisionVector);
-
-        // めり込み量
-        result->penetration = radiusAdd - sqrtf(distSq);
-    }
-
-    return true; // 交差している
+    return false; // 交差していない
 
 
     //// 各カプセルの中心線上の最近点算出

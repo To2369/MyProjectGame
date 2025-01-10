@@ -7,7 +7,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,1,0 };
-    height = 5;
+    height = 1;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 

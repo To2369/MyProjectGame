@@ -33,7 +33,7 @@ void MovementState::Exit()
 
 }
 
-BattleState::~BattleState()
+WeakAttackState::~WeakAttackState()
 {
 	for (State* state : subStatePool)
 	{
@@ -43,19 +43,46 @@ BattleState::~BattleState()
 }
 
 //バトルステートに入った時のメソッド
-void BattleState::Enter()
+void WeakAttackState::Enter()
 {
-	SetSubState(static_cast<int>(Player::Battle::Attack));
+	SetSubState(static_cast<int>(Player::WeakAttack::WeakAttack01));
 }
 
 //バトルステートで実行するメソッド
-void BattleState::Execute(float elapsedTime)
+void WeakAttackState::Execute(float elapsedTime)
 {
 	subState->Execute(elapsedTime);
 }
 
 //バトルステートからでていくときのメソッド
-void BattleState::Exit()
+void WeakAttackState::Exit()
+{
+
+}
+
+UseSkillState::~UseSkillState()
+{
+	for (State* state : subStatePool)
+	{
+		delete state;
+	}
+	subStatePool.clear();
+}
+
+//バトルステートに入った時のメソッド
+void UseSkillState::Enter()
+{
+	SetSubState(static_cast<int>(Player::WeakAttack::WeakAttack01));
+}
+
+//バトルステートで実行するメソッド
+void UseSkillState::Execute(float elapsedTime)
+{
+	subState->Execute(elapsedTime);
+}
+
+//バトルステートからでていくときのメソッド
+void UseSkillState::Exit()
 {
 
 }
@@ -88,9 +115,8 @@ void HitDamegeState::Exit()
 // 待機ステートに入った時のメソッド
 void IdleState::Enter()
 {
-	// TODO 02_03
 	// 各種Enter関数の内容は各Transition○○State関数を参考に
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimIdle), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbatIdle), true);
 }
 
 // 待機ステートで実行するメソッド
@@ -101,23 +127,20 @@ void IdleState::Execute(float elapsedTime)
 		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Move));
 	}
 
-	owner->InputAttack();
 	if (owner->InputAttack())
 	{
-		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Battle));
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
 	}
 
-	if (owner->InputRecoverySkillEnergy(elapsedTime))
+	if (owner->InputJump())
 	{
-		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Battle));
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Jump));
 	}
 
-	/*pl->InputJump();
-	if (pl->InputJump())
+	if (owner->InputArts(elapsedTime))
 	{
-		pl->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Jump));
-	}*/
-
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::UseSkill));
+	}
 }
 
 // 待機ステートから出ていくときのメソッド
@@ -132,7 +155,7 @@ void MoveState::Enter()
 {
 	// TODO 02_03
 	// 各種Enter関数の内容は各Transition○○State関数を参考に
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimIdle), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
 }
 
 // 追跡ステートで実行するメソッド
@@ -143,20 +166,19 @@ void MoveState::Execute(float elapsedTime)
 		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Idle));
 	}
 
-	owner->InputAttack();
 	if (owner->InputAttack())
 	{
-		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Battle));
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
 	}
 
-	if (owner->InputRecoverySkillEnergy(elapsedTime))
-	{
-		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Battle));
-	}
-
-	owner->InputJump();
+	if(owner->InputJump())
 	{
 		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Jump));
+	}
+
+	if (owner->InputArts(elapsedTime))
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::UseSkill));
 	}
 
 }
@@ -179,17 +201,16 @@ void DashState::Execute(float elapsedTime)
 		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Idle));
 	}
 
-	owner->InputAttack();
 	if (owner->InputAttack())
 	{
-		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Battle));
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
 	}
 
-	owner->InputDashTowardsEnemy(elapsedTime);
+	/*owner->InputDashTowardsEnemy(elapsedTime);
 	if (!owner->InputDashTowardsEnemy(elapsedTime))
 	{
 		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Move));
-	}
+	}*/
 }
 
 void DashState::Exit()
@@ -199,12 +220,21 @@ void DashState::Exit()
 
 void JumpState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimJumpStart), false);
 }
 
 void JumpState::Execute(float elapsedTime)
 {
-	
+	owner->InputMove(elapsedTime);
+
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetModel()->PlayAnimation(AnimJumpFalling, true);
+	}
+	if (owner->isGrounded())
+	{
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Land));
+	}
 }
 
 void JumpState::Exit()
@@ -214,12 +244,15 @@ void JumpState::Exit()
 
 void LandState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimJumpLanding), false);
 }
 
 void  LandState::Execute(float elapsedTime)
 {
-
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
 }
 
 void  LandState::Exit()
@@ -227,32 +260,165 @@ void  LandState::Exit()
 	//書かなくてよい
 }
 
-void AttackState::Enter()
+void WeakAttackState01::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_1), false);
 }
 
-void  AttackState::Execute(float elapsedTime)
+void  WeakAttackState01::Execute(float elapsedTime)
 {
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.4f && animationTime <= 0.45f)
+	{
 
+	}
+	if (animationTime >= 0.1f && animationTime <= 0.9f)
+	{
+		if (owner->InputAttack())
+		{
+			owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack02));
+		}
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
 }
 
-void AttackState::Exit()
+void WeakAttackState01::Exit()
 {
 	//書かなくてよい
 }
 
-void RecoverySkillEnergyState::Enter()
+void WeakAttackState02::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_2), false);
 }
 
-void  RecoverySkillEnergyState::Execute(float elapsedTime)
+void  WeakAttackState02::Execute(float elapsedTime)
 {
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.25f && animationTime <= 0.3f)
+	{
 
+	}
+	if (owner->InputAttack())
+	{
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack03));
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
 }
 
-void RecoverySkillEnergyState::Exit()
+void WeakAttackState02::Exit()
+{
+	//書かなくてよい
+}
+
+void WeakAttackState03::Enter()
+{
+
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_3), false);
+}
+
+void  WeakAttackState03::Execute(float elapsedTime)
+{
+
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.38f && animationTime <= 0.45f)
+	{
+
+	}
+	if (owner->InputAttack())
+	{
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack04));
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
+}
+
+void WeakAttackState03::Exit()
+{
+	//書かなくてよい
+}
+
+void WeakAttackState04::Enter()
+{
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_4), false);
+}
+
+void  WeakAttackState04::Execute(float elapsedTime)
+{
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.2f && animationTime <= 0.4f)
+	{
+
+	}
+	if (owner->InputAttack())
+	{
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack05));
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
+}
+
+void WeakAttackState04::Exit()
+{
+	//書かなくてよい
+}
+
+void WeakAttackState05::Enter()
+{
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_5), false);
+}
+
+void  WeakAttackState05::Execute(float elapsedTime)
+{
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.27f && animationTime <= 0.31f)
+	{
+
+	}
+	if (owner->InputAttack())
+	{
+		owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
+}
+
+void WeakAttackState05::Exit()
+{
+	//書かなくてよい
+}
+
+void WeakAttackState06::Enter()
+{
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_6), false);
+}
+
+void  WeakAttackState06::Execute(float elapsedTime)
+{
+	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	if (animationTime >= 0.4f && animationTime <= 0.5f)
+	{
+
+	}
+	if (!owner->GetModel()->IsPlayAnimation())
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
+}
+
+void WeakAttackState06::Exit()
 {
 	//書かなくてよい
 }
@@ -271,6 +437,25 @@ void DashToEnemyState::Exit()
 {
 	//書かなくてよい
 }
+
+void SkillSelectState::Enter()
+{
+	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimTpose), true);
+}
+
+void  SkillSelectState::Execute(float elapsedTime)
+{
+	if (!owner->InputArts(elapsedTime))
+	{
+		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+	}
+}
+
+void SkillSelectState::Exit()
+{
+	//書かなくてよい
+}
+
 
 void DamegeState::Enter()
 {

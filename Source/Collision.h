@@ -88,5 +88,4 @@ public:
 		float cylinderHeight,                       //‰~’Œ‚Ì‚‚³
 		DirectX::XMFLOAT3& outCylinderPosition
 	);
-		
 };

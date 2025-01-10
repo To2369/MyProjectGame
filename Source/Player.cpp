@@ -11,7 +11,7 @@
 #include "NormalBallet.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\astoroPlayer.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
     geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6);
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
@@ -19,7 +19,8 @@ Player::Player()
     stateMachine = std::make_unique<StateMachine>();
 
     stateMachine->RegisterState(new MovementState(this));
-    stateMachine->RegisterState(new BattleState(this));
+    stateMachine->RegisterState(new WeakAttackState(this));
+    stateMachine->RegisterState(new UseSkillState(this));
     stateMachine->RegisterState(new HitDamegeState(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new IdleState(this));
@@ -28,9 +29,15 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new JumpState(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new LandState(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new AttackState(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new RecoverySkillEnergyState(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::Battle), new DashToEnemyState(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState01(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState02(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState03(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState04(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState05(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState06(this));
+    //stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
+
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::UseSkill), new SkillSelectState(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::HitDamege), new DamegeState(this));
     //bulletMgr = std::make_unique<BulletManager>();
@@ -50,13 +57,11 @@ Player::~Player()
 void Player::Update(float elapsedTime)
 {
     //ステート毎の処理
-    //stateMachine->Update(elapsedTime);
+    stateMachine->Update(elapsedTime);
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
-    InputMove(elapsedTime);
-    // ジャンプ入力処理
-    InputJump();
+    //InputMove(elapsedTime);
 
     //InputFlying(elapsedTime);
 
@@ -66,7 +71,7 @@ void Player::Update(float elapsedTime)
     InputArts();
 
     InputAttack();*/
-    InputArts();
+    //InputArts();
     //InputMove(elapsedTime);
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
@@ -74,36 +79,24 @@ void Player::Update(float elapsedTime)
     CollisionArtsAndEnemies();
     CollisionPlayerAndArts();
     artsMgr.Update(elapsedTime);
-
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
     {
-
         
         
     }
-      
-    UpdateAnimation(elapsedTime);
-    model->UpdateAnimation(elapsedTime);
 
     //Lock();
 
     UpdateStatus(elapsedTime);
+
+
+    UpdateAnimation(elapsedTime);
 
 	// ワールド行列更新
 	UpdateTransform();
 
     p = position;
     p.y += height / 2;
-    // スケール行列作成
-    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(s.x, s.y, s.z) };
-
-    // 位置行列作成
-    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(p.x, p.y, p.z) };
-
-    // 行列を組み合わせ、ワールド行列を作成
-    DirectX::XMMATRIX W = S * T;
-
-    // 計算したワールド行列をtransformに取り出す
-    DirectX::XMStoreFloat4x4(&t, W);
 }
 void Player::UpdateAnimation(float elapsedTime)
 {
@@ -339,8 +332,8 @@ void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     artsMgr.Render(dc);
-    ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-    artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
+    //ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+    //artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 float c = 0;
 void Player::DrawDebugGUI()
@@ -351,24 +344,78 @@ void Player::DrawDebugGUI()
 
     std::string str = "";
     std::string subStr = "";
-   /* switch (static_cast<State>(state))
+    switch (static_cast<State>(stateMachine->GetStateIndex()))
     {
-    case State::Idle:
-        str = "Idle";
-        break;
-    case State::Move:
+    case State::Movement:
         str = "Move";
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Movement::Idle))
+        {
+            subStr = "Idle";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Movement::Move))
+        {
+            subStr = "Move";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Movement::Dash))
+        {
+            subStr = "Dash";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Movement::Jump))
+        {
+            subStr = "Jump";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Movement::Land))
+        {
+            subStr = "Land";
+        }
         break;
-    case State::Dash:
-        str = "Dash";
+    case State::WeakAttack:
+        str = "WeakAttack";
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack01))
+        {
+            subStr = "WeakAttack01";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack02))
+        {
+            subStr = "WeakAttack02";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack03))
+        {
+            subStr = "WeakAttack03";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack04))
+        {
+            subStr = "WeakAttack04";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack05))
+        {
+            subStr = "WeakAttack05";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack06))
+        {
+            subStr = "WeakAttack06";
+        }
+
         break;
-    case State::DashToEnemy:
-        str = "DashToEnemy";
+    case State::UseSkill:
+        str = "UseSkill";
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::UseSkill::SkillSelect))
+        {
+            subStr = "SkillSelect";
+        }
         break;
-    case State::RecoverySkillEnergy:
-        str = "RecoverySkillEnergy";
+    case State::HitDamege:
+        str = "HitDamege";
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::HitDamege::Damege))
+        {
+            subStr = "Damage";
+        }
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::HitDamege::Death))
+        {
+            subStr = "Death";
+        }
         break;
-    }*/
+    }
     if (ImGui::Begin("Player", nullptr, ImGuiWindowFlags_None))
     {
         //トランスフォーム
@@ -400,7 +447,7 @@ void Player::DrawDebugGUI()
             ImGui::InputFloat("currentAnimationSeconds", &model->currentAnimationSeconds);
             ImGui::InputInt("hit", &hit);
             ImGui::Text(u8"State　%s", str.c_str());
-            //ImGui::Text(u8"Subtate　%s", subStr.c_str());
+            ImGui::Text(u8"Subtate　%s", subStr.c_str());
         }
     }
     ImGui::End();
@@ -420,9 +467,9 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
+    //debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
     {
-        //debugPrimitive->DrawCapsule(position, angle,radius, height, { 1,1,1,1 });
+        //debugPrimitive->DrawCapsule(p, angle,radius, height/2, { 1,1,1,1 });
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
@@ -508,10 +555,10 @@ bool Player::InputMove(float elapsedTime)
 }
 
 // ジャンプ入力処理
-void Player::InputJump()
+bool Player::InputJump()
 {
     GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (gamePad->GetButtonDown() & GamePad::BTN_A)
+    if (gamePad->GetButtonDown() & GamePad::BTN_A&&!artSkillReady)
     {
         // ジャンプ回数制限
         if (jumpCount < jumpLimit)
@@ -519,23 +566,26 @@ void Player::InputJump()
             // ジャンプ
             jumpCount++;
             Jump(jumpSpeed);
+            return true;
         }
     }
+    return false;
 }
 void Player::InputFlying(float elapsedTime)
 {
 
 }
 
-void Player::InputArts()
+bool Player::InputArts(float elapsedTime)
 {
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     Mouse* mouse = InputManager::Instance()->getMouse();
-    ArtskillReady = false;
+    artSkillReady = false;
     // 回避技や究極技系
-    if (gamePad->GetButton() & GamePad::BTN_LEFT_TRIGGER)
+    if (gamePad->GetButton() & GamePad::BTN_LEFT_TRIGGER)// Rキー
     {
-        if (gamePad->GetButtonDown()& GamePad::BTN_B)
+        artSkillReady = true;
+        if (gamePad->GetButtonDown()& GamePad::BTN_B) // Qキー
         {
             DirectX::XMFLOAT3 f;
             DirectX::XMStoreFloat3(&f, front);
@@ -556,12 +606,13 @@ void Player::InputArts()
             ArtsSpiritExplosion* artsSpiritExplosion = new ArtsSpiritExplosion(&artsMgr);
             artsSpiritExplosion->Launch(dir, pos);
             spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
+            return true;
         }
     }
     // 必殺技
-    else if (gamePad->GetButton() & GamePad::BTN_RIGHT_TRIGGER)
+    else if (gamePad->GetButton() & GamePad::BTN_RIGHT_TRIGGER) // Fキー
     {
-        ArtskillReady = true;
+        artSkillReady = true;
         if (mouse->GetButtonDown()&Mouse::BTN_LEFT)
         {
             DirectX::XMFLOAT3 f;
@@ -583,6 +634,18 @@ void Player::InputArts()
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
             artsSkillStraightBallet->Launch(dir, pos);
             skillEnergy -= artsSkillStraightBallet->GetUseSpiritEnergy();
+            return true;
+        }
+        // 技力回復
+        else if (gamePad->GetButton() & GamePad::BTN_A) // Space
+        {
+            skillEnergyTimer -= elapsedTime;
+            if (skillEnergyTimer <= 0)
+            {
+                skillEnergy += 1;
+                skillEnergyTimer = 0.025f;
+            }
+            return true;
         }
     }
     //　通常弾
@@ -636,7 +699,9 @@ void Player::InputArts()
         normalBallet->Launch(dir, pos,target);
         normalBallet->LockonTarget(target);
         skillEnergy -= normalBallet->GetUseSpiritEnergy();
+        return true;
     }
+    return false;
 }
 
 // 着地したときに呼び出される
@@ -793,36 +858,38 @@ void Player::CollisionPlayerAndArts()
     {
         Arts* arts = artsMgr.GetArts(i);
 
-        //プレイやー高さ1.5f
-        // 衝突処理
-        DirectX::XMFLOAT3 outVec;
-        DirectX::XMFLOAT3 dir = { 0,1,0 };
-        DirectX::XMFLOAT3 plPos = position;
-        plPos.y += height/2;
-        float h = height / 2;
-        if (Collision::IntersectCapsuleAndCapsule(
-            DirectX::XMLoadFloat3(&plPos),
-            DirectX::XMLoadFloat3(&dir),
-            h,
-            radius,
-            DirectX::XMLoadFloat3(&arts->GetPosition()),
-            DirectX::XMLoadFloat3(&arts->GetDirection()),
-            arts->GetHeight(),
-            arts->GetRadius(),
-            &result))
+        if (arts->GetType() == BalletType::SkillStraight)
         {
-            // プレイヤーが敵に押し出される処理
-            //DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
-            //DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
-            //newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
-            //DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
-            hit = 1;
+            //プレイやー高さ1.5f
+            // 衝突処理
+            DirectX::XMFLOAT3 outVec;
+            DirectX::XMFLOAT3 dir = { 0,1,0 };
+            DirectX::XMFLOAT3 plPos = position;
+            //plPos.y += height / 2;
+            //float h = height / 2;
+            if (Collision::IntersectCapsuleAndCapsule(
+                DirectX::XMLoadFloat3(&plPos),
+                DirectX::XMLoadFloat3(&dir),
+                height,
+                radius,
+                DirectX::XMLoadFloat3(&arts->GetPosition()),
+                DirectX::XMLoadFloat3(&arts->GetDirection()),
+                arts->GetHeight(),
+                arts->GetRadius(),
+                &result))
+            {
+                // プレイヤーが敵に押し出される処理
+                //DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
+                //DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
+                //newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
+                //DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
+                hit = 1;
+            }
+            else
+            {
+                hit = 0;
+            }
         }
-        else
-        {
-            hit = 0;
-        }
-        
     }
 }
 
@@ -1112,26 +1179,10 @@ bool Player::InputDash(float elapsedTime)
     }
 }
 
-bool Player::InputRecoverySkillEnergy(float elapsedTime)
-{
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (gamePad->GetButton() & GamePad::BTN_A)//Z
-    {
-        skillEnergyTimer -= elapsedTime;
-        if (skillEnergyTimer <= 0)
-        {
-            skillEnergy += 1;
-            skillEnergyTimer = 0.1f;
-        }
-        return true;
-    }
-    return false;
-}
-
 bool Player::InputAttack()
 {
     Mouse* mouse = InputManager::Instance()->getMouse();
-    if (mouse->GetButtonDown() & Mouse::BTN_LEFT)
+    if (mouse->GetButtonDown() & Mouse::BTN_LEFT&&!artSkillReady)
     {
         return true;
     }

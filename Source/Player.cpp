@@ -332,8 +332,8 @@ void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     artsMgr.Render(dc);
-    //ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-    //artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
+    ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+    artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 float c = 0;
 void Player::DrawDebugGUI()
@@ -467,9 +467,9 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    //debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
+    debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
     {
-        //debugPrimitive->DrawCapsule(p, angle,radius, height/2, { 1,1,1,1 });
+        debugPrimitive->DrawCapsule(p, angle,radius, height, { 1,1,1,1 });
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
@@ -633,7 +633,7 @@ bool Player::InputArts(float elapsedTime)
             // ”­Ë
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
             artsSkillStraightBallet->Launch(dir, pos);
-            skillEnergy -= artsSkillStraightBallet->GetUseSpiritEnergy();
+            skillEnergy -= artsSkillStraightBallet->GetUseSkillEnergy();
             return true;
         }
         // ‹Z—Í‰ñ•œ
@@ -698,7 +698,7 @@ bool Player::InputArts(float elapsedTime)
         NormalBallet* normalBallet = new NormalBallet(&artsMgr);
         normalBallet->Launch(dir, pos,target);
         normalBallet->LockonTarget(target);
-        skillEnergy -= normalBallet->GetUseSpiritEnergy();
+        skillEnergy -= normalBallet->GetUseSkillEnergy();
         return true;
     }
     return false;

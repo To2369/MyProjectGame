@@ -681,7 +681,7 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     DirectX::XMFLOAT2 texcoord;
 
     float angle = 0.0f;
-    
+
     // マントル部分の頂点生成ループ
     for (uint32_t u = 0; u <= slices; ++u)
     {
@@ -711,13 +711,8 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
 #if _HAS_CXX20
             position.y = lerp(half_height, -half_height, texcoord.y);
 #else
-            position.y = half_height * (1 - texcoord.y) + -half_height * texcoord.y;
+            position.y = half_height * (1-texcoord.y)+ -half_height * texcoord.y;
 #endif
-            // 頂点の座標に回転を適用
-         /*   DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
-            pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
-            DirectX::XMStoreFloat3(&position, pos_vector);*/
-
             vertices.push_back({ position, normal });
         }
 
@@ -725,56 +720,91 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
         angle += angle_steps;
     }
 
-    /* 上部と下部のカバー頂点の生成 */
-    const float cover_side[2] = { 1, -1 };
-    uint32_t base_offset_ellipsoid[2] = { 0 };
-    for (size_t i = 0; i < 2; ++i)
+    const float top_cover_side = { 1 };
+    uint32_t top_base_offset_ellipsoid = { 0 };
+
+    top_base_offset_ellipsoid = static_cast<uint32_t>(vertices.size());
+
+    for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
     {
-        base_offset_ellipsoid[i] = static_cast<uint32_t>(vertices.size());
+        /* 球面座標系のθの計算 */
+        texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
+        point.theta = texcoord.y * pi_0_5;
 
-        for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
+        for (uint32_t u = 0; u <= slices; ++u)
         {
-            /* 球面座標系のθの計算 */
-            texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
-            point.theta = texcoord.y * pi_0_5;
+            /* 球面座標系のφの計算 */
+            texcoord.x = static_cast<float>(u) * inv_slices;
+            point.phi = texcoord.x * pi_2 * top_cover_side + pi_0_5;
 
-            for (uint32_t u = 0; u <= slices; ++u)
-            {
-                /* 球面座標系のφの計算 */
-                texcoord.x = static_cast<float>(u) * inv_slices;
-                point.phi = texcoord.x * pi_2 * cover_side[i] + pi_0_5;
+            /* 球面座標系を直交座標系に変換して、法線をセット */
+            const float sin_theta = sinf(point.theta);
+            position.x = point.radius * cosf(point.phi) * sin_theta;
+            position.y = point.radius * sinf(point.phi) * sin_theta;
+            position.z = point.radius * cosf(point.theta);
 
-                /* 球面座標系を直交座標系に変換して、法線をセット */
-                const float sin_theta = sinf(point.theta);
-                position.x = point.radius * cosf(point.phi) * sin_theta;
-                position.y = point.radius * sinf(point.phi) * sin_theta;
-                position.z = point.radius * cosf(point.theta);
+            std::swap(position.y, position.z);
+            position.y *= top_cover_side;
 
-                std::swap(position.y, position.z);
-                position.y *= cover_side[i];
+            /* 法線を求めて半球体を移動 */
+            float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
+            normal.x = position.x / magnitude;
+            normal.y = position.y / magnitude;
+            normal.z = position.z / magnitude;
 
-                /* 法線を求めて半球体を移動 */
-                float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
-                normal.x = position.x / magnitude;
-                normal.y = position.y / magnitude;
-                normal.z = position.z / magnitude;
+            /* 半径と高さを使って座標を変換 */
+            position.x *= radius.x;
+            position.y *= radius.y;
+            position.z *= radius.z;
+            position.y += half_height * top_cover_side;
 
-                /* 半径と高さを使って座標を変換 */
-                position.x *= radius.x;
-                position.y *= radius.y;
-                position.z *= radius.z;
-                position.y += half_height * cover_side[i];
-
-                // 頂点の座標に回転を適用
-            /*    DirectX::XMVECTOR pos_vector = DirectX::XMLoadFloat3(&position);
-                pos_vector = DirectX::XMVector3Transform(pos_vector, rotation_matrix);
-                DirectX::XMStoreFloat3(&position, pos_vector);*/
-
-                vertices.push_back({ position, normal });
-            }
+            // 頂点の座標に回転を適用
+            vertices.push_back({ position, normal });
         }
     }
 
+    const float bottom_cover_side = { -1 };
+    uint32_t bottom_base_offset_ellipsoid = { 0 };
+
+    bottom_base_offset_ellipsoid = static_cast<uint32_t>(vertices.size());
+
+    for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
+    {
+        /* 球面座標系のθの計算 */
+        texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
+        point.theta = texcoord.y * pi_0_5;
+
+        for (uint32_t u = 0; u <= slices; ++u)
+        {
+            /* 球面座標系のφの計算 */
+            texcoord.x = static_cast<float>(u) * inv_slices;
+            point.phi = texcoord.x * pi_2 * bottom_cover_side + pi_0_5;
+
+            /* 球面座標系を直交座標系に変換して、法線をセット */
+            const float sin_theta = sinf(point.theta);
+            position.x = point.radius * cosf(point.phi) * sin_theta;
+            position.y = point.radius * sinf(point.phi) * sin_theta;
+            position.z = point.radius * cosf(point.theta);
+
+            std::swap(position.y, position.z);
+            position.y *= bottom_cover_side;
+
+            /* 法線を求めて半球体を移動 */
+            float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
+            normal.x = position.x / magnitude;
+            normal.y = position.y / magnitude;
+            normal.z = position.z / magnitude;
+
+            /* 半径と高さを使って座標を変換 */
+            position.x *= radius.x;
+            position.y *= radius.y;
+            position.z *= radius.z;
+            position.y += half_height * bottom_cover_side;
+
+            // 頂点の座標に回転を適用
+            vertices.push_back({ position, normal });
+        }
+    }
     /* Generate indices for the mantle */
     int offset = base_offset;
     for (uint32_t u = 0; u < slices; ++u)
@@ -797,29 +827,47 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     }
 
     /* Generate indices for the top and bottom */
-    for (size_t i = 0; i < 2; ++i)
+    for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
     {
-        for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
+        for (uint32_t u = 0; u < slices; ++u)
         {
-            for (uint32_t u = 0; u < slices; ++u)
-            {
-                /* Compute indices for current face */
-                auto i0 = v * (slices + 1) + u;
-                auto i1 = v * (slices + 1) + (u + 1);
+            /* Compute indices for current face */
+            auto i0 = v * (slices + 1) + u;
+            auto i1 = v * (slices + 1) + (u + 1);
 
-                auto i2 = (v + 1) * (slices + 1) + (u + 1);
-                auto i3 = (v + 1) * (slices + 1) + u;
+            auto i2 = (v + 1) * (slices + 1) + (u + 1);
+            auto i3 = (v + 1) * (slices + 1) + u;
 
-                /* Add new indices */
-                indices.emplace_back(i0 + base_offset_ellipsoid[i]);
-                indices.emplace_back(i1 + base_offset_ellipsoid[i]);
-                indices.emplace_back(i3 + base_offset_ellipsoid[i]);
-                indices.emplace_back(i1 + base_offset_ellipsoid[i]);
-                indices.emplace_back(i2 + base_offset_ellipsoid[i]);
-                indices.emplace_back(i3 + base_offset_ellipsoid[i]);
-            }
+            /* Add new indices */
+            indices.emplace_back(i0 + top_base_offset_ellipsoid);
+            indices.emplace_back(i1 + top_base_offset_ellipsoid);
+            indices.emplace_back(i3 + top_base_offset_ellipsoid);
+            indices.emplace_back(i1 + top_base_offset_ellipsoid);
+            indices.emplace_back(i2 + top_base_offset_ellipsoid);
+            indices.emplace_back(i3 + top_base_offset_ellipsoid);
         }
     }
+    for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
+    {
+        for (uint32_t u = 0; u < slices; ++u)
+        {
+            /* Compute indices for current face */
+            auto i0 = v * (slices + 1) + u;
+            auto i1 = v * (slices + 1) + (u + 1);
+
+            auto i2 = (v + 1) * (slices + 1) + (u + 1);
+            auto i3 = (v + 1) * (slices + 1) + u;
+
+            /* Add new indices */
+            indices.emplace_back(i0 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i1 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i3 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i1 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i2 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i3 + bottom_base_offset_ellipsoid);
+        }
+    }
+
     // 頂点バッファのオブジェクトの作成
     CreateComBuffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
 }

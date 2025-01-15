@@ -7,7 +7,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,1,0 };
-    height = 1;
+    height =1;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 
@@ -24,6 +24,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         // ŽžŠÔ‚ª 0 ˆÈ‰º‚É‚È‚Á‚½‚çŽ©•ª‚ð”jŠü
         Destroy();
     }
+    height += 5 * elapsedTime;
     //angle.x = DirectX::XMConvertToRadians(90);
     // ˆÚ“®
     //float speed = this->speed * elapsedTime;

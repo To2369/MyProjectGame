@@ -86,8 +86,8 @@ class GeometricCapsule :public GeometricPrimitive
 public:
     GeometricCapsule(ID3D11Device* device,
         float height,
-        const DirectX::XMFLOAT3& radius,
+        float radius,
         uint32_t slices,
         uint32_t ellipsoid_stacks,
-        uint32_t mantle_stacks);
+        uint32_t stacks);
 };

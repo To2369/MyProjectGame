@@ -12,7 +12,7 @@
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
-    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height/2, DirectX::XMFLOAT3{ radius,radius,radius }, 12, 6, 6);
+    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
 	const float scale_factor = 0.01f;
 	scale = { scale_factor,scale_factor,scale_factor };
     height=1.5f;
@@ -467,9 +467,9 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
+    //debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
     {
-        debugPrimitive->DrawCapsule(p, angle,radius, height, { 1,1,1,1 });
+        //debugPrimitive->DrawCapsule(p, angle,radius, height, { 1,1,1,1 });
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }

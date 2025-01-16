@@ -19,6 +19,7 @@ public:
     void Launch(const DirectX::XMFLOAT3& direction,
         const DirectX::XMFLOAT3& position);
 private:
+    
     BalletType GetType()override { return BalletType::SkillStraight; }
     float speed = 10.0f;
     float lifeTimer = 3.0f; // éıñΩÅiÇRïbÅj

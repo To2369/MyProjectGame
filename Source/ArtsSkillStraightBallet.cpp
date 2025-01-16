@@ -7,7 +7,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,1,0 };
-    height =1;
+    height = 10;
     //angle.x = DirectX::XMConvertToRadians(90);
 }
 
@@ -24,7 +24,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         // 時間が 0 以下になったら自分を破棄
         Destroy();
     }
-    height += 5 * elapsedTime;
+    //height += 5 * elapsedTime;
     //angle.x = DirectX::XMConvertToRadians(90);
     // 移動
     //float speed = this->speed * elapsedTime;
@@ -41,7 +41,7 @@ void ArtsSkillStraightBallet::Render(ID3D11DeviceContext* dc)
 {
     //衝突判定用のデバッグ球を描画
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    debugPrimitive->DrawCapsule(position, angle,radius,height, { 1, 0, 0, 1 });
+    debugPrimitive->DrawCapsule(position, scale,angle,radius,height, { 1, 0, 0, 1 });
 }
 
 //発射

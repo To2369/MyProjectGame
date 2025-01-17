@@ -149,8 +149,8 @@ void CapsuleOneWay::Update(float elapsedTime) {
     currentHeight += growthRate * elapsedTime;
 
     // 必要に応じて高さをリセット
-    if (currentHeight >= 10.0f) {
-        currentHeight = 10.0f; // 初期高さに戻す
+    if (currentHeight >= 30.0f) {
+        currentHeight = 30.0f; // 初期高さに戻す
     }
 
     // 新しい頂点データを生成

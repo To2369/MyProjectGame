@@ -20,6 +20,8 @@ public:
         const DirectX::XMFLOAT4X4& world,
         const DirectX::XMFLOAT4& material_color);
     void SetGrowthRate(const float& rate) { this->growthRate = rate; }
+
+    const float GetCurrentHeight()const { return currentHeight; }
     // 頂点フォーマット
     struct vertex
     {

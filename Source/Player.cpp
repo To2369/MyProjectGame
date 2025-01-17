@@ -77,7 +77,7 @@ void Player::Update(float elapsedTime)
     CollisionPlayerAndEnemies();
 
     CollisionArtsAndEnemies();
-    CollisionPlayerAndArts();
+    //CollisionPlayerAndArts();
     artsMgr.Update(elapsedTime);
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     {
@@ -332,8 +332,8 @@ void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     artsMgr.Render(dc);
-    ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-    artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
+    //ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
+    //artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 float c = 0;
 void Player::DrawDebugGUI()
@@ -622,13 +622,21 @@ bool Player::InputArts(float elapsedTime)
             dir.x = f.x;
             dir.y = 0.0f;
             dir.z = f.z;
-
+            DirectX::XMVECTOR dirVec = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&dir));
 
             // 発射位置（プレイヤーの腰あたり
             DirectX::XMFLOAT3 pos;
             pos.x = position.x;
             pos.y = position.y + height * 0.5f;
             pos.z = position.z;
+
+            float offsetDistance = 1.5f; // 少し前の距離（調整可能）
+            DirectX::XMVECTOR offset = DirectX::XMVectorScale(dirVec, offsetDistance);
+
+            // オフセットを発射位置に加算
+            DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&pos);
+            posVec = DirectX::XMVectorAdd(posVec, offset);
+            DirectX::XMStoreFloat3(&pos, posVec);
 
             // 発射
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
@@ -816,7 +824,7 @@ void Player::CollisionArtsAndEnemies()
                 if (Collision::IntersectCapsuleAndCapsule(
                     DirectX::XMLoadFloat3(&arts->GetPosition()),
                     DirectX::XMLoadFloat3(&arts->GetDirection()),
-                    arts->GetHeight(),
+                    arts->GetCurrentCapsuleHeight(),
                     arts->GetRadius(),
                     DirectX::XMLoadFloat3(&enemy->GetPosition()),
                     {0,1,0},
@@ -824,25 +832,25 @@ void Player::CollisionArtsAndEnemies()
                     enemy->GetRadius(),
                     result))
                 {
-                    //if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
-                    //{
-                    //    // 吹き飛ばし
-                    //    float power = 10.0f;
-                    //    DirectX::XMFLOAT3 impulse;
-                    //    impulse.x = outPos.x * power;
-                    //    impulse.y = power * 0.5f;
-                    //    impulse.z = outPos.z * power;
+                    if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
+                    {
+                        // 吹き飛ばし
+                      /*  float power = 10.0f;
+                        DirectX::XMFLOAT3 impulse;
+                        impulse.x = result->penetration * power;
+                        impulse.y = power * 0.5f;
+                        impulse.z = result->penetration * power;*/
 
-                    //    enemy->AddImpulse(impulse);
+                        //enemy->AddImpulse(impulse);
 
-                    //    // ヒットエフェクトの再生
-                    //    DirectX::XMFLOAT3 enePos = enemy->GetPosition();
-                    //    enePos.y += enemy->GetHeight() * 0.5f;
-                    //    //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+                        // ヒットエフェクトの再生
+                        DirectX::XMFLOAT3 enePos = enemy->GetPosition();
+                        enePos.y += enemy->GetHeight() * 0.5f;
+                        //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
-                    //    // 弾の破棄
-                    //    arts->Destroy();
-                    //}
+                        // 弾の破棄
+                        arts->Destroy();
+                    }
                 }
             }
         }

@@ -48,6 +48,7 @@ public:
     int GetUseSkillEnergy() const { return useSkillEnergy; }
     int GetDamage() const { return damage; }
     virtual BalletType GetType() = 0;
+    float GetCurrentCapsuleHeight()const { return currentCapsuleHeight; }
 protected:
     // s—ñXVˆ—
     void UpdateTransform();
@@ -73,4 +74,5 @@ protected:
     int useSpiritEnergy = 0;
     int useSkillEnergy = 0;
     int damage = 0;
+    float currentCapsuleHeight = 0;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphics/GeometricPrimitive.h"
+#include "Graphics/CapsuleOneWay.h"
 #include "Arts.h"
 #include<memory>
 // ãCíeãZíºêi
@@ -19,7 +19,7 @@ public:
     void Launch(const DirectX::XMFLOAT3& direction,
         const DirectX::XMFLOAT3& position);
 private:
-    
+    std::unique_ptr<CapsuleOneWay> geoPrimitive;
     BalletType GetType()override { return BalletType::SkillStraight; }
     float speed = 10.0f;
     float lifeTimer = 3.0f; // éıñΩÅiÇRïbÅj

@@ -186,6 +186,7 @@
     <ClInclude Include="Source\EnemySlime.h" />
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\Graphics\Buffer.h" />
+    <ClInclude Include="Source\Graphics\CapsuleOneWay.h" />
     <ClInclude Include="Source\Graphics\ColorGrading.h" />
     <ClInclude Include="Source\Graphics\DebugPrimitive.h" />
     <ClInclude Include="Source\Graphics\DebugRenderer.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="Source\EnemyManager.cpp" />
     <ClCompile Include="Source\EnemySlime.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
+    <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp" />
     <ClCompile Include="Source\Graphics\ColorGrading.cpp" />
     <ClCompile Include="Source\Graphics\DebugPrimitive.cpp" />
     <ClCompile Include="Source\Graphics\DebugRenderer.cpp" />

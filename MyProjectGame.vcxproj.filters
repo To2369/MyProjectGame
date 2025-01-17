@@ -210,6 +210,9 @@
     <ClInclude Include="Source\NormalBallet.h">
       <Filter>Sources\Skill</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\CapsuleOneWay.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -370,6 +373,9 @@
     </ClCompile>
     <ClCompile Include="Source\NormalBallet.cpp">
       <Filter>Sources\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp">
+      <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

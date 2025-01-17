@@ -79,71 +79,34 @@ bool Collision::IntersectCapsuleAndCapsule(
     const float					radius2,	// 半径
     IntersectionResult* result)
 {
-    // カプセル1の終端点
-    DirectX::XMVECTOR point1A = DirectX::XMVectorSubtract(position1, DirectX::XMVectorScale(direction1, length1));
-    DirectX::XMVECTOR point1B = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
 
-    // カプセル2の終端点
-    DirectX::XMVECTOR point2A = DirectX::XMVectorSubtract(position2, DirectX::XMVectorScale(direction2, length2));
-    DirectX::XMVECTOR point2B = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));
 
-    // 線分間の最短距離の二乗を求める
-    DirectX::XMVECTOR nearPoint1, nearPoint2;
-    float distSq = GetMinDistSq_SegmentSegment(point1A, point1B, point2A, point2B, &nearPoint1, &nearPoint2);
+    // 各カプセルの中心線上の最近点算出
+    //向きの方向にしか伸びてないからこれはだめっだった
+    DirectX::XMVECTOR point1 = {}, point2 = {};
+    DirectX::XMVECTOR end1 = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
+    DirectX::XMVECTOR end2 = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));
 
-    // 半径の合計の二乗
+    // 線分同士の最短距離の二乗を取得
+    float distSq = GetMinDistSq_SegmentSegment(position1, end1, position2, end2, &point1, &point2);
+    DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(point1, point2);
     float radiusAdd = radius1 + radius2;
-    float radiusAddSq = radiusAdd * radiusAdd;
 
-    // 交差判定
-    if (distSq <= radiusAddSq)
+    // 最近接点間の距離がカプセルの半径の和より小さい場合、衝突している
+    if (distSq < radiusAdd * radiusAdd)
     {
-        // 交差している場合は、結果を設定
         if (result)
         {
-            result->pointA = nearPoint1;
-            result->pointB = nearPoint2;
-
-            // 衝突法線ベクトル
-            DirectX::XMVECTOR collisionVector = DirectX::XMVectorSubtract(nearPoint1, nearPoint2);
-            result->normal = DirectX::XMVector3Normalize(collisionVector);
-
-            // めり込み量
+            result->normal = DirectX::XMVector3Normalize(vec);
             result->penetration = radiusAdd - sqrtf(distSq);
+            result->pointA = DirectX::XMVectorAdd(point1, DirectX::XMVectorScale(result->normal, -radius1));
+            result->pointB = DirectX::XMVectorAdd(point2, DirectX::XMVectorScale(result->normal, radius2));
         }
 
-        return true; // 交差している
+        return true;
     }
 
-    return false; // 交差していない
-
-
-    //// 各カプセルの中心線上の最近点算出
-    //向きの方向にしか伸びてないからこれはだめっだった
-    //DirectX::XMVECTOR point1 = {}, point2 = {};
-    //DirectX::XMVECTOR end1 = DirectX::XMVectorAdd(position1, DirectX::XMVectorScale(direction1, length1));
-    //DirectX::XMVECTOR end2 = DirectX::XMVectorAdd(position2, DirectX::XMVectorScale(direction2, length2));
-
-    //// 線分同士の最短距離の二乗を取得
-    //float distSq = GetMinDistSq_SegmentSegment(position1, end1, position2, end2, &point1, &point2);
-    //DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(point1, point2);
-    //float radiusAdd = radius1 + radius2;
-
-    //// 最近接点間の距離がカプセルの半径の和より小さい場合、衝突している
-    //if (distSq < radiusAdd * radiusAdd)
-    //{
-    //    if (result)
-    //    {
-    //        result->normal = DirectX::XMVector3Normalize(vec);
-    //        result->penetration = radiusAdd - sqrtf(distSq);
-    //        result->pointA = DirectX::XMVectorAdd(point1, DirectX::XMVectorScale(result->normal, -radius1));
-    //        result->pointB = DirectX::XMVectorAdd(point2, DirectX::XMVectorScale(result->normal, radius2));
-    //    }
-
-    //    return true;
-    //}
-
-    //return false;
+    return false;
 }
 
 // 線分と線分の最短距離の二乗を取得する

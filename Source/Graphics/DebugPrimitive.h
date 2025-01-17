@@ -29,7 +29,7 @@ public:
 
     void DrawSphere(const DirectX::XMFLOAT3& center, const DirectX::XMFLOAT3& angle, float radius, const DirectX::XMFLOAT4& color);
 
-    void DrawCapsule(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& scale, const DirectX::XMFLOAT3& angle, float radius,float height, const DirectX::XMFLOAT4& color);
+    void DrawCapsule(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& angle, float radius,float height, const DirectX::XMFLOAT4& color);
 private:
     struct Cube
     {
@@ -63,7 +63,6 @@ private:
         DirectX::XMFLOAT4 color;
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT3 angle;
-        DirectX::XMFLOAT3 scale;
         float radius;
         float height;
     };

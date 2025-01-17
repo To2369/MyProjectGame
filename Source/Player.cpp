@@ -467,7 +467,7 @@ void Player::DrawDebugPrimitive()
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
     //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    //debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
+    debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
     {
         //debugPrimitive->DrawCapsule(p, angle,radius, height, { 1,1,1,1 });
        /* if(a==1)
@@ -824,25 +824,25 @@ void Player::CollisionArtsAndEnemies()
                     enemy->GetRadius(),
                     result))
                 {
-                    if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
-                    {
-                        // 吹き飛ばし
-                        float power = 10.0f;
-                        DirectX::XMFLOAT3 impulse;
-                        impulse.x = outPos.x * power;
-                        impulse.y = power * 0.5f;
-                        impulse.z = outPos.z * power;
+                    //if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
+                    //{
+                    //    // 吹き飛ばし
+                    //    float power = 10.0f;
+                    //    DirectX::XMFLOAT3 impulse;
+                    //    impulse.x = outPos.x * power;
+                    //    impulse.y = power * 0.5f;
+                    //    impulse.z = outPos.z * power;
 
-                        enemy->AddImpulse(impulse);
+                    //    enemy->AddImpulse(impulse);
 
-                        // ヒットエフェクトの再生
-                        DirectX::XMFLOAT3 enePos = enemy->GetPosition();
-                        enePos.y += enemy->GetHeight() * 0.5f;
-                        //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+                    //    // ヒットエフェクトの再生
+                    //    DirectX::XMFLOAT3 enePos = enemy->GetPosition();
+                    //    enePos.y += enemy->GetHeight() * 0.5f;
+                    //    //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
-                        // 弾の破棄
-                        arts->Destroy();
-                    }
+                    //    // 弾の破棄
+                    //    arts->Destroy();
+                    //}
                 }
             }
         }
@@ -879,10 +879,10 @@ void Player::CollisionPlayerAndArts()
                 &result))
             {
                 // プレイヤーが敵に押し出される処理
-                //DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
-                //DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
-                //newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
-                //DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
+                DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
+                DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
+                newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
+                DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
                 hit = 1;
             }
             else

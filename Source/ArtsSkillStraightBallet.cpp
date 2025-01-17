@@ -1,14 +1,15 @@
 #include "ArtsSkillStraightBallet.h"
 #include "Graphics/Graphics.h"
-
 ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(manager)
 {
+    height = 5;
+    geoPrimitive =
+        std::make_unique<CapsuleOneWay>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
+    geoPrimitive->SetGrowthRate(0.0f);
     position = { 3,0,3 };
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,1,0 };
-    height = 10;
-    //angle.x = DirectX::XMConvertToRadians(90);
 }
 
 ArtsSkillStraightBallet::~ArtsSkillStraightBallet()
@@ -24,7 +25,6 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         // 時間が 0 以下になったら自分を破棄
         Destroy();
     }
-    //height += 5 * elapsedTime;
     //angle.x = DirectX::XMConvertToRadians(90);
     // 移動
     //float speed = this->speed * elapsedTime;
@@ -32,6 +32,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
     //position.x += direction.x * speed;
     //position.y += direction.y * speed;
     //position.z += direction.z * speed;
+    geoPrimitive->Update(elapsedTime);
     // ワールド行列の更新
     UpdateTransform();
 }
@@ -39,9 +40,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
 // 描画処理
 void ArtsSkillStraightBallet::Render(ID3D11DeviceContext* dc)
 {
-    //衝突判定用のデバッグ球を描画
-    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    debugPrimitive->DrawCapsule(position, scale,angle,radius,height, { 1, 0, 0, 1 });
+    geoPrimitive->Render(dc, transform, { 1,0,0,1 });
 }
 
 //発射

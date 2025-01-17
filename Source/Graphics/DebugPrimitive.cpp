@@ -73,7 +73,7 @@ void DebugPrimitive::Render(ID3D11DeviceContext* immediate_context)
     // ƒJƒvƒZƒ‹
     for (const Capsule& capsule : capsules)
     {
-        UpdateTransform(capsule.position, capsule.angle, capsule.scale);
+        UpdateTransform(capsule.position, capsule.angle, {capsule.radius,capsule.height,capsule.radius});
         materialColor = capsule.color;
         geometricPrimitives[static_cast<int>(FORM_STATE::Capsule)]->Render(immediate_context, transform, materialColor);
     }
@@ -112,14 +112,13 @@ void DebugPrimitive::DrawSphere(const DirectX::XMFLOAT3& center, const DirectX::
     spheres.emplace_back(sphere);
 }
 
-void DebugPrimitive::DrawCapsule(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& scale, const DirectX::XMFLOAT3& angle, float radius, float height, const DirectX::XMFLOAT4& color)
+void DebugPrimitive::DrawCapsule(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& angle, float radius, float height, const DirectX::XMFLOAT4& color)
 {
     Capsule capsule;
     capsule.position = position;
     capsule.angle = angle;
     capsule.radius = radius;
     capsule.height = height;
-    capsule.scale = scale;
     capsule.color = color;
     capsules.emplace_back(capsule);
 }

@@ -126,6 +126,7 @@ public:
 	bool InputAttack();
 
 	bool artSkillReady = false;
+	bool artUltSkillReady = false;
 	void InputFlying(float elapsedTime);
 private:
 	DirectX::XMFLOAT3 GetMoveVec() const;

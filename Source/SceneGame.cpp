@@ -309,6 +309,11 @@ void SceneGame::Render()
         {
             DrawSkillArtsSelect(dc, &rc);
         }
+        if (player->artUltSkillReady)
+        {
+            DrawUltArtsSelect(dc, &rc);
+
+        }
     }
     // 2DデバッグGUI描画
     {
@@ -403,8 +408,16 @@ void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constan
 
 void SceneGame::DrawSkillArtsSelect(ID3D11DeviceContext* dc,RenderContext*rc)
 {
-    dc->OMSetBlendState(rc->renderState->GetBlendStates(BLEND_STATE::ADD), nullptr, 0xFFFFFFFF);
+    dc->OMSetBlendState(rc->renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
     dc->OMSetDepthStencilState(rc->renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(rc->renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    skillArtsSellect->Textout(dc, "normalskill", 1000, 500, 16, 16, 1, 1, 1, 1);
+    skillArtsSellect->Textout(dc, "normalskill", 1000, 500, 16, 16, 0, 0, 1, 1);
+}
+
+void  SceneGame::DrawUltArtsSelect(ID3D11DeviceContext* dc, RenderContext* rc)
+{
+    dc->OMSetBlendState(rc->renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(rc->renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(rc->renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    skillArtsSellect->Textout(dc, "Ultskill", 1000, 500, 16, 16, 0, 0, 1, 1);
 }

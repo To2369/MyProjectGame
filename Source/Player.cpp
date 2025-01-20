@@ -581,32 +581,36 @@ bool Player::InputArts(float elapsedTime)
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     Mouse* mouse = InputManager::Instance()->getMouse();
     artSkillReady = false;
+    artUltSkillReady = false;
     // 回避技や究極技系
     if (gamePad->GetButton() & GamePad::BTN_LEFT_TRIGGER)// Rキー
     {
-        artSkillReady = true;
+        artUltSkillReady = true;
         if (gamePad->GetButtonDown()& GamePad::BTN_B) // Qキー
         {
-            DirectX::XMFLOAT3 f;
-            DirectX::XMStoreFloat3(&f, front);
-            // 前方向
-            DirectX::XMFLOAT3 dir;
-            dir.x = f.x;
-            dir.y = 0.0f;
-            dir.z = f.z;
-
-
-            // 発射位置（プレイヤーの腰あたり
-            DirectX::XMFLOAT3 pos;
-            pos.x = position.x;
-            pos.y = position.y + height * 0.5f;
-            pos.z = position.z;
-
-            // 発射
             ArtsSpiritExplosion* artsSpiritExplosion = new ArtsSpiritExplosion(&artsMgr);
-            artsSpiritExplosion->Launch(dir, pos);
-            spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
-            return true;
+            if (spiritEnergy >= artsSpiritExplosion->GetUseSpiritEnergy())
+            {
+                DirectX::XMFLOAT3 f;
+                DirectX::XMStoreFloat3(&f, front);
+                // 前方向
+                    DirectX::XMFLOAT3 dir;
+                    dir.x = f.x;
+                    dir.y = 0.0f;
+                    dir.z = f.z;
+
+
+                    // 発射位置（プレイヤーの腰あたり
+                    DirectX::XMFLOAT3 pos;
+                pos.x = position.x;
+                pos.y = position.y + height * 0.5f;
+                pos.z = position.z;
+
+                // 発射
+                artsSpiritExplosion->Launch(dir, pos);
+                spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
+                return true;
+            }
         }
     }
     // 必殺技
@@ -615,33 +619,36 @@ bool Player::InputArts(float elapsedTime)
         artSkillReady = true;
         if (mouse->GetButtonDown()&Mouse::BTN_LEFT)
         {
-            DirectX::XMFLOAT3 f;
-            DirectX::XMStoreFloat3(&f, front);
-            // 前方向
-            DirectX::XMFLOAT3 dir;
-            dir.x = f.x;
-            dir.y = 0.0f;
-            dir.z = f.z;
-            DirectX::XMVECTOR dirVec = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&dir));
-
-            // 発射位置（プレイヤーの腰あたり
-            DirectX::XMFLOAT3 pos;
-            pos.x = position.x;
-            pos.y = position.y + height * 0.5f;
-            pos.z = position.z;
-
-            float offsetDistance = 1.5f; // 少し前の距離（調整可能）
-            DirectX::XMVECTOR offset = DirectX::XMVectorScale(dirVec, offsetDistance);
-
-            // オフセットを発射位置に加算
-            DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&pos);
-            posVec = DirectX::XMVectorAdd(posVec, offset);
-            DirectX::XMStoreFloat3(&pos, posVec);
-
-            // 発射
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-            artsSkillStraightBallet->Launch(dir, pos);
-            skillEnergy -= artsSkillStraightBallet->GetUseSkillEnergy();
+            if(skillEnergy>=artsSkillStraightBallet->GetUseSkillEnergy())
+            {
+                DirectX::XMFLOAT3 f;
+                DirectX::XMStoreFloat3(&f, front);
+                // 前方向
+                DirectX::XMFLOAT3 dir;
+                dir.x = f.x;
+                dir.y = 0.0f;
+                dir.z = f.z;
+                DirectX::XMVECTOR dirVec = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&dir));
+
+                // 発射位置（プレイヤーの腰あたり
+                DirectX::XMFLOAT3 pos;
+                pos.x = position.x;
+                pos.y = position.y + height * 0.5f;
+                pos.z = position.z;
+
+                float offsetDistance = 1.5f; // 少し前の距離（調整可能）
+                DirectX::XMVECTOR offset = DirectX::XMVectorScale(dirVec, offsetDistance);
+
+                // オフセットを発射位置に加算
+                DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&pos);
+                posVec = DirectX::XMVectorAdd(posVec, offset);
+                DirectX::XMStoreFloat3(&pos, posVec);
+
+                // 発射
+                artsSkillStraightBallet->Launch(dir, pos);
+                skillEnergy -= artsSkillStraightBallet->GetUseSkillEnergy();
+            }
             return true;
         }
         // 技力回復
@@ -659,55 +666,58 @@ bool Player::InputArts(float elapsedTime)
     //　通常弾
     else if (gamePad->GetButtonDown() & GamePad::BTN_B)
     {
-        DirectX::XMFLOAT3 f;
-        DirectX::XMStoreFloat3(&f, front);
-        // 前方向
-        DirectX::XMFLOAT3 dir;
-        dir.x = f.x;
-        dir.y = 0.0f;
-        dir.z = f.z;
-
-
-        // 発射位置（プレイヤーの腰あたり
-        DirectX::XMFLOAT3 pos;
-        pos.x = position.x;
-        pos.y = position.y + height * 0.5f;
-        pos.z = position.z;
-
-        // ターゲット
-        DirectX::XMFLOAT3 target;
-        target.x = pos.x + dir.x * 1000.0f;
-        target.y = pos.y + dir.y * 1000.0f;
-        target.z = pos.z + dir.z * 1000.0f;
-
-        // 一番近くの敵をターゲットに設定
-        float dist = FLT_MAX;
-        EnemyManager& enemyMgr = EnemyManager::Instance();
-        int enemyCount = enemyMgr.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)
-        {
-            // 敵との距離を判定
-            Enemy* enemy = enemyMgr.GetEnemy(i);
-            DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
-            DirectX::XMVECTOR eneVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-            DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(eneVec, posVec);
-            DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vec);
-            float lengthSq;
-            DirectX::XMStoreFloat(&lengthSq, lengthSqVec);
-            if (lengthSq < dist)
-            {
-                dist = lengthSq;
-                target = enemy->GetPosition();
-                target.y += enemy->GetHeight() * 0.5f;
-
-            }
-        }
-        // 発射
         NormalBallet* normalBallet = new NormalBallet(&artsMgr);
-        normalBallet->Launch(dir, pos,target);
-        normalBallet->LockonTarget(target);
-        skillEnergy -= normalBallet->GetUseSkillEnergy();
-        return true;
+        if (skillEnergy >= normalBallet->GetUseSkillEnergy())
+        {
+            DirectX::XMFLOAT3 f;
+            DirectX::XMStoreFloat3(&f, front);
+            // 前方向
+            DirectX::XMFLOAT3 dir;
+            dir.x = f.x;
+            dir.y = 0.0f;
+            dir.z = f.z;
+
+
+            // 発射位置（プレイヤーの腰あたり
+            DirectX::XMFLOAT3 pos;
+            pos.x = position.x;
+            pos.y = position.y + height * 0.5f;
+            pos.z = position.z;
+
+            // ターゲット
+            DirectX::XMFLOAT3 target;
+            target.x = pos.x + dir.x * 1000.0f;
+            target.y = pos.y + dir.y * 1000.0f;
+            target.z = pos.z + dir.z * 1000.0f;
+
+            // 一番近くの敵をターゲットに設定
+            float dist = FLT_MAX;
+            EnemyManager& enemyMgr = EnemyManager::Instance();
+            int enemyCount = enemyMgr.GetEnemyCount();
+            for (int i = 0; i < enemyCount; ++i)
+            {
+                // 敵との距離を判定
+                Enemy* enemy = enemyMgr.GetEnemy(i);
+                DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
+                DirectX::XMVECTOR eneVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(eneVec, posVec);
+                DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vec);
+                float lengthSq;
+                DirectX::XMStoreFloat(&lengthSq, lengthSqVec);
+                if (lengthSq < dist)
+                {
+                    dist = lengthSq;
+                    target = enemy->GetPosition();
+                    target.y += enemy->GetHeight() * 0.5f;
+
+                }
+            }
+            // 発射
+            normalBallet->Launch(dir, pos, target);
+            normalBallet->LockonTarget(target);
+            skillEnergy -= normalBallet->GetUseSkillEnergy();
+            return true;
+        }
     }
     return false;
 }

@@ -5,7 +5,7 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     height = 1;
     geoPrimitive =
         std::make_unique<CapsuleOneWay>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
-    geoPrimitive->SetGrowthRate(10.0f);
+    geoPrimitive->SetGrowthRate(15.0f);
     position = { 3,0,3 };
     damage = 1;
     useSkillEnergy = 100;
@@ -25,13 +25,6 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         // 時間が 0 以下になったら自分を破棄
         Destroy();
     }
-    //angle.x = DirectX::XMConvertToRadians(90);
-    // 移動
-    //float speed = this->speed * elapsedTime;
-    //// 位置 += 方向 * 速さ
-    //position.x += direction.x * speed;
-    //position.y += direction.y * speed;
-    //position.z += direction.z * speed;
     currentCapsuleHeight = geoPrimitive->GetCurrentHeight();
     geoPrimitive->Update(elapsedTime);
     // ワールド行列の更新

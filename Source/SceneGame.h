@@ -31,7 +31,7 @@ public:
     //ï`âÊçXêV
     void Render()override;
 
-    void DrawGauge(ID3D11DeviceContext* dc);
+    void DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc);
 
     void DrawUltArtsSelect(ID3D11DeviceContext* dc, RenderContext* rc);
 

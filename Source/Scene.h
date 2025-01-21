@@ -32,7 +32,7 @@ public:
     virtual void Render() = 0;
 
     //€”õŠ®—¹‚µ‚Ä‚¢‚é‚©
-    bool ISReady() { return ready; }
+    bool IsReady() { return ready; }
 
     //€”õŠ®—¹İ’è
     void SetReady() { ready = true; }

@@ -27,7 +27,7 @@ private:
     DirectX::XMFLOAT3 angle = { 0,0,0 };        //ƒJƒƒ‰‚ÌŠp“x
     float range = 10.0f;                        //ˆê’è‹——£
     DirectX::XMFLOAT3 cameraAngle = { 0,0,0 };
-    float sensi = 0.005f;
+    float sensi = 0.00001f;
     bool mouseMoveFlag = true;
     float targetY = 0;
     bool cutInFlag = false;

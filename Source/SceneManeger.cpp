@@ -11,7 +11,7 @@ void SceneManager::Update(float elapsedTime)
         currentScene = nextScene;
         nextScene = nullptr;
         //ƒV[ƒ“‰Šú‰»ˆ—
-        if (!currentScene->ISReady())
+        if (!currentScene->IsReady())
         {
             currentScene->Initialize();
         }

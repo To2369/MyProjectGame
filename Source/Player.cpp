@@ -121,9 +121,9 @@ void Player::UpdateAnimation(float elapsedTime)
     int clip_index{ model->currentAnimationIndex };
 
     int frame_index{ 0 }, old_frame_index{ 0 };
-    animation& animation{ model->animation_clips.at(clip_index) };
-    frame_index = static_cast<int>(model->currentAnimationSeconds * animation.sampling_rate);
-    old_frame_index = static_cast<int>(model->oldAnimationSeconds * animation.sampling_rate);
+    Animation& animation{ model->animationClips.at(clip_index) };
+    frame_index = static_cast<int>(model->currentAnimationSeconds * animation.samplingRate);
+    old_frame_index = static_cast<int>(model->oldAnimationSeconds * animation.samplingRate);
     if (frame_index > animation.sequence.size() - 1)
     {
         frame_index = animation.sequence.size() - 1;
@@ -133,30 +133,30 @@ void Player::UpdateAnimation(float elapsedTime)
         old_frame_index = animation.sequence.size() - 1;
     }
 
-    animation::keyframe beginPose, oldPose, newPose;
-    animation::keyframe endPose;
+    Animation::Keyframe beginPose, oldPose, newPose;
+    Animation::Keyframe endPose;
     if (blendRate < 1.0f)
     {
         // ブレンド再生
-        const animation::keyframe* begin_keyframes[2]{
+        const Animation::Keyframe* begin_keyframes[2]{
             &model->keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &model->animation_clips.at(clip_index).sequence.at(0),
+            &model->animationClips.at(clip_index).sequence.at(0),
         };
-        const animation::keyframe* old_keyframes[2]{
+        const Animation::Keyframe* old_keyframes[2]{
             &model->keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &model->animation_clips.at(clip_index).sequence.at(old_frame_index),
+            &model->animationClips.at(clip_index).sequence.at(old_frame_index),
         };
-        const animation::keyframe* current_keyframes[2]{
+        const Animation::Keyframe* current_keyframes[2]{
             &model->keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &model->animation_clips.at(clip_index).sequence.at(frame_index),
+            &model->animationClips.at(clip_index).sequence.at(frame_index),
         };
-        const animation::keyframe* end_keyframes[2]{
+        const Animation::Keyframe* end_keyframes[2]{
             &model->keyframe,
             // 今回アニメーションの最初のフレームを最後として補完
-            &model->animation_clips.at(clip_index).sequence.at(animation.sequence.size() - 1),
+            &model->animationClips.at(clip_index).sequence.at(animation.sequence.size() - 1),
         };
 
         // ブレンド補間
@@ -201,13 +201,13 @@ void Player::UpdateAnimation(float elapsedTime)
 
     //ルートモーション
     {
-        const Model::mesh* mesh = model->FindMesh("root");
-        const skeleton::bone* bone = model->FindNode("root");
+        const Model::Mesh* mesh = model->FindMesh("root");
+        const Skeleton::Bone* bone = model->FindNode("root");
         //const Model::mesh* mesh = model->FindMesh("pelvis");
         //const skeleton::bone* bone = model->FindNode("pelvis");
         if (bone && !model->keyframe.nodes.empty())
         {
-            const int rootMotionIndex = bone->node_index;
+            const int rootMotionIndex = bone->nodeIndex;
             DirectX::XMFLOAT3 localTranslation{};
             if (model->oldAnimationSeconds > model->currentAnimationSeconds)
             {
@@ -240,12 +240,12 @@ void Player::UpdateAnimation(float elapsedTime)
             }
             //親ノード取得
             DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMMatrixIdentity();
-            if (bone->parent_index >= 0)
+            if (bone->parentIndex >= 0)
             {
                 //rootmotionNodeの親ノード(parent)からグローバル行列を取得できるので
                 //ローカル移動量をグローバル空間に移動させる
-                const skeleton::bone& rootmotionNode = mesh->bind_pose.bones[bone->parent_index];
-                ParentGlobalTransform = DirectX::XMLoadFloat4x4(&model->keyframe.nodes[rootmotionNode.node_index].global_transform);
+                const Skeleton::Bone& rootmotionNode = mesh->bindPose.bones[bone->parentIndex];
+                ParentGlobalTransform = DirectX::XMLoadFloat4x4(&model->keyframe.nodes[rootmotionNode.nodeIndex].globalTransform);
             }
 
             DirectX::XMVECTOR GlobalTranslation;
@@ -261,7 +261,7 @@ void Player::UpdateAnimation(float elapsedTime)
                 DirectX::XMMATRIX InverceParentGlobalTransform;
                 InverceParentGlobalTransform = XMMatrixInverse(nullptr, ParentGlobalTransform);
                 LocalPos = XMVector3Transform(GlobalPos, InverceParentGlobalTransform);
-                DirectX::XMStoreFloat3(&model->keyframe.nodes[bone->node_index].translation, LocalPos);
+                DirectX::XMStoreFloat3(&model->keyframe.nodes[bone->nodeIndex].translation, LocalPos);
 
                 DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&transform);
                 DirectX::XMFLOAT3 worldTranslation;
@@ -282,17 +282,17 @@ void Player::UpdateAnimation(float elapsedTime)
         for (size_t node_index = 0; node_index < node_count; ++node_index)
         {
             // ローカル行列を設定
-            animation::keyframe::node& node{ model->keyframe.nodes.at(node_index) };
+            Animation::Keyframe::Node& node{ model->keyframe.nodes.at(node_index) };
             DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scaling.x,node.scaling.y,node.scaling.z) };
             DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&node.rotation)) };
             DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
 
             // 親のグローバル行列を取得
-            int64_t parent_index{ model->scene_view.nodes.at(node_index).parent_index };
-            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&model->keyframe.nodes.at(parent_index).global_transform) };
+            int64_t parent_index{ model->sceneView.nodes.at(node_index).parentIndex };
+            DirectX::XMMATRIX P{ parent_index < 0 ? DirectX::XMMatrixIdentity() : DirectX::XMLoadFloat4x4(&model->keyframe.nodes.at(parent_index).globalTransform) };
 
             // ローカル行列 * 親のグローバル行列
-            DirectX::XMStoreFloat4x4(&node.global_transform, S * R * T * P);
+            DirectX::XMStoreFloat4x4(&node.globalTransform, S * R * T * P);
         }
     }
 
@@ -309,13 +309,13 @@ void Player::UpdateAnimation(float elapsedTime)
 
     // アニメーション全体の長さを計算
     totalAnimationTime =
-        model->animation_clips.at(model->currentAnimationIndex).sequence.size() *
-        (1.0f / model->animation_clips.at(model->currentAnimationIndex).sampling_rate);
+        model->animationClips.at(model->currentAnimationIndex).sequence.size() *
+        (1.0f / model->animationClips.at(model->currentAnimationIndex).samplingRate);
     //再生時間が終端時間を超えたら
     if (model->currentAnimationSeconds >= totalAnimationTime)
     {
         //再生時間を巻き戻す
-        if (model->animLoop)
+        if (model->animationLoop)
         {
             model->currentAnimationSeconds -= totalAnimationTime;
         }
@@ -473,12 +473,12 @@ void Player::DrawDebugPrimitive()
        /* if(a==1)
         debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
     }
-    skeleton::bone* bone = model->FindNode("ik_hand_l");
+    Skeleton::Bone* bone = model->FindNode("ik_hand_l");
     if (bone && !model->keyframe.nodes.empty())
     {
         //  外套のボーンのノードの市政情報を取得
-        auto& node = model->keyframe.nodes[bone->node_index];
-        auto WorldTransform = DirectX::XMLoadFloat4x4(&node.global_transform) * DirectX::XMLoadFloat4x4(&transform);
+        auto& node = model->keyframe.nodes[bone->nodeIndex];
+        auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
         DirectX::XMFLOAT4X4 worldTransform;
         DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
         debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
@@ -914,9 +914,9 @@ void Player::CollisionPlayerAndArts()
 void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
 {
     //ノード取得
-    skeleton::bone* bone = model->FindNode(nodeName);
-    auto& node = model->keyframe.nodes[bone->node_index];
-    auto WorldTransform = DirectX::XMLoadFloat4x4(&node.global_transform) * DirectX::XMLoadFloat4x4(&transform);
+    Skeleton::Bone* bone = model->FindNode(nodeName);
+    auto& node = model->keyframe.nodes[bone->nodeIndex];
+    auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
     DirectX::XMFLOAT4X4 worldTransform;
     DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
     // ノード位置取得

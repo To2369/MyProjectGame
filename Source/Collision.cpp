@@ -245,10 +245,10 @@ bool Collision::IntersectRayAndModel(
 
     // true...衝突した
     bool hit = false;
-    for (const Model::mesh& mesh_ : model->meshes)
+    for (const Model::Mesh& mesh_ : model->meshes)
     {
         // レイをワールド空間からローカル空間へ変換
-        DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.default_global_transform);
+        DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
         DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
 
         // ローカル空間上でのレイの始点
@@ -273,11 +273,11 @@ bool Collision::IntersectRayAndModel(
         DirectX::XMVECTOR hitPosition;
         DirectX::XMVECTOR hitNormal;
 
-        for (const Model::mesh::subset& subset : mesh_.subsets)
+        for (const Model::Mesh::Subset& subset : mesh_.subsets)
         {
-            for (UINT i = 0; i < subset.index_count; i += 3)
+            for (UINT i = 0; i < subset.indexCount; i += 3)
             {
-                UINT index = subset.start_index_location + i;
+                UINT index = subset.startIndexLocation + i;
 
                 // 三角形の頂点の抽出
                 const Model::vertex& a = vertices.at(indices.at(index));
@@ -367,7 +367,7 @@ bool Collision::IntersectRayAndModel(
                 localRayLength = length;
 
                 // マテリアル番号を更新
-                materialIndex = subset.material_unique_id;
+                materialIndex = subset.materialUniqueID;
 
                 // 交点と法線を更新
                 hitPosition = hitPosVec;

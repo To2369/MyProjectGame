@@ -18,15 +18,30 @@ void CameraController::Update(float elapsedTime)
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     Mouse* mouse = InputManager::Instance()->getMouse();
 
-    DirectX::XMFLOAT2 mousePosition = { (float)mouse->GetPositionX(),(float)mouse->GetPositionY() };
-    DirectX::XMFLOAT2 mouseOldPosition = { (float)mouse->GetOldPositionX(),(float)mouse->GetOldPositionY() };
+ /*   DirectX::XMFLOAT2 mouseOldPosition = { (float)mouse->GetOldPositionX(),(float)mouse->GetOldPositionY() };
     float ax = gamePad->GetAxisRX();
-    float ay = gamePad->GetAxisRY();
+    float ay = gamePad->GetAxisRY();*/
     if (mouseMoveFlag)
     {
+        // マウスの現在の位置
+        POINT mousePosition;
+        GetCursorPos(&mousePosition);
+
+        // 画面中央
+        const float centerX = 1920 / 2;
+        const float centerY = 1080 / 2;
+
+        //　マウス移動量
+        float deltaX = static_cast<float>(mousePosition.x - centerX);
+        float deltaY = static_cast<float>(mousePosition.y - centerY);
+
+        // マウスカーソルを中央に戻す
+        SetCursorPos(centerX, centerY);
         //カメラの回転速度
         constexpr float rollSpeed = DirectX::XMConvertToRadians(90);
         float speed = rollSpeed * elapsedTime;
+        float ax = gamePad->GetAxisRX();
+        float ay = gamePad->GetAxisRY();
 
         // コントローラーでカメラ操作する場合
         if (ax!=0||ay!=0)
@@ -37,8 +52,8 @@ void CameraController::Update(float elapsedTime)
         // マウスでカメラ操作
         else
         {
-            cameraAngle.y += (mousePosition.x - mouseOldPosition.x) * sensi;
-            cameraAngle.x += (mousePosition.y - mouseOldPosition.y) * sensi;
+            cameraAngle.y += deltaX * sensi*0.5f;
+            cameraAngle.x += deltaY * sensi*0.5f;
         }
         //X軸のカメラ回転を上下45度に制限
         constexpr float maxAngle = DirectX::XMConvertToRadians(45);

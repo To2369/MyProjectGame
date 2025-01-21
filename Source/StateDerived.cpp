@@ -116,7 +116,7 @@ void HitDamegeState::Exit()
 void IdleState::Enter()
 {
 	// 各種Enter関数の内容は各Transition○○State関数を参考に
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbatIdle), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbatIdle), true);
 }
 
 // 待機ステートで実行するメソッド
@@ -155,7 +155,7 @@ void MoveState::Enter()
 {
 	// TODO 02_03
 	// 各種Enter関数の内容は各Transition○○State関数を参考に
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
 
 // 追跡ステートで実行するメソッド
@@ -191,7 +191,7 @@ void MoveState::Exit()
 
 void DashState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
 
 void DashState::Execute(float elapsedTime)
@@ -220,7 +220,7 @@ void DashState::Exit()
 
 void JumpState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimJumpStart), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimJumpStart), false);
 }
 
 void JumpState::Execute(float elapsedTime)
@@ -244,7 +244,7 @@ void JumpState::Exit()
 
 void LandState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimJumpLanding), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimJumpLanding), false);
 }
 
 void  LandState::Execute(float elapsedTime)
@@ -262,12 +262,12 @@ void  LandState::Exit()
 
 void WeakAttackState01::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_1), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_1), false);
 }
 
 void  WeakAttackState01::Execute(float elapsedTime)
 {
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.4f && animationTime <= 0.45f)
 	{
 
@@ -292,12 +292,12 @@ void WeakAttackState01::Exit()
 
 void WeakAttackState02::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_2), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_2), false);
 }
 
 void  WeakAttackState02::Execute(float elapsedTime)
 {
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.25f && animationTime <= 0.3f)
 	{
 
@@ -320,13 +320,13 @@ void WeakAttackState02::Exit()
 void WeakAttackState03::Enter()
 {
 
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_3), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_3), false);
 }
 
 void  WeakAttackState03::Execute(float elapsedTime)
 {
 
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.38f && animationTime <= 0.45f)
 	{
 
@@ -348,12 +348,12 @@ void WeakAttackState03::Exit()
 
 void WeakAttackState04::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_4), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_4), false);
 }
 
 void  WeakAttackState04::Execute(float elapsedTime)
 {
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.2f && animationTime <= 0.4f)
 	{
 
@@ -375,12 +375,12 @@ void WeakAttackState04::Exit()
 
 void WeakAttackState05::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_5), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_5), false);
 }
 
 void  WeakAttackState05::Execute(float elapsedTime)
 {
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.27f && animationTime <= 0.31f)
 	{
 
@@ -402,12 +402,12 @@ void WeakAttackState05::Exit()
 
 void WeakAttackState06::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimConbo01_6), false);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_6), false);
 }
 
 void  WeakAttackState06::Execute(float elapsedTime)
 {
-	float animationTime = owner->GetModel()->GetCurrentAnimationSeconds();
+	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.4f && animationTime <= 0.5f)
 	{
 
@@ -425,7 +425,7 @@ void WeakAttackState06::Exit()
 
 void DashToEnemyState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
 
 void  DashToEnemyState::Execute(float elapsedTime)
@@ -440,7 +440,7 @@ void DashToEnemyState::Exit()
 
 void SkillSelectState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimTpose), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimTpose), true);
 }
 
 void  SkillSelectState::Execute(float elapsedTime)
@@ -459,7 +459,7 @@ void SkillSelectState::Exit()
 
 void DamegeState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
 
 void  DamegeState::Execute(float elapsedTime)
@@ -474,7 +474,7 @@ void DamegeState::Exit()
 
 void DeathState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimRun), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
 
 void  DeathState::Execute(float elapsedTime)

@@ -61,38 +61,38 @@ namespace DirectX
 
 // スケルトン
 // 複数のボーンを管理
-struct skeleton
+struct Skeleton
 {
 	// メッシュのボーン情報
-	struct bone
+	struct Bone
 	{
-		uint64_t unique_id{ 0 };	// 識別ID
+		uint64_t uniqueID{ 0 };	// 識別ID
 		std::string name;
 		// 親ボーンの位置を参照するインデックス	-1...親無し
-		int64_t parent_index{ -1 };
+		int64_t parentIndex{ -1 };
 		// シーンのノード配列を参照するインデックス
-		int64_t node_index{ 0 };
+		int64_t nodeIndex{ 0 };
 
 		// モデル(メッシュ)空間からボーン(ノード)に変換するために使用
-		DirectX::XMFLOAT4X4 offset_transform{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+		DirectX::XMFLOAT4X4 offsetTransform{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 
 		// true...親無しのボーン
-		bool IsOrphans() const { return parent_index < 0; };
+		bool IsOrphans() const { return parentIndex < 0; };
 
 		template<class T>
 		void serialize(T& archive)
 		{
-			archive(unique_id, name, parent_index, node_index, offset_transform);
+			archive(uniqueID, name, parentIndex, nodeIndex, offsetTransform);
 		}
 	};
-	std::vector<bone> bones;
+	std::vector<Bone> bones;
 
-	int64_t IndexOf(uint64_t unique_id)const
+	int64_t IndexOf(uint64_t uniqueID)const
 	{
 		int64_t index{ 0 };
-		for (const bone& bone_ : bones)
+		for (const Bone& bone : bones)
 		{
-			if (bone_.unique_id == unique_id)
+			if (bone.uniqueID == uniqueID)
 			{
 				return index;
 			}
@@ -109,20 +109,20 @@ struct skeleton
 };
 
 // アニメーション
-struct animation
+struct Animation
 {
 	// アニメーションの名前
 	std::string name;
 	// サンプリングレート
-	float sampling_rate{ 0 };
+	float samplingRate{ 0 };
 
 	// キーフレーム
-	struct keyframe
+	struct Keyframe
 	{
-		struct node
+		struct Node
 		{
 			// キーフレームに含まれるノードの行列
-			DirectX::XMFLOAT4X4 global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+			DirectX::XMFLOAT4X4 globalTransform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 		
 			DirectX::XMFLOAT3 scaling{ 1,1,1 };
 			DirectX::XMFLOAT4 rotation{ 0,0,0,1 };
@@ -131,11 +131,11 @@ struct animation
 			template<class T>
 			void serialize(T& archive)
 			{
-				archive(global_transform, scaling, rotation, translation);
+				archive(globalTransform, scaling, rotation, translation);
 			}
 		};
 		// キーフレームに含まれる全てのノードの行列
-		std::vector<node> nodes;
+		std::vector<Node> nodes;
 
 		template<class T>
 		void serialize(T& archive)
@@ -144,38 +144,38 @@ struct animation
 		}
 	};
 	// アニメーション１つ分のデータ
-	std::vector<keyframe> sequence;
+	std::vector<Keyframe> sequence;
 
 	template<class T>
 	void serialize(T& archive)
 	{
-		archive(name, sampling_rate, sequence);
+		archive(name, samplingRate, sequence);
 	}
 };
 
-struct scene
+struct ModelScene
 {
-	struct node
+	struct Node
 	{
-		uint64_t unique_id{ 0 };	// 識別ID
+		uint64_t uniqueID{ 0 };	// 識別ID
 		std::string name;
 		FbxNodeAttribute::EType attribute{ FbxNodeAttribute::EType::eUnknown };
-		int64_t parent_index{ -1 };
+		int64_t parentIndex{ -1 };
 
 		template<class T>
 		void serialize(T& archive)
 		{
-			archive(unique_id, name, attribute, parent_index);
+			archive(uniqueID, name, attribute, parentIndex);
 		}
 	};
 
-	std::vector<node> nodes;
-	int64_t IndexOf(uint64_t unique_id)const
+	std::vector<Node> nodes;
+	int64_t IndexOf(uint64_t uniqueID)const
 	{
 		int64_t index{ 0 };
-		for (const node& node_ : nodes)
+		for (const Node& node : nodes)
 		{
-			if (node_.unique_id == unique_id)
+			if (node.uniqueID == uniqueID)
 			{
 				return index;
 			}
@@ -195,7 +195,7 @@ class Model
 {
 public:
 	// 最大ボーン影響値
-	static const int MAX_BONE_INFLUENCES{ 4 };
+	static const int maxBoneInfluences{ 4 };
 
 	struct vertex
 	{
@@ -203,58 +203,58 @@ public:
 		DirectX::XMFLOAT3 normal{ 0,1,0 };	// 法線
 		DirectX::XMFLOAT4 tangent;			// 接線ベクトル
 		DirectX::XMFLOAT2 texcoord{ 0,0 };	// テクスチャ座標
-		float bone_weights[MAX_BONE_INFLUENCES]{ 1,0,0,0 };	// ウェイト値
-		uint32_t bone_indices[MAX_BONE_INFLUENCES]{};		// ボーン番号
+		float boneWeights[maxBoneInfluences]{ 1,0,0,0 };	// ウェイト値
+		uint32_t boneIndices[maxBoneInfluences]{};		// ボーン番号
 
 		template<class T>
 		void serialize(T& archive)
 		{
-			archive(position, normal, tangent, texcoord, bone_weights, bone_indices);
+			archive(position, normal, tangent, texcoord, boneWeights, boneIndices);
 		}
 	};
 
-	static const int MAX_BONES{ 516 };
+	static const int MaxBones{ 516 };
 	// 定数バッファフォーマット
-	struct constants
+	struct Constants
 	{
 		DirectX::XMFLOAT4X4 world;			// ワールド行列
-		DirectX::XMFLOAT4 material_color;	// マテリアルカラー
-		DirectX::XMFLOAT4X4 bone_transforms[MAX_BONES]{ {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1} };
+		DirectX::XMFLOAT4 materialColor;	// マテリアルカラー
+		DirectX::XMFLOAT4X4 boneTransforms[MaxBones]{ {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1} };
 	};
 
 	//メッシュ情報
-	struct mesh
+	struct Mesh
 	{
-		uint64_t unique_id{ 0 };		// 識別ID
+		uint64_t uniqueID{ 0 };		// 識別ID
 		std::string name;				// メッシュ名
-		int64_t node_index{ 0 };		// ノードID
+		int64_t nodeIndex{ 0 };		// ノードID
 		std::vector<vertex> vertices;	// 頂点座標
 		std::vector<uint32_t> indices;	// 頂点インデックス
 
 		// サブセット情報
-		struct subset
+		struct Subset
 		{
-			uint64_t material_unique_id{ 0 };	// 識別ID
-			std::string material_name;			// マテリアル名
+			uint64_t materialUniqueID{ 0 };	// 識別ID
+			std::string materialName;			// マテリアル名
 
-			uint32_t start_index_location{ 0 };	// インデックスの開始位置
-			uint32_t index_count{ 0 };			// インデックスの数(頂点)
+			uint32_t startIndexLocation{ 0 };	// インデックスの開始位置
+			uint32_t indexCount{ 0 };			// インデックスの数(頂点)
 
 			template<class T>
 			void serialize(T& archive)
 			{
-				archive(material_unique_id, material_name, start_index_location, index_count);
+				archive(materialUniqueID, materialName, startIndexLocation, indexCount);
 			}
 		};
-		std::vector<subset> subsets;
+		std::vector<Subset> subsets;
 
 		// メッシュごとのワールド行列
-		DirectX::XMFLOAT4X4 default_global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		DirectX::XMFLOAT4X4 defaultGlobalTransform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	
 		// バインドポーズ(初期姿勢)
-		skeleton bind_pose;
+		Skeleton bindPose;
 
-		DirectX::XMFLOAT3 bounding_box[2]
+		DirectX::XMFLOAT3 boundingBox[2]
 		{
 			{D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX},
 			{-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX}
@@ -263,20 +263,20 @@ public:
 		template<class T>
 		void serialize(T& archive)
 		{
-			archive(unique_id, name, node_index, subsets, default_global_transform,
-				bind_pose, bounding_box, vertices, indices);
+			archive(uniqueID, name, nodeIndex, subsets, defaultGlobalTransform,
+				bindPose, boundingBox, vertices, indices);
 		}
 	private:
-		Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;	// 頂点バッファ
-		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;	// インデックスバッファ
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;	// 頂点バッファ
+		Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;	// インデックスバッファ
 		friend class Model;
 	};
-	std::vector<mesh> meshes;
+	std::vector<Mesh> meshes;
 
 	//マテリアル
-	struct material
+	struct Material
 	{
-		uint64_t unique_id{ 0 };	// 識別ID
+		uint64_t uniqueID{ 0 };	// 識別ID
 		std::string name;	// マテリアル名
 
 		DirectX::XMFLOAT4 Ka{ 0.2f,0.2f,0.2f,1.0f };
@@ -284,90 +284,85 @@ public:
 		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
 
 		// テクスチャファイル名
-		std::string texture_filenames[4];
+		std::string textureFilenames[4];
 		// テクスチャ情報
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceViews[4];
 	
 		template<class T>
 		void serialize(T& archive)
 		{
-			archive(unique_id, name, Ka, Kd, Ks, texture_filenames);
+			archive(uniqueID, name, Ka, Kd, Ks, textureFilenames);
 		}
 	};
 	// 読み込んだマテリアル
-	std::unordered_map<uint64_t, material> materials;
+	std::unordered_map<uint64_t, Material> materials;
 
 	// 全てのアニメーションのデータ
-	std::vector<animation> animation_clips;
+	std::vector<Animation> animationClips;
 public:
 	// "triangulate">true...多角形で作られたポリゴンを三角形化
 	Model(ID3D11Device* device,
-		const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
+		const char* fbxFilename, bool triangulate = false, float samplingRate = 0);
 
-	Model(ID3D11Device* device, std::vector<std::string>& animation_filenames,
-		const char* fbx_filename, bool triangulate = false, float sampling_rate = 0);
+	Model(ID3D11Device* device, std::vector<std::string>& animationFilenames,
+		const char* fbxFilename, bool triangulate = false, float samplingRate = 0);
 	virtual ~Model() = default;
 
 	// 描画処理
-	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world,const DirectX::XMFLOAT4& material_color);
+	void Render(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& world,const DirectX::XMFLOAT4& materialColor);
 
 	//	アニメーション更新
 	void UpdateAnimation(float elapsedTime);
 
 	// アニメーションの追加
-	bool AppendAnimations(const char* animation_filename, float sampling_rate);
+	bool AppendAnimations(const char* animationFilename, float samplingRate);
 
 	// アニメーションの連結
-	void BlendAnimations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe);
+	void BlendAnimations(const Animation::Keyframe* keyframes[2], float factor, Animation::Keyframe& keyframe);
 
-	void BlendAnimations(const animation::keyframe* keyframes[2], int nodeIndex, float rate, animation::keyframe& keyframe);
+	void BlendAnimations(const Animation::Keyframe* keyframes[2], int nodeIndex, float rate, Animation::Keyframe& keyframe);
 
 	// メッシュ情報の取り出し
-	void FetchMeshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
+	void FetchMeshes(FbxScene* fbxScene, std::vector<Mesh>& meshes);
 
 	// マテリアル情報の取り出し
-	void FetchMaterials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
+	void FetchMaterials(FbxScene* fbxScene, std::unordered_map<uint64_t, Material>& materials);
 
 	// バインドポーズ情報の取り出し
-	void FetchSkeletons(FbxMesh* fbx_mesh, skeleton& bind_pose);
+	void FetchSkeletons(FbxMesh* fbxMesh, Skeleton& bindPose);
 
 	// アニメーション情報の取り出し
-	void FetchAnimations(FbxScene* fbx_scene, std::vector<animation>& animation_clips,
-		float sampling_rate);
+	void FetchAnimations(FbxScene* fbxScene, std::vector<Animation>& animationClips,
+		float samplingRate);
 
 	// バッファの生成
-	void CreateComObjects(ID3D11Device* devvice, const char* fbx_filename);
+	void CreateComObjects(ID3D11Device* device, const char* fbxFilename);
 
 	void PlayAnimation(int index,bool loop, float blendSeconds = 0.2f);
 
 	//アニメーション再生中かどうか
 	bool IsPlayAnimation() const;
 
-	float GetCurrentAnimationSeconds()const { return currentAnimationSeconds; }
+	Skeleton::Bone* FindNode(const char* node);
 
-	skeleton::bone* FindNode(const char* node);
-
-	mesh* FindMesh(const char* name);
+	Mesh* FindMesh(const char* name);
+	ModelScene sceneView;
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;	// 頂点シェーダー
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;		// ピクセルシェーダー
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;		// 入力レイアウト
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;		// 定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;	// 頂点シェーダー
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;		// ピクセルシェーダー
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;		// 入力レイアウト
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;		// 定数バッファ
 public:
 	// 前回のアニメーションの番号
 	int currentAnimationIndex = -1;
 	float currentAnimationSeconds = 0.0f;
 	float oldAnimationSeconds = 0.0f;
-	bool animLoop = false;
+	bool animationLoop = false;
 	bool animationEndFlag = false;
 	float animationBlendTime;
 	float animationBlendSeconds;
-	animation::keyframe keyframe;
-	FbxScene* fbx_scene{};
-	DirectX::XMFLOAT4X4 trans = {};
-	scene scene_view;
-private:
-	float blendRate = 0;
+	Animation::Keyframe keyframe;
+	FbxScene* fbxScene{};
 protected:
 	// このfbxの親シーン
 	//scene scene_view;

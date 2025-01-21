@@ -10,7 +10,7 @@
 
 
 //アニメーション
-enum Animation
+enum AnimationNum
 {
 	AnimTpose,
 	AnimIdle,

@@ -195,8 +195,8 @@ void SceneTest::Render()
             int frame_index{ 0 };
             static float animation_tick{ 0 };
 
-            animation& animation{ model[0]->animation_clips.at(clip_index) };
-            frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+            Animation& animation{ model[0]->animationClips.at(clip_index) };
+            frame_index = static_cast<int>(animation_tick * animation.samplingRate);
             if (frame_index > animation.sequence.size() - 1)
             {
                 frame_index = 0;
@@ -206,7 +206,7 @@ void SceneTest::Render()
             {
                 animation_tick += elapsedTime_;
             }
-            animation::keyframe& keyframe{ animation.sequence.at(frame_index) };
+            Animation::Keyframe& keyframe{ animation.sequence.at(frame_index) };
 #if 1
             // デバッグ用(首を高くして左に回転)
             DirectX::XMStoreFloat4(&keyframe.nodes.at(30).rotation, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1, 0, 0, 0), factor[0]));

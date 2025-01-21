@@ -2,8 +2,8 @@
 #include<d3d11.h>
 #include "framework.h"
 
-const LONG SCREEN_WIDTH = 1280;
-const LONG SCREEN_HEIGHT = 720;
+const LONG SCREEN_WIDTH = 1920;
+const LONG SCREEN_HEIGHT = 1080;
 
 LRESULT CALLBACK window_procedure(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {

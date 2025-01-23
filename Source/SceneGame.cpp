@@ -337,7 +337,7 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
     const float skillgaugeHeight = 25.0f;
 
     float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
-    float spiritEnergyRate = player->GetSpritEnergy() / static_cast<float>(player->GetMaxSpritEnergy());
+    float spiritEnergyRate = player->GetSpritOneGauge() / 100.0f;
     float skillEnergyRate = player->GetSkillEnergy() / static_cast<float>(player->GetMaxSkillEnergy());
     // ƒQ[ƒW•`‰æ
     lifegauge->Render(
@@ -365,14 +365,14 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         static_cast<float>(skillEnergyGauge->GetTextureHeight())
     );
     
-    for(int i=0;i<2;i++)
+    for(int i=0;i<player->GetSpritGaugeCount();i++)
     {
         spritEnergyGauge->Render(
             dc,
-            50+(32*i),
+            50 + (32 * i),
             100,
             42,
-            32 * -spiritEnergyRate,
+            32 *-spiritEnergyRate,
             1.0f, 1.0f, 1.0f, 1.0f,
             0.0f,
             0, 0,

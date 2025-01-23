@@ -43,8 +43,14 @@ void Character::UpdateStatus(float elapsedTime)
         energyRecoveryTimer -= elapsedTime;
         if (energyRecoveryTimer <= 0)
         {
-            spiritEnergy += 1;
+            spiritEnergy += spiritHealSpeed;
+            spritOneGauge += spiritHealSpeed;
             energyRecoveryTimer = 0.1f;
+            if (spritOneGauge >= 100)
+            {
+                spritOneGauge = 0;
+                spiritGaugeCount++;
+            }
         }
     }
     else
@@ -229,7 +235,7 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    //velocity.y += gravity * elapsedTime * 60.0f;
+    velocity.y += gravity * elapsedTime * 60.0f;
 }
 
 DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)

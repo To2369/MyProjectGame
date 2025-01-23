@@ -70,6 +70,8 @@ public:
 	// Å‘å‹C—Í‚ğæ“¾
 	int GetMaxSpritEnergy() const { return maxSpritEnergy; }
 
+	int GetSpritGaugeCount() const { return spiritGaugeCount; }
+	int GetSpritOneGauge() const { return spritOneGauge; }
 	// ‹C—Í‚ğæ“¾
 	int GetSkillEnergy() const { return skillEnergy; }
 
@@ -153,6 +155,11 @@ protected:
 	bool useSpiritEnergyFlag = false;
 	float energyRecoveryTimer = 0.0f;
 	float energyNoRecoveryTimer = 1.0f;
+	int spiritHealSpeed = 1;
+	int spritOneGauge = 0;
+	int oneGaugeMax = 100;
+	int spiritGaugeCount = 1;
+
 
 	int useDashSkillEnergy = 1;
 	float skillEnergyTimer = 0.0f;	// ‹Z—Í‚ğg‚Á‚Ä‰½•b‚½‚Á‚½‚©

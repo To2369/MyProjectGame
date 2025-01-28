@@ -162,7 +162,7 @@ void ColorGraging::Draw(const RenderContext& rc, const Sprite* sprite)
 	filter.saturation = color_filter_parameter.y;
 	filter.brightress = color_filter_parameter.z;
 	rc.deviceContext->UpdateSubresource(color_filter_constant_buffer.Get(), 0, 0, &filter, 0, 0);
-	UINT stride = sizeof(Sprite::vertex);
+	UINT stride = sizeof(Sprite::Vertex);
 	UINT offset = 0;
 	rc.deviceContext->IASetVertexBuffers(0, 1, sprite->GetVertexBuffer().GetAddressOf(), &stride, &offset);
 	rc.deviceContext->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());

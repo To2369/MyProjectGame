@@ -147,9 +147,6 @@
     <ClInclude Include="Source\Input\Mouse.h">
       <Filter>Sources\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\DebugRenderer.h">
-      <Filter>Sources\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Graphics\LineRenderer.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
@@ -307,9 +304,6 @@
     </ClCompile>
     <ClCompile Include="Source\Input\Mouse.cpp">
       <Filter>Sources\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\DebugRenderer.cpp">
-      <Filter>Sources\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\LineRenderer.cpp">
       <Filter>Sources\Graphics</Filter>

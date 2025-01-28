@@ -31,7 +31,7 @@ void ArtsSpiritExplosion::Render(ID3D11DeviceContext* dc)
 {
     //衝突判定用のデバッグ球を描画
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    debugPrimitive->DrawSphere(position, angle,radius, { 0,0,1,1 });
+    debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
 }
 
 //発射

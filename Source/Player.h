@@ -128,7 +128,6 @@ public:
 	bool artSkillReady = false;
 	bool artUltSkillReady = false;
 	void InputFlying(float elapsedTime);
-private:
 	DirectX::XMFLOAT3 GetMoveVec() const;
 
 	void Lock();
@@ -144,6 +143,8 @@ private:
 	void TeleportBehindEnemy();
 
 	void UpdateAnimation(float elapsedTime);
+
+	bool attackCollisionFlag = false;
 protected:
 	// ’…’n‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é
 	void OnLanding() override;

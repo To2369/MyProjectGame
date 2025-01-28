@@ -2,32 +2,32 @@
 #include"../misc.h"
 #include <sstream>
 #include<WICTextureLoader.h>
-SpriteBatch::SpriteBatch(ID3D11Device* device, const wchar_t* filename, size_t max_sprites) :max_vertices(max_sprites * 6)
+SpriteBatch::SpriteBatch(ID3D11Device* device, const wchar_t* filename, size_t maxSprites) :maxVertices(maxSprites * 6)
 {
     HRESULT hr{ S_OK };
 
     // 頂点情報のセット
-    std::unique_ptr<vertex[]> vertices{ std::make_unique<vertex[]>(max_vertices) };
+    std::unique_ptr<Vertex[]> vertices{ std::make_unique<Vertex[]>(maxVertices) };
     // 頂点バッファオブジェクトの生成
-    D3D11_BUFFER_DESC buffer_desc{};                                                // 頂点バッファオブジェクトの設定を行うための構造体
-    buffer_desc.ByteWidth = sizeof(vertex) * max_vertices;                          // 頂点情報のサイズを指定
-    buffer_desc.Usage = D3D11_USAGE_DYNAMIC;                                        // バッファの読み取りと書き込みの方法を特定。GPU からしかアクセスできないよう設定
-    buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;                               // バッファがパイプラインにバインドされる方法を特定,このバッファオブジェクトを頂点バッファとして設定
-    buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;                            // CPU へアクセスする際のフラグ
-    buffer_desc.MiscFlags = 0;                                                      // その他のフラグ。不要な場合は０
-    buffer_desc.StructureByteStride = 0;                                            // バッファが構造化バッファを表す場合のバッファ構造内の各要素のサイズ。
+    D3D11_BUFFER_DESC bufferDesc{};                                                // 頂点バッファオブジェクトの設定を行うための構造体
+    bufferDesc.ByteWidth = sizeof(Vertex) * maxVertices;                          // 頂点情報のサイズを指定
+    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;                                        // バッファの読み取りと書き込みの方法を特定。GPU からしかアクセスできないよう設定
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;                               // バッファがパイプラインにバインドされる方法を特定,このバッファオブジェクトを頂点バッファとして設定
+    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;                            // CPU へアクセスする際のフラグ
+    bufferDesc.MiscFlags = 0;                                                      // その他のフラグ。不要な場合は０
+    bufferDesc.StructureByteStride = 0;                                            // バッファが構造化バッファを表す場合のバッファ構造内の各要素のサイズ。
 
     // サブリソースデータ
-    D3D11_SUBRESOURCE_DATA subresource_data{};
+    D3D11_SUBRESOURCE_DATA subresourceData{};
     // 初期化データへのポインタ
-    subresource_data.pSysMem = vertices.get();                                                  // テクスチャの１行の先頭から次の行までの距離(バイト単位)。
-    subresource_data.SysMemPitch = 0;                                                           // テクスチャの１行の先頭から次の行までの距離(バイト単位)。
-    subresource_data.SysMemSlicePitch = 0;                                                      // ある深度レベルの開始から次の深度レベルまでの距離(バイト単位)
-    hr = device->CreateBuffer(&buffer_desc, &subresource_data, vertex_buffer.GetAddressOf());   // デバイスを使って、頂点バッファのサブリソースとして頂点情報を設定して頂点バッファを生成
+    subresourceData.pSysMem = vertices.get();                                                  // テクスチャの１行の先頭から次の行までの距離(バイト単位)。
+    subresourceData.SysMemPitch = 0;                                                           // テクスチャの１行の先頭から次の行までの距離(バイト単位)。
+    subresourceData.SysMemSlicePitch = 0;                                                      // ある深度レベルの開始から次の深度レベルまでの距離(バイト単位)
+    hr = device->CreateBuffer(&bufferDesc, &subresourceData, vertexBuffer.GetAddressOf());   // デバイスを使って、頂点バッファのサブリソースとして頂点情報を設定して頂点バッファを生成
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
     // レイアウトオブジェクトの生成
-    D3D11_INPUT_ELEMENT_DESC input_element_desc[]       // 入力レイアウトオブジェクトの設定を行うための構造体
+    D3D11_INPUT_ELEMENT_DESC inputElementDesc[]       // 入力レイアウトオブジェクトの設定を行うための構造体
     {
         {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -40,29 +40,29 @@ SpriteBatch::SpriteBatch(ID3D11Device* device, const wchar_t* filename, size_t m
     // 頂点シェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\SpriteVS.cso",
-            vertex_shader.GetAddressOf(), input_layout.GetAddressOf(),
-            input_element_desc, ARRAYSIZE(input_element_desc));
+            vertexShader.GetAddressOf(), inputLayout.GetAddressOf(),
+            inputElementDesc, ARRAYSIZE(inputElementDesc));
     }
 
     // ピクセルシェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SpritePS.cso",
-            pixel_shader.GetAddressOf());
+            pixelShader.GetAddressOf());
     }
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\EffectPS.cso",
-            replaced_pixel_shader.GetAddressOf());
+            replacedPixelShader.GetAddressOf());
     }
     // テクスチャの読み込み
     {
         ShaderManager::Instance()->LoadTextureFromFile(device, filename,
-            shader_resource_view.GetAddressOf(),
-            &texture2d_desc);
+            shaderResourceView.GetAddressOf(),
+            &texture2dDesc);
     }
     {
         ShaderManager::Instance()->LoadTextureFromFile(device, filename,
-            replaced_shader_resource_view.GetAddressOf(),
-            &replaced_texture2d_desc);
+            replacedShaderResourceView.GetAddressOf(),
+            &replacedTexture2dDesc);
     }
 }
 
@@ -72,95 +72,95 @@ SpriteBatch::~SpriteBatch()
 }
 
 // シェーダーとテクスチャの設定
-void SpriteBatch::Begin(ID3D11DeviceContext* immediate_context,
-    ID3D11PixelShader* replaced_pixel_shader,
-    ID3D11ShaderResourceView* replaced_shader_resource_view)
+void SpriteBatch::Begin(ID3D11DeviceContext* dc,
+    ID3D11PixelShader* replacedPixelShader,
+    ID3D11ShaderResourceView* replacedShaderResourceView)
 {
     vertices.clear();
-    immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-    replaced_pixel_shader ? immediate_context->PSSetShader(replaced_pixel_shader, nullptr, 0) : 
-        immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-    if (replaced_shader_resource_view)
+    dc->VSSetShader(vertexShader.Get(), nullptr, 0);
+    replacedPixelShader ? dc->PSSetShader(replacedPixelShader, nullptr, 0) : 
+        dc->PSSetShader(pixelShader.Get(), nullptr, 0);
+    if (replacedShaderResourceView)
     {
         // texture2d_descにさし変わったテクスチャ情報を設定
         HRESULT hr{ S_OK };
         Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-        replaced_shader_resource_view->GetResource(resource.GetAddressOf());
+        replacedShaderResourceView->GetResource(resource.GetAddressOf());
         Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;
         hr = resource->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
-        texture2d->GetDesc(&texture2d_desc);
+        texture2d->GetDesc(&texture2dDesc);
 
         // 差し変わったテクスチャを設定
-        immediate_context->PSSetShaderResources(0, 1, &replaced_shader_resource_view);
+        dc->PSSetShaderResources(0, 1, &replacedShaderResourceView);
     }
     else
     {
         // 今までのテクスチャを設定
-        immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+        dc->PSSetShaderResources(0, 1, shaderResourceView.GetAddressOf());
     }
 }
 
-void SpriteBatch::End(ID3D11DeviceContext* immediate_context)
+void SpriteBatch::End(ID3D11DeviceContext* dc)
 {
     HRESULT hr{ S_OK };
-    D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
-    hr = immediate_context->Map(vertex_buffer.Get(),
-        0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource{};
+    hr = dc->Map(vertexBuffer.Get(),
+        0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-    size_t vertex_count = vertices.size();
-    _ASSERT_EXPR(max_vertices >= vertex_count, "Buffer overflow");
-    vertex* data{ reinterpret_cast<vertex*>(mapped_subresource.pData) };
+    size_t vertexCount = vertices.size();
+    _ASSERT_EXPR(maxVertices >= vertexCount, "Buffer overflow");
+    Vertex* data{ reinterpret_cast<Vertex*>(mappedSubresource.pData) };
     if (data != nullptr)
     {
-        const vertex* p = vertices.data();
-        memcpy_s(data, max_vertices * sizeof(vertex), p, vertex_count * sizeof(vertex));
+        const Vertex* p = vertices.data();
+        memcpy_s(data, maxVertices * sizeof(Vertex), p, vertexCount * sizeof(Vertex));
     }
-    immediate_context->Unmap(vertex_buffer.Get(), 0);
+    dc->Unmap(vertexBuffer.Get(), 0);
 
-    UINT stride{ sizeof(vertex) };
+    UINT stride{ sizeof(Vertex) };
     UINT offset{ 0 };
-    immediate_context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
-    immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    immediate_context->IASetInputLayout(input_layout.Get());
+    dc->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    dc->IASetInputLayout(inputLayout.Get());
 
-    immediate_context->Draw(static_cast<UINT>(vertex_count), 0);
+    dc->Draw(static_cast<UINT>(vertexCount), 0);
 }
 
 
-void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* dc,
     float dx, float dy,
     float dw, float dh
 )
 {
     // 幅高さを0.0からが画像最大にしてオーバーロードしたほうのRenderを呼び出す
-    Render(immediate_context,
+    Render(dc,
         dx, dy,
         dw, dh,
         1, 1, 1, 1,
         0.0f,
         0.0f, 0.0f,
-        static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
+        static_cast<float>(texture2dDesc.Width), static_cast<float>(texture2dDesc.Height));
 }
 
-void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* dc,
     float dx, float dy,
     float dw, float dh,
     float r, float g, float b, float a,
     float angle)
 {
     // 幅高さを0.0からが画像最大にしてオーバーロードしたほうのRenderを呼び出す
-    Render(immediate_context,
+    Render(dc,
         dx, dy,
         dw, dh,
         r, g, b, a,
         angle,
         0.0f, 0.0f,
-        static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
+        static_cast<float>(texture2dDesc.Width), static_cast<float>(texture2dDesc.Height));
 }
 
-void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
+void SpriteBatch::Render(ID3D11DeviceContext* dc,
     float dx, float dy,
     float dw, float dh,
     float r, float g, float b, float a,
@@ -171,7 +171,7 @@ void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
     // スクリーン（ビューポート）のサイズを取得
     D3D11_VIEWPORT viewport{};
     UINT num_viewports{ 1 };
-    immediate_context->RSGetViewports(&num_viewports, &viewport);
+    dc->RSGetViewports(&num_viewports, &viewport);
 
     //  (x0, y0) *----* (x1, y1)             
     //           |   /|           
@@ -215,10 +215,10 @@ void SpriteBatch::Render(ID3D11DeviceContext* immediate_context,
     y3 = 1.0f - 2.0f * y3 / viewport.Height;
 
     // テクスチャ座標の設定
-    float u0{ sx / texture2d_desc.Width };
-    float v0{ sy / texture2d_desc.Height };
-    float u1{ (sx + sw) / texture2d_desc.Width };
-    float v1{ (sy + sh) / texture2d_desc.Height };
+    float u0{ sx / texture2dDesc.Width };
+    float v0{ sy / texture2dDesc.Height };
+    float u1{ (sx + sw) / texture2dDesc.Width };
+    float v1{ (sy + sh) / texture2dDesc.Height };
 
     // 頂点データの設定
     vertices.push_back({ {x0,y0,0},{r,g,b,a},{u0,v0} });

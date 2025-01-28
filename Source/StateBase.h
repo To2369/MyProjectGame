@@ -8,7 +8,7 @@ class State
 {
 public:
 	// コンストラクタ
-	State(Player* enemy) :owner(enemy) {}
+	State(Player* player) :owner(player) {}
 	virtual ~State() {}
 	// 全て継承先で実装させる必要があるため純粋仮想関数で実装
 	// ステートに入った時のメソッド
@@ -25,7 +25,7 @@ class HierarchicalState :public State
 {
 public:
 	// コンストラクタ
-	HierarchicalState(Player* enemy) :State(enemy) {}
+	HierarchicalState(Player* player) :State(player) {}
 	virtual ~HierarchicalState() {}
 	// 全て継承先で実装させる必要があるため純粋仮想関数で実装
 	// ステートに入った時のメソッド

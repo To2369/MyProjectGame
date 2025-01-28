@@ -32,12 +32,6 @@ public:
 	void SetPosition(const DirectX::XMFLOAT3& position) { this->position = position; }
 
 	//‰ñ“]æ“¾
-	const DirectX::XMFLOAT3& GetAngle()const { return angle; }
-
-	//‰ñ“]İ’è
-	void SetAngle(const DirectX::XMFLOAT3& angle) { this->angle = angle; }
-
-	//‰ñ“]æ“¾
 	const DirectX::XMFLOAT4& GetQuarternion()const { return quaternion; }
 
 	//‰ñ“]İ’è
@@ -118,7 +112,6 @@ protected:
 	virtual void OnDead() {}
 protected:
 	DirectX::XMFLOAT3 position = { 0,0,0 };
-	DirectX::XMFLOAT3 angle = { 0,0,0 };
 	DirectX::XMFLOAT4 quaternion = { 0,0,0,1 };
 	DirectX::XMFLOAT4 quaternion_additional = { 0,0,0,1 };
 	DirectX::XMFLOAT3 scale = { 1,1,1 };
@@ -142,7 +135,7 @@ protected:
 	int spiritEnergy = 500;	//‹C—Í
 	int maxSpritEnergy = 500;//Å‘å‹C—Í
 	int skillEnergy = 200;	//‹Z—Í
-	int maxSkillEnergy = 600;	//Å‘å‹Z—Í
+	int maxSkillEnergy = 900;	//Å‘å‹Z—Í
 
 	float invincibleTimer = 0.5f;   // –³“GŠÔ
 	float friction = 0.5f; // –€C

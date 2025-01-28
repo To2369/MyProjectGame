@@ -1,10 +1,6 @@
 #include "StateDerived.h"
 #include "Player.h"
 #include "Mathf.h"
-// TODO 02_03 Stateを基底クラスとして各種Stateクラスを用意する。
-// Wanderはサンプルとしてすでに記述済み
-// 各種Enter関数の内容は各Transition○○State関数を参考に
-// 各種Execute関数の内容は各Update○○State関数を参考に
 
 MovementState::~MovementState()
 {
@@ -146,14 +142,13 @@ void IdleState::Execute(float elapsedTime)
 // 待機ステートから出ていくときのメソッド
 void IdleState::Exit()
 {
-	//書かなくてよい
+	
 }
 
 
 // 追跡ステートに入った時のメソッド
 void MoveState::Enter()
 {
-	// TODO 02_03
 	// 各種Enter関数の内容は各Transition○○State関数を参考に
 	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
 }
@@ -186,7 +181,7 @@ void MoveState::Execute(float elapsedTime)
 // 追跡ステートから出ていくときのメソッド
 void MoveState::Exit()
 {
-	//書かなくてよい
+
 }
 
 void DashState::Enter()
@@ -239,7 +234,7 @@ void JumpState::Execute(float elapsedTime)
 
 void JumpState::Exit()
 {
-	//書かなくてよい
+	
 }
 
 void LandState::Enter()
@@ -257,7 +252,7 @@ void  LandState::Execute(float elapsedTime)
 
 void  LandState::Exit()
 {
-	//書かなくてよい
+	
 }
 
 void WeakAttackState01::Enter()
@@ -270,7 +265,11 @@ void  WeakAttackState01::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.4f && animationTime <= 0.45f)
 	{
-
+		owner->CollisionNodeVsEnemies("ball_l", 0.3f);
+	}
+	else
+	{
+		owner->attackCollisionFlag = false;
 	}
 	if (animationTime >= 0.1f && animationTime <= 0.9f)
 	{
@@ -287,7 +286,7 @@ void  WeakAttackState01::Execute(float elapsedTime)
 
 void WeakAttackState01::Exit()
 {
-	//書かなくてよい
+
 }
 
 void WeakAttackState02::Enter()
@@ -314,7 +313,7 @@ void  WeakAttackState02::Execute(float elapsedTime)
 
 void WeakAttackState02::Exit()
 {
-	//書かなくてよい
+
 }
 
 void WeakAttackState03::Enter()
@@ -343,7 +342,7 @@ void  WeakAttackState03::Execute(float elapsedTime)
 
 void WeakAttackState03::Exit()
 {
-	//書かなくてよい
+	
 }
 
 void WeakAttackState04::Enter()
@@ -370,7 +369,7 @@ void  WeakAttackState04::Execute(float elapsedTime)
 
 void WeakAttackState04::Exit()
 {
-	//書かなくてよい
+	
 }
 
 void WeakAttackState05::Enter()

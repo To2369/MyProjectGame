@@ -21,24 +21,22 @@ enum class PIXEL_SHADER_STATE
 };
 // スタティックメッシュ
 // スタティックメッシュとはスケルトンが入っていない変形させるようなアニメーションができないメッシュの事です。
-// えば椅子や岩、壁といったメッシュはスタティックメッシュにあたります。（静的オブジェクト）
-// メッシュとはポリゴンの集まりのこと。イメージとしては中身のない表面だけのデータ
 class StaticMesh
 {
 public:
 	// DCCツールによって上下成分や原点が違う場合があるのでテクスチャが反転している場合
-	// flipping_v_coodinatesをtrueにする
-	StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool flipping_v_coordinates);
+	// flippingVcoodinatesをtrueにする
+	StaticMesh(ID3D11Device* device, const wchar_t* objFilename, bool flippingVcoordinates);
 	virtual ~StaticMesh() = default;
 
 	// 描画処理
-	void Render(ID3D11DeviceContext* immediate_context,
-		const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color,
+	void Render(ID3D11DeviceContext* dc,
+		const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& materialColor,
 		PIXEL_SHADER_STATE state);
 
 public:
 	// 頂点フォーマット
-	struct vertex
+	struct Vertex
 	{
 		DirectX::XMFLOAT3 position;	// 座標
 		DirectX::XMFLOAT3 normal;	// 法線
@@ -46,26 +44,26 @@ public:
 	};
 
 	// 定数バッファ用フォーマット
-	struct constants
+	struct Constants
 	{
 		DirectX::XMFLOAT4X4 world;	// ワールド行列
 		DirectX::XMFLOAT4 Ka;
 		DirectX::XMFLOAT4 Kd;
 		DirectX::XMFLOAT4 Ks;
-		DirectX::XMFLOAT4 material_color;
+		DirectX::XMFLOAT4 materialColor;
 	};
 
 	// マテリアル名とDrawIndex()に必要な情報部分をサブセット化
-	struct subset
+	struct Subset
 	{
 		std::wstring usemtl;		// マテリアル名
-		uint32_t index_start{ 0 };	// インデックスの開始位置
-		uint32_t index_count{ 0 };	// インデクスの数（頂点数）
+		uint32_t indexStart{ 0 };	// インデックスの開始位置
+		uint32_t indexCount{ 0 };	// インデクスの数（頂点数）
 	};
-	std::vector<subset> subsets;
+	std::vector<Subset> subsets;
 
 	// マテリアル
-	struct material
+	struct Material
 	{
 		// マテリアル名
 		std::wstring name;
@@ -73,38 +71,38 @@ public:
 		DirectX::XMFLOAT4 Kd{ 0.8f,0.8f,0.8f,1.0f };
 		DirectX::XMFLOAT4 Ks{ 1.0f,1.0f,1.0f,1.0f };
 		// テクスチャファイル名
-		std::wstring texture_filenames[static_cast<int>(STATICMESH_STATE::Enum_Max)];
+		std::wstring textureFilenames[static_cast<int>(STATICMESH_STATE::Enum_Max)];
 		// テクスチャ情報
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view[static_cast<int>(STATICMESH_STATE::Enum_Max)];
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView[static_cast<int>(STATICMESH_STATE::Enum_Max)];
 	};
 	// 読み込んだマテリアル
-	std::vector<material> materials;
+	std::vector<Material> materials;
 
-	DirectX::XMFLOAT3 bounding_box[2]{
+	DirectX::XMFLOAT3 boundingBox[2]{
 		{D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX,D3D11_FLOAT32_MAX},
 		{-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX,-D3D11_FLOAT32_MAX}
 	};
 protected:
 	// 頂点バッファオブジェクトの作成
-	void Create_com_buffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,
-		uint32_t* indices, size_t index_count);
+	void CreateComBuffers(ID3D11Device* device, Vertex* vertices, size_t vertexCount,
+		uint32_t* indices, size_t indexCount);
 private:
 	// 頂点バッファオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 	// インデックスバッファオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
 
 	// 頂点シェーダーオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
 	// ピクセルシェーダーオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::Enum_Max)];
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShaders[static_cast<int>(PIXEL_SHADER_STATE::Enum_Max)];
 	// 入力レイアウトオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	// 定数バッファオブジェクト
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
 
 	// 定数バッファ
-	D3D11_BUFFER_DESC buffer_desc{};
+	D3D11_BUFFER_DESC bufferDesc{};
 
-	D3D11_SUBRESOURCE_DATA subresource_data{};
+	D3D11_SUBRESOURCE_DATA subresourceData{};
 };

@@ -49,13 +49,13 @@ void SceneGame::Initialize()
     player = std::make_unique<Player>();
 
     lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
-    skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), nullptr);
-    spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\SkillGauge.png");
+    skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\SkillGauge.png");
+    spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\SpiritGauge.png");
     //shadowMapCaster = std::make_unique<ShadowMapCaster>(graphics->GetDevice());
     //colorGrading = std::make_unique<ColorGraging>(graphics->GetDevice());
     framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
     framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280 / 2, 720 / 2);
-    sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\screenshot.jpg");
+    sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\screenshot.jpg");
     skillArtsSellect = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Fonts\\font4.png");
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
         gaussian_filter_pixel_shader.GetAddressOf());
@@ -252,7 +252,7 @@ void SceneGame::Render()
     // 3Dデバッグ描画
     {
         graphics->GetLineRenderer()->Render(dc, rc.view, rc.projection);
-        graphics->GetDebugRenderer()->Render(dc, rc.view, rc.projection);
+
         graphics->GetDebugPrimitive()->Render(dc);
 
         player->DrawDebugPrimitive();
@@ -277,7 +277,7 @@ void SceneGame::Render()
 
         //rc.colorGradingData = colorGradingData;
 
-        sprite->SetShaderResourceView(framebuffers[0]->shader_resource_views[0], 1280, 720);
+        sprite->SetShaderResourceView(framebuffers[0]->shaderResourceViews[0], 1280, 720);
         shader->Draw(rc, sprite.get());
         //sprite->Render(dc, 256, 128, 1280-256*2, 720-128*2, 1, 1, 1, 1, 0);
         //	ガウスフィルター
@@ -352,25 +352,38 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         static_cast<float>(lifegauge->GetTextureWidth()),
         static_cast<float>(lifegauge->GetTextureHeight())
     );
+    // 現在の技力ゲージ
     skillEnergyGauge->Render(
         dc,
         25,
-        skillgaugeWidth*skillEnergyRate,
-        skillgaugeHeight,
-        64,
+        100,
+        548,
+        16,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        0.0f,
+        548 , 0,
+        100,
+        static_cast<float>(skillEnergyGauge->GetTextureHeight())
+    );
+    // 技力ゲージの囲い
+    skillEnergyGauge->Render(
+        dc,
+        25,
+        100,
+        548,
+        16,
         1.0f, 1.0f, 1.0f, 1.0f,
         0.0f,
         0, 0,
-        static_cast<float>(skillEnergyGauge->GetTextureWidth()),
+        548,
         static_cast<float>(skillEnergyGauge->GetTextureHeight())
     );
-    
     for(int i=0;i<player->GetSpritGaugeCount();i++)
     {
         spritEnergyGauge->Render(
             dc,
             50 + (32 * i),
-            100,
+            150,
             42,
             32 *-spiritEnergyRate,
             1.0f, 1.0f, 1.0f, 1.0f,

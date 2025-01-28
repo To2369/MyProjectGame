@@ -10,192 +10,192 @@
 #include"Shader.h"
 GltfModel::GltfModel(ID3D11Device* device, const std::string& filename) : filename(filename)
 {
-	tinygltf::Model gltf_model;
-	tinygltf::TinyGLTF tiny_gltf;
+	tinygltf::Model gltfModel;
+	tinygltf::TinyGLTF tinyGltf;
 	std::string error, warning;
 	bool succeeded{ false };
 	if (filename.find(".glb") != std::string::npos)
 	{
-		succeeded = tiny_gltf.LoadBinaryFromFile(&gltf_model, &error, &warning, filename.c_str());
+		succeeded = tinyGltf.LoadBinaryFromFile(&gltfModel, &error, &warning, filename.c_str());
 	}
 	else if (filename.find(".gltf") != std::string::npos)
 	{
-		succeeded = tiny_gltf.LoadASCIIFromFile(&gltf_model, &error, &warning, filename.c_str());
+		succeeded = tinyGltf.LoadASCIIFromFile(&gltfModel, &error, &warning, filename.c_str());
 	}
 
 	_ASSERT_EXPR_A(warning.empty(), warning.c_str());
 	_ASSERT_EXPR_A(error.empty(), warning.c_str());
 	_ASSERT_EXPR_A(succeeded, L"Failed to load glTF file");
-	for (std::vector<tinygltf::Scene>::const_reference gltf_scene : gltf_model.scenes)
+	for (std::vector<tinygltf::Scene>::const_reference gltfScene : gltfModel.scenes)
 	{
-		scene& scene_{ scenes.emplace_back() };
-		scene_.name = gltf_model.scenes.at(0).name;
-		scene_.nodes = gltf_model.scenes.at(0).nodes;
+		GltfModelScene& scene{ scenes.emplace_back() };
+		scene.name = gltfModel.scenes.at(0).name;
+		scene.nodes = gltfModel.scenes.at(0).nodes;
 	}
 
-	FetchNodes(gltf_model);
-	FetchMeshes(device, gltf_model);
-	FetchMaterials(device, gltf_model);
-	FetchTextures(device, gltf_model);
+	FetchNodes(gltfModel);
+	FetchMeshes(device, gltfModel);
+	FetchMaterials(device, gltfModel);
+	FetchTextures(device, gltfModel);
 	// TODO: This is a force-brute programming, may cause bugs
-	const std::map<std::string, buffer_view>& vertex_buffer_views{
-		meshes.at(0).primitives.at(0).vertex_buffer_views
+	const std::map<std::string, BufferView>& vertexBufferViews{
+		meshes.at(0).primitives.at(0).vertexBufferViews
 	};
-	D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+	D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
 	{
-		{"POSITION",0,vertex_buffer_views.at("POSITION").format,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"NORMAL",0,vertex_buffer_views.at("NORMAL").format,1,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TANGENT",0,vertex_buffer_views.at("TANGENT").format,2,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD",0,vertex_buffer_views.at("TEXCOORD_0").format,3,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"JOINTS",0,vertex_buffer_views.at("JOINTS_0").format,4,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"WEIGHTS",0,vertex_buffer_views.at("WEIGHTS_0").format,5,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"POSITION",0,vertexBufferViews.at("POSITION").format,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL",0,vertexBufferViews.at("NORMAL").format,1,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TANGENT",0,vertexBufferViews.at("TANGENT").format,2,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD",0,vertexBufferViews.at("TEXCOORD_0").format,3,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"JOINTS",0,vertexBufferViews.at("JOINTS_0").format,4,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"WEIGHTS",0,vertexBufferViews.at("WEIGHTS_0").format,5,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 
 	// 頂点シェーダーオブジェクトの生成
 	{
-		ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GltfModelVS.cso", vertex_shader.ReleaseAndGetAddressOf(),
-			input_layout.ReleaseAndGetAddressOf(), input_element_desc, _countof(input_element_desc));
+		ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GltfModelVS.cso", vertexShader.ReleaseAndGetAddressOf(),
+			inputLayout.ReleaseAndGetAddressOf(), inputElementDesc, _countof(inputElementDesc));
 	}
 
 	// ピクセルシェーダーオブジェクトの生成
 	{
 		ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GltfModelPS.cso",
-			pixel_shader.ReleaseAndGetAddressOf());
+			pixelShader.ReleaseAndGetAddressOf());
 	}
 
-	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(primitive_constants);
-	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	buffer_desc.BindFlags = D3D11_USAGE_DEFAULT;
+	D3D11_BUFFER_DESC bufferDesc{};
+	bufferDesc.ByteWidth = sizeof(primitiveConstants);
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_USAGE_DEFAULT;
 	HRESULT hr;
-	hr = device->CreateBuffer(&buffer_desc, nullptr, primitive_cbuffer.ReleaseAndGetAddressOf());
+	hr = device->CreateBuffer(&bufferDesc, nullptr, primitiveCbuffer.ReleaseAndGetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 
-void GltfModel::Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world)
+void GltfModel::Render(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& world)
 {
-	immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-	immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-	immediate_context->IASetInputLayout(input_layout.Get());
-	immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	immediate_context->PSSetShaderResources(0, 1, material_resource_view.GetAddressOf());
+	dc->VSSetShader(vertexShader.Get(), nullptr, 0);
+	dc->PSSetShader(pixelShader.Get(), nullptr, 0);
+	dc->IASetInputLayout(inputLayout.Get());
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->PSSetShaderResources(0, 1, materialResourceView.GetAddressOf());
 
 	std::function<void(int)> traverse{ [&](int node_index)->void {
-		const node& node_{nodes.at(node_index)};
-		if (node_.mesh > -1)
+		const Node& node{nodes.at(node_index)};
+		if (node.mesh > -1)
 		{
-			const mesh& mesh_{ meshes.at(node_.mesh) };
-			for (std::vector<mesh::primitive>::const_reference primitive : mesh_.primitives)
+			const Mesh& mesh{ meshes.at(node.mesh) };
+			for (std::vector<Mesh::Primitive>::const_reference primitive : mesh.primitives)
 			{
-				ID3D11Buffer* vertex_buffers[]{
-					primitive.vertex_buffer_views.at("POSITION").buffer.Get(),
-					primitive.vertex_buffer_views.at("NORMAL").buffer.Get(),
-					primitive.vertex_buffer_views.at("TANGENT").buffer.Get(),
-					primitive.vertex_buffer_views.at("TEXCOORD_0").buffer.Get(),
-					primitive.vertex_buffer_views.at("JOINTS_0").buffer.Get(),
-					primitive.vertex_buffer_views.at("WEIGHTS_0").buffer.Get(),
+				ID3D11Buffer* vertexBuffers[]{
+					primitive.vertexBufferViews.at("POSITION").buffer.Get(),
+					primitive.vertexBufferViews.at("NORMAL").buffer.Get(),
+					primitive.vertexBufferViews.at("TANGENT").buffer.Get(),
+					primitive.vertexBufferViews.at("TEXCOORD_0").buffer.Get(),
+					primitive.vertexBufferViews.at("JOINTS_0").buffer.Get(),
+					primitive.vertexBufferViews.at("WEIGHTS_0").buffer.Get(),
 				};
 				UINT strides[]{
-					static_cast<UINT>(primitive.vertex_buffer_views.at("POSITION").stride_in_bytes),
-					static_cast<UINT>(primitive.vertex_buffer_views.at("NORMAL").stride_in_bytes),
-					static_cast<UINT>(primitive.vertex_buffer_views.at("TANGENT").stride_in_bytes),
-					static_cast<UINT>(primitive.vertex_buffer_views.at("TEXCOORD_0").stride_in_bytes),
-					static_cast<UINT>(primitive.vertex_buffer_views.at("JOINTS_0").stride_in_bytes),
-					static_cast<UINT>(primitive.vertex_buffer_views.at("WEIGHTS_0").stride_in_bytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("POSITION").strideInBytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("NORMAL").strideInBytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("TANGENT").strideInBytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("TEXCOORD_0").strideInBytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("JOINTS_0").strideInBytes),
+					static_cast<UINT>(primitive.vertexBufferViews.at("WEIGHTS_0").strideInBytes),
 				};
-				UINT offsets[_countof(vertex_buffers)]{ 0 };
-				immediate_context->IASetVertexBuffers(0, _countof(vertex_buffers), vertex_buffers, strides, offsets);
-				immediate_context->IASetIndexBuffer(primitive.index_buffer_view.buffer.Get(),
-					primitive.index_buffer_view.format, 0);
+				UINT offsets[_countof(vertexBuffers)]{ 0 };
+				dc->IASetVertexBuffers(0, _countof(vertexBuffers), vertexBuffers, strides, offsets);
+				dc->IASetIndexBuffer(primitive.indexBufferView.buffer.Get(),
+					primitive.indexBufferView.format, 0);
 				
-				const material& material_{ materials.at(primitive.material) };
-				const int texture_indices[]
+				const Material& material{ materials.at(primitive.material) };
+				const int textureIndices[]
 				{
-					material_.data.pbr_metallic_rougness_.basecolor_texture.index,
-					material_.data.pbr_metallic_rougness_.metalic_roughness_texture.index,
-					material_.data.normal_texture.index,
-					material_.data.emissive_texture.index,
-					material_.data.occlusion_texture.index,
+					material.data.pbrMetallicRougness.baseColorTexture.index,
+					material.data.pbrMetallicRougness.metalicRoughnessTexture.index,
+					material.data.normalTexture.index,
+					material.data.emissiveTexture.index,
+					material.data.occlusionTexture.index,
 				};
-				ID3D11ShaderResourceView* null_shader_resource_view{};
-				std::vector<ID3D11ShaderResourceView*> shader_resource_views(_countof(texture_indices));
-				for (int texture_index = 0; texture_index < shader_resource_views.size(); ++texture_index)
+				ID3D11ShaderResourceView* nullShaderResourceView{};
+				std::vector<ID3D11ShaderResourceView*> shaderResourceViews(_countof(textureIndices));
+				for (int textureIndex = 0; textureIndex < shaderResourceViews.size(); ++textureIndex)
 				{
-					shader_resource_views.at(texture_index) = texture_indices[texture_index] > -1 ?
-						texture_resource_views.at(textures.at(texture_indices[texture_index]).source).Get() :
-						null_shader_resource_view;
+					shaderResourceViews.at(textureIndex) = textureIndices[textureIndex] > -1 ?
+						textureResourceViews.at(textures.at(textureIndices[textureIndex]).source).Get() :
+						nullShaderResourceView;
 				}
-				immediate_context->PSSetShaderResources(1, static_cast<UINT>(shader_resource_views.size()),
-					shader_resource_views.data());
+				dc->PSSetShaderResources(1, static_cast<UINT>(shaderResourceViews.size()),
+					shaderResourceViews.data());
 
-				primitive_constants primitive_data{};
-				primitive_data.material = primitive.material;
-				primitive_data.has_tangent = primitive.vertex_buffer_views.at("TANGENT").buffer != NULL;
-				primitive_data.skin = node_.skin;
-				DirectX::XMStoreFloat4x4(&primitive_data.world,
-					DirectX::XMLoadFloat4x4(&node_.global_transform) * DirectX::XMLoadFloat4x4(&world));
-				immediate_context->UpdateSubresource(primitive_cbuffer.Get(), 0, 0, &primitive_data, 0, 0);
-				immediate_context->VSSetConstantBuffers(0, 1, primitive_cbuffer.GetAddressOf());
-				immediate_context->PSSetConstantBuffers(0, 1, primitive_cbuffer.GetAddressOf());
+				primitiveConstants primitiveData{};
+				primitiveData.material = primitive.material;
+				primitiveData.hasTangent = primitive.vertexBufferViews.at("TANGENT").buffer != NULL;
+				primitiveData.skin = node.skin;
+				DirectX::XMStoreFloat4x4(&primitiveData.world,
+					DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&world));
+				dc->UpdateSubresource(primitiveCbuffer.Get(), 0, 0, &primitiveData, 0, 0);
+				dc->VSSetConstantBuffers(0, 1, primitiveCbuffer.GetAddressOf());
+				dc->PSSetConstantBuffers(0, 1, primitiveCbuffer.GetAddressOf());
 
-				immediate_context->DrawIndexed(static_cast<UINT>(primitive.index_buffer_view.count()), 0, 0);
+				dc->DrawIndexed(static_cast<UINT>(primitive.indexBufferView.count()), 0, 0);
 			}
 		}
-		for (std::vector<int>::value_type child_index : node_.children)
+		for (std::vector<int>::value_type childIndex : node.children)
 		{
-			traverse(child_index);
+			traverse(childIndex);
 		}
 		} };
-	for (std::vector<int>::value_type node_index : scenes.at(0).nodes)
+	for (std::vector<int>::value_type nodeIndex : scenes.at(0).nodes)
 	{
-		traverse(node_index);
+		traverse(nodeIndex);
 	}
 }
 
-void GltfModel::CumulateTransforms(std::vector<node>& nodes)
+void GltfModel::CumulateTransforms(std::vector<Node>& nodes)
 {
-	std::stack<DirectX::XMFLOAT4X4> parent_global_transforms;
+	std::stack<DirectX::XMFLOAT4X4> parentGlobalTransforms;
 	std::function<void(int)> traverse{ [&](int node_index)->void
 	{
-			node& node_{nodes.at(node_index)};
-			DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node_.scale.x,node_.scale.y,node_.scale.z) };
+			Node& node{nodes.at(node_index)};
+			DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(node.scale.x,node.scale.y,node.scale.z) };
 			DirectX::XMMATRIX R{ DirectX::XMMatrixRotationQuaternion(
-				DirectX::XMVectorSet(node_.rotation.x,node_.rotation.y,node_.rotation.z,node_.rotation.w)) };
-			DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node_.translation.x,node_.translation.y,node_.translation.z) };
-			DirectX::XMStoreFloat4x4(&node_.global_transform, S * R * T * DirectX::XMLoadFloat4x4(&parent_global_transforms.top()));
-			for (int child_index : node_.children)
+				DirectX::XMVectorSet(node.rotation.x,node.rotation.y,node.rotation.z,node.rotation.w)) };
+			DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(node.translation.x,node.translation.y,node.translation.z) };
+			DirectX::XMStoreFloat4x4(&node.globalTransform, S * R * T * DirectX::XMLoadFloat4x4(&parentGlobalTransforms.top()));
+			for (int childIndex : node.children)
 			{
-				parent_global_transforms.push(node_.global_transform);
-				traverse(child_index);
-				parent_global_transforms.pop();
+				parentGlobalTransforms.push(node.globalTransform);
+				traverse(childIndex);
+				parentGlobalTransforms.pop();
 			}
 	} };
-	for (std::vector<int>::value_type node_index : scenes.at(0).nodes)
+	for (std::vector<int>::value_type nodeIndex : scenes.at(0).nodes)
 	{
-		parent_global_transforms.push({ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 });
-		traverse(node_index);
-		parent_global_transforms.pop();
+		parentGlobalTransforms.push({ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 });
+		traverse(nodeIndex);
+		parentGlobalTransforms.pop();
 	}
 }
 
 // ノード情報の取り出し
-void GltfModel::FetchNodes(const tinygltf::Model& gltf_model)
+void GltfModel::FetchNodes(const tinygltf::Model& gltfModel)
 {
-	for (std::vector<tinygltf::Node>::const_reference gltf_node : gltf_model.nodes)
+	for (std::vector<tinygltf::Node>::const_reference gltfNode : gltfModel.nodes)
 	{
-		node& node_{ nodes.emplace_back() };
-		node_.name = gltf_node.name;
-		node_.skin = gltf_node.skin;
-		node_.mesh = gltf_node.mesh;
-		node_.children = gltf_node.children;
-		if (!gltf_node.matrix.empty())
+		Node& node{ nodes.emplace_back() };
+		node.name = gltfNode.name;
+		node.skin = gltfNode.skin;
+		node.mesh = gltfNode.mesh;
+		node.children = gltfNode.children;
+		if (!gltfNode.matrix.empty())
 		{
 			DirectX::XMFLOAT4X4 matrix;
 			for (size_t row = 0; row < 4; row++)
 			{
 				for (size_t column = 0; column < 4; column++)
 				{
-					matrix(row, column) = static_cast<float>(gltf_node.matrix.at(4 * row + column));
+					matrix(row, column) = static_cast<float>(gltfNode.matrix.at(4 * row + column));
 				}
 			}
 
@@ -203,30 +203,30 @@ void GltfModel::FetchNodes(const tinygltf::Model& gltf_model)
 			bool succeed = DirectX::XMMatrixDecompose(&S, &R, &T, DirectX::XMLoadFloat4x4(&matrix));
 			_ASSERT_EXPR(succeed, L"Failed to decompose matrix.");
 
-			DirectX::XMStoreFloat3(&node_.scale, S);
-			DirectX::XMStoreFloat4(&node_.rotation, R);
-			DirectX::XMStoreFloat3(&node_.translation, T);
+			DirectX::XMStoreFloat3(&node.scale, S);
+			DirectX::XMStoreFloat4(&node.rotation, R);
+			DirectX::XMStoreFloat3(&node.translation, T);
 		}
 		else
 		{
-			if (gltf_node.scale.size() > 0)
+			if (gltfNode.scale.size() > 0)
 			{
-				node_.scale.x = static_cast<float>(gltf_node.scale.at(0));
-				node_.scale.y = static_cast<float>(gltf_node.scale.at(1));
-				node_.scale.z = static_cast<float>(gltf_node.scale.at(2));
+				node.scale.x = static_cast<float>(gltfNode.scale.at(0));
+				node.scale.y = static_cast<float>(gltfNode.scale.at(1));
+				node.scale.z = static_cast<float>(gltfNode.scale.at(2));
 			}
-			if (gltf_node.translation.size() > 0)
+			if (gltfNode.translation.size() > 0)
 			{
-				node_.translation.x = static_cast<float>(gltf_node.translation.at(0));
-				node_.translation.y = static_cast<float>(gltf_node.translation.at(1));
-				node_.translation.z = static_cast<float>(gltf_node.translation.at(2));
+				node.translation.x = static_cast<float>(gltfNode.translation.at(0));
+				node.translation.y = static_cast<float>(gltfNode.translation.at(1));
+				node.translation.z = static_cast<float>(gltfNode.translation.at(2));
 			}
-			if (gltf_node.rotation.size() > 0)
+			if (gltfNode.rotation.size() > 0)
 			{
-				node_.rotation.x = static_cast<float>(gltf_node.rotation.at(0));
-				node_.rotation.y = static_cast<float>(gltf_node.rotation.at(1));
-				node_.rotation.z = static_cast<float>(gltf_node.rotation.at(2));
-				node_.rotation.w = static_cast<float>(gltf_node.rotation.at(3));
+				node.rotation.x = static_cast<float>(gltfNode.rotation.at(0));
+				node.rotation.y = static_cast<float>(gltfNode.rotation.at(1));
+				node.rotation.z = static_cast<float>(gltfNode.rotation.at(2));
+				node.rotation.w = static_cast<float>(gltfNode.rotation.at(3));
 			}
 		}
 	}
@@ -234,69 +234,69 @@ void GltfModel::FetchNodes(const tinygltf::Model& gltf_model)
 }
 
 // メッシュ情報の取り出し
-void GltfModel::FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltf_model)
+void GltfModel::FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltfModel)
 {
 	HRESULT hr;
-	for (std::vector<tinygltf::Mesh>::const_reference gltf_mesh : gltf_model.meshes)
+	for (std::vector<tinygltf::Mesh>::const_reference gltfMesh : gltfModel.meshes)
 	{
-		mesh& mesh_{ meshes.emplace_back() };
-		mesh_.name = gltf_mesh.name;
-		for (std::vector<tinygltf::Primitive>::const_reference gltf_primitive : gltf_mesh.primitives)
+		Mesh& mesh{ meshes.emplace_back() };
+		mesh.name = gltfMesh.name;
+		for (std::vector<tinygltf::Primitive>::const_reference gltfPrimitive : gltfMesh.primitives)
 		{
-			mesh::primitive& primitive{ mesh_.primitives.emplace_back() };
-			primitive.material = gltf_primitive.material;
+			Mesh::Primitive& primitive{ mesh.primitives.emplace_back() };
+			primitive.material = gltfPrimitive.material;
 
 			// Create index buffer
-			const tinygltf::Accessor& gltf_accessor{ gltf_model.accessors.at(gltf_primitive.indices) };
-			const tinygltf::BufferView& gltf_buffer_view{ gltf_model.bufferViews.at(gltf_accessor.bufferView) };
+			const tinygltf::Accessor& gltfAccessor{ gltfModel.accessors.at(gltfPrimitive.indices) };
+			const tinygltf::BufferView& gltfBufferView{ gltfModel.bufferViews.at(gltfAccessor.bufferView) };
 
-			primitive.index_buffer_view = MakeBufferView(gltf_accessor);
+			primitive.indexBufferView = MakeBufferView(gltfAccessor);
 			
-			D3D11_BUFFER_DESC buffer_desc{};
-			buffer_desc.ByteWidth = static_cast<UINT>(primitive.index_buffer_view.size_in_bytes);
-			buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-			buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			D3D11_SUBRESOURCE_DATA subresource_data{};
-			subresource_data.pSysMem = gltf_model.buffers.at(gltf_buffer_view.buffer).data.data() +
-				gltf_buffer_view.byteOffset + gltf_accessor.byteOffset;
-			hr = device->CreateBuffer(&buffer_desc, &subresource_data,
-				primitive.index_buffer_view.buffer.ReleaseAndGetAddressOf());
+			D3D11_BUFFER_DESC bufferDesc{};
+			bufferDesc.ByteWidth = static_cast<UINT>(primitive.indexBufferView.sizeInBytes);
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			D3D11_SUBRESOURCE_DATA subresourceData{};
+			subresourceData.pSysMem = gltfModel.buffers.at(gltfBufferView.buffer).data.data() +
+				gltfBufferView.byteOffset + gltfAccessor.byteOffset;
+			hr = device->CreateBuffer(&bufferDesc, &subresourceData,
+				primitive.indexBufferView.buffer.ReleaseAndGetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
 			//Create vertex buffers
-			for (std::map<std::string, int>::const_reference gltf_attribute : gltf_primitive.attributes)
+			for (std::map<std::string, int>::const_reference gltfAttribute : gltfPrimitive.attributes)
 			{
-				const tinygltf::Accessor& gltf_accessor{ gltf_model.accessors.at(gltf_attribute.second) };
-				const tinygltf::BufferView& gltf_buffer_view{ gltf_model.bufferViews.at(gltf_accessor.bufferView) };
+				const tinygltf::Accessor& gltfAccessor{ gltfModel.accessors.at(gltfAttribute.second) };
+				const tinygltf::BufferView& gltfBufferView{ gltfModel.bufferViews.at(gltfAccessor.bufferView) };
 
-				buffer_view vertex_buffer_view{ MakeBufferView(gltf_accessor) };
+				BufferView vertexBufferView{ MakeBufferView(gltfAccessor) };
 
-				D3D11_BUFFER_DESC buffer_desc{};
-				buffer_desc.ByteWidth = static_cast<UINT>(vertex_buffer_view.size_in_bytes);
-				buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-				buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-				D3D11_SUBRESOURCE_DATA subresource_data{};
-				subresource_data.pSysMem = gltf_model.buffers.at(gltf_buffer_view.buffer).data.data()
-					+ gltf_buffer_view.byteOffset + gltf_accessor.byteOffset;
-				hr = device->CreateBuffer(&buffer_desc, &subresource_data,
-					vertex_buffer_view.buffer.ReleaseAndGetAddressOf());
+				D3D11_BUFFER_DESC bufferDesc{};
+				bufferDesc.ByteWidth = static_cast<UINT>(vertexBufferView.sizeInBytes);
+				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+				D3D11_SUBRESOURCE_DATA subresourceData{};
+				subresourceData.pSysMem = gltfModel.buffers.at(gltfBufferView.buffer).data.data()
+					+ gltfBufferView.byteOffset + gltfAccessor.byteOffset;
+				hr = device->CreateBuffer(&bufferDesc, &subresourceData,
+					vertexBufferView.buffer.ReleaseAndGetAddressOf());
 				_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-				primitive.vertex_buffer_views.emplace(std::make_pair(gltf_attribute.first, vertex_buffer_view));
+				primitive.vertexBufferViews.emplace(std::make_pair(gltfAttribute.first, vertexBufferView));
 			}
 
 			// Add dummy attributes if any are missing
-			const std::unordered_map<std::string, buffer_view> attributes{
+			const std::unordered_map<std::string, BufferView> attributes{
 				{"TANGENT",{DXGI_FORMAT_R32G32B32A32_FLOAT}},
 				{"TEXCOORD_0",{DXGI_FORMAT_R32G32_FLOAT}},
 				{"JOINTS_0",{DXGI_FORMAT_R16G16B16A16_UINT}},
 				{"WEIGHTS_0",{DXGI_FORMAT_R32G32B32A32_FLOAT}},
 			};
-			for (std::unordered_map<std::string, buffer_view>::const_reference attribute : attributes)
+			for (std::unordered_map<std::string, BufferView>::const_reference attribute : attributes)
 			{
-				if (primitive.vertex_buffer_views.find(attribute.first) == primitive.vertex_buffer_views.end())
+				if (primitive.vertexBufferViews.find(attribute.first) == primitive.vertexBufferViews.end())
 				{
-					primitive.vertex_buffer_views.insert(std::make_pair(attribute.first, attribute.second));
+					primitive.vertexBufferViews.insert(std::make_pair(attribute.first, attribute.second));
 				}
 			}
 		}
@@ -304,155 +304,155 @@ void GltfModel::FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltf_mo
 }
 
 // マテリアル情報の取り出し
-void GltfModel::FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltf_model)
+void GltfModel::FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltfModel)
 {
-	for (std::vector<tinygltf::Material>::const_reference gltf_material : gltf_model.materials)
+	for (std::vector<tinygltf::Material>::const_reference gltfMaterial : gltfModel.materials)
 	{
-		std::vector<material>::reference material = materials.emplace_back();
+		std::vector<Material>::reference material = materials.emplace_back();
 
-		material.name = gltf_material.name;
+		material.name = gltfMaterial.name;
 
-		material.data.emissive_factor[0] = static_cast<float>(gltf_material.emissiveFactor.at(0));
-		material.data.emissive_factor[1] = static_cast<float>(gltf_material.emissiveFactor.at(1));
-		material.data.emissive_factor[2] = static_cast<float>(gltf_material.emissiveFactor.at(2));
+		material.data.emissiveFactor[0] = static_cast<float>(gltfMaterial.emissiveFactor.at(0));
+		material.data.emissiveFactor[1] = static_cast<float>(gltfMaterial.emissiveFactor.at(1));
+		material.data.emissiveFactor[2] = static_cast<float>(gltfMaterial.emissiveFactor.at(2));
 
-		material.data.alpha_mode = gltf_material.alphaMode == "OPAQUE" ?
-			0 : gltf_material.alphaMode == "MASK" ? 1 : gltf_material.alphaMode == "BLEND" ? 2 : 0;
-		material.data.alpha_cutoff = static_cast<float>(gltf_material.alphaCutoff);
-		material.data.double_sided = gltf_material.doubleSided ? 1 : 0;
+		material.data.alphaMode = gltfMaterial.alphaMode == "OPAQUE" ?
+			0 : gltfMaterial.alphaMode == "MASK" ? 1 : gltfMaterial.alphaMode == "BLEND" ? 2 : 0;
+		material.data.alphaCutoff = static_cast<float>(gltfMaterial.alphaCutoff);
+		material.data.doubleSided = gltfMaterial.doubleSided ? 1 : 0;
 
-		material.data.pbr_metallic_rougness_.basecolor_factor[0] =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.baseColorFactor.at(0));
-		material.data.pbr_metallic_rougness_.basecolor_factor[1] =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.baseColorFactor.at(1));
-		material.data.pbr_metallic_rougness_.basecolor_factor[2] =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.baseColorFactor.at(2));
-		material.data.pbr_metallic_rougness_.basecolor_factor[3] =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.baseColorFactor.at(3));
+		material.data.pbrMetallicRougness.baseColorFactor[0] =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.baseColorFactor.at(0));
+		material.data.pbrMetallicRougness.baseColorFactor[1] =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.baseColorFactor.at(1));
+		material.data.pbrMetallicRougness.baseColorFactor[2] =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.baseColorFactor.at(2));
+		material.data.pbrMetallicRougness.baseColorFactor[3] =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.baseColorFactor.at(3));
 
-		material.data.pbr_metallic_rougness_.basecolor_texture.index =
-			gltf_material.pbrMetallicRoughness.baseColorTexture.index;
-		material.data.pbr_metallic_rougness_.basecolor_texture.texcoord =
-			gltf_material.pbrMetallicRoughness.baseColorTexture.texCoord;
-		material.data.pbr_metallic_rougness_.metallic_factor =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.metallicFactor);
-		material.data.pbr_metallic_rougness_.roughness_factor =
-			static_cast<float>(gltf_material.pbrMetallicRoughness.roughnessFactor);
-		material.data.pbr_metallic_rougness_.metalic_roughness_texture.index =
-			gltf_material.pbrMetallicRoughness.metallicRoughnessTexture.index;
-		material.data.pbr_metallic_rougness_.metalic_roughness_texture.texcoord =
-			gltf_material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord;
+		material.data.pbrMetallicRougness.baseColorTexture.index =
+			gltfMaterial.pbrMetallicRoughness.baseColorTexture.index;
+		material.data.pbrMetallicRougness.baseColorTexture.texcoord =
+			gltfMaterial.pbrMetallicRoughness.baseColorTexture.texCoord;
+		material.data.pbrMetallicRougness.metallicFactor =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.metallicFactor);
+		material.data.pbrMetallicRougness.roughnessFactor =
+			static_cast<float>(gltfMaterial.pbrMetallicRoughness.roughnessFactor);
+		material.data.pbrMetallicRougness.metalicRoughnessTexture.index =
+			gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index;
+		material.data.pbrMetallicRougness.metalicRoughnessTexture.texcoord =
+			gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.texCoord;
 
-		material.data.normal_texture.index = gltf_material.normalTexture.index;
-		material.data.normal_texture.texcoord = gltf_material.normalTexture.texCoord;
-		material.data.normal_texture.scale = static_cast<float>(gltf_material.normalTexture.scale);
+		material.data.normalTexture.index = gltfMaterial.normalTexture.index;
+		material.data.normalTexture.texcoord = gltfMaterial.normalTexture.texCoord;
+		material.data.normalTexture.scale = static_cast<float>(gltfMaterial.normalTexture.scale);
 
-		material.data.occlusion_texture.index = gltf_material.occlusionTexture.index;
-		material.data.occlusion_texture.texcoord = gltf_material.occlusionTexture.texCoord;
-		material.data.occlusion_texture.strength = static_cast<float>(gltf_material.occlusionTexture.strength);
+		material.data.occlusionTexture.index = gltfMaterial.occlusionTexture.index;
+		material.data.occlusionTexture.texcoord = gltfMaterial.occlusionTexture.texCoord;
+		material.data.occlusionTexture.strength = static_cast<float>(gltfMaterial.occlusionTexture.strength);
 
-		material.data.emissive_texture.index = gltf_material.emissiveTexture.index;
-		material.data.emissive_texture.texcoord = gltf_material.emissiveTexture.texCoord;
+		material.data.emissiveTexture.index = gltfMaterial.emissiveTexture.index;
+		material.data.emissiveTexture.texcoord = gltfMaterial.emissiveTexture.texCoord;
 	}
 
 	// Create material data as shader resource view on GPU
-	std::vector<material::cbuffer> material_data;
-	for (std::vector<material>::const_reference material : materials)
+	std::vector<Material::Cbuffer> materialData;
+	for (std::vector<Material>::const_reference material : materials)
 	{
-		material_data.emplace_back(material.data);
+		materialData.emplace_back(material.data);
 	}
 
 	HRESULT hr;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> material_buffer;
-	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = static_cast<UINT>(sizeof(material::cbuffer) * material_data.size());
-	buffer_desc.StructureByteStride = sizeof(material::cbuffer);
-	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	buffer_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	buffer_desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> materialBuffer;
+	D3D11_BUFFER_DESC bufferDesc{};
+	bufferDesc.ByteWidth = static_cast<UINT>(sizeof(Material::Cbuffer) * materialData.size());
+	bufferDesc.StructureByteStride = sizeof(Material::Cbuffer);
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
-	D3D11_SUBRESOURCE_DATA subresource_data{};
-	subresource_data.pSysMem = material_data.data();
-	hr = device->CreateBuffer(&buffer_desc, &subresource_data, material_buffer.GetAddressOf());
+	D3D11_SUBRESOURCE_DATA subresourceData{};
+	subresourceData.pSysMem = materialData.data();
+	hr = device->CreateBuffer(&bufferDesc, &subresourceData, materialBuffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
-	shader_resource_view_desc.Format = DXGI_FORMAT_UNKNOWN;
-	shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	shader_resource_view_desc.Buffer.NumElements = static_cast<UINT>(material_data.size());
-	hr = device->CreateShaderResourceView(material_buffer.Get(),
-		&shader_resource_view_desc, material_resource_view.GetAddressOf());
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	shaderResourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	shaderResourceViewDesc.Buffer.NumElements = static_cast<UINT>(materialData.size());
+	hr = device->CreateShaderResourceView(materialBuffer.Get(),
+		&shaderResourceViewDesc, materialResourceView.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 
 //テクスチャ情報取り出し
-void GltfModel::FetchTextures(ID3D11Device* device, const tinygltf::Model& gltf_model)
+void GltfModel::FetchTextures(ID3D11Device* device, const tinygltf::Model& gltfModel)
 {
 	HRESULT hr{ S_OK };
-	for (const tinygltf::Texture& gltf_texture : gltf_model.textures)
+	for (const tinygltf::Texture& gltfTexture : gltfModel.textures)
 	{
-		texture& texture_{ textures.emplace_back() };
-		texture_.name = gltf_texture.name;
-		texture_.source = gltf_texture.source;
+		Texture& texture{ textures.emplace_back() };
+		texture.name = gltfTexture.name;
+		texture.source = gltfTexture.source;
 	}
-	for (const tinygltf::Image& gltf_image : gltf_model.images)
+	for (const tinygltf::Image& gltfImage : gltfModel.images)
 	{
-		image& image_{ images.emplace_back() };
-		image_.name = gltf_image.name;
-		image_.width = gltf_image.width;
-		image_.height = gltf_image.height;
-		image_.component = gltf_image.component;
-		image_.bits = gltf_image.bits;
-		image_.pixel_type = gltf_image.pixel_type;
-		image_.buffer_view = gltf_image.bufferView;
-		image_.uri = gltf_image.uri;
-		image_.as_is = gltf_image.as_is;
+		Image& image{ images.emplace_back() };
+		image.name = gltfImage.name;
+		image.width = gltfImage.width;
+		image.height = gltfImage.height;
+		image.component = gltfImage.component;
+		image.bits = gltfImage.bits;
+		image.pixelType = gltfImage.pixel_type;
+		image.bufferView = gltfImage.bufferView;
+		image.uri = gltfImage.uri;
+		image.asIs = gltfImage.as_is;
 
-		if (gltf_image.bufferView > -1)
+		if (gltfImage.bufferView > -1)
 		{
-			const tinygltf::BufferView& buffer_view{ gltf_model.bufferViews.at(gltf_image.bufferView) };
-			const tinygltf::Buffer& buffer{ gltf_model.buffers.at(buffer_view.buffer) };
-			const byte* data = buffer.data.data() + buffer_view.byteOffset;
+			const tinygltf::BufferView& bufferView{ gltfModel.bufferViews.at(gltfImage.bufferView) };
+			const tinygltf::Buffer& buffer{ gltfModel.buffers.at(bufferView.buffer) };
+			const byte* data = buffer.data.data() + bufferView.byteOffset;
 
-			ID3D11ShaderResourceView* texture_resource_view{};
-			hr = ShaderManager::Instance()->LoadTextureFromMemory(device, data, buffer_view.byteLength, &texture_resource_view);
+			ID3D11ShaderResourceView* textureResourceView{};
+			hr = ShaderManager::Instance()->LoadTextureFromMemory(device, data, bufferView.byteLength, &textureResourceView);
 			if (hr == S_OK)
 			{
-				texture_resource_views.emplace_back().Attach(texture_resource_view);
+				textureResourceViews.emplace_back().Attach(textureResourceView);
 			}
 		}
 		else
 		{
 			const std::filesystem::path path(filename);
-			ID3D11ShaderResourceView* shader_resource_view{};
-			D3D11_TEXTURE2D_DESC texture2d_desc;
+			ID3D11ShaderResourceView* shaderResourceView{};
+			D3D11_TEXTURE2D_DESC texture2dDesc;
 			std::wstring filename{
 			path.parent_path().concat(L"/").wstring() +
-				std::wstring(gltf_image.uri.begin(), gltf_image.uri.end()) };
-			hr = ShaderManager::Instance()->LoadTextureFromFile(device, filename.c_str(), &shader_resource_view, &texture2d_desc);
+				std::wstring(gltfImage.uri.begin(), gltfImage.uri.end()) };
+			hr = ShaderManager::Instance()->LoadTextureFromFile(device, filename.c_str(), &shaderResourceView, &texture2dDesc);
 			if (hr == S_OK)
 			{
-				texture_resource_views.emplace_back().Attach(shader_resource_view);
+				textureResourceViews.emplace_back().Attach(shaderResourceView);
 			}
 		}
 	}
 }
 
-GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& accessor)
+GltfModel::BufferView GltfModel::MakeBufferView(const tinygltf::Accessor& accessor)
 {
-	buffer_view buffer_view_;
+	BufferView bufferView;
 	switch (accessor.type)
 	{
 	case TINYGLTF_TYPE_SCALAR:
 		switch (accessor.componentType)
 		{
 		case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT:
-			buffer_view_.format = DXGI_FORMAT_R16_UINT;
-			buffer_view_.stride_in_bytes = sizeof(USHORT);
+			bufferView.format = DXGI_FORMAT_R16_UINT;
+			bufferView.strideInBytes = sizeof(USHORT);
 			break;
 		case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT:
-			buffer_view_.format = DXGI_FORMAT_R32_UINT;
-			buffer_view_.stride_in_bytes = sizeof(UINT);
+			bufferView.format = DXGI_FORMAT_R32_UINT;
+			bufferView.strideInBytes = sizeof(UINT);
 			break;
 		default:
 			_ASSERT_EXPR(FALSE, L"This accessor component type is not supported.");
@@ -463,8 +463,8 @@ GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& acces
 		switch (accessor.componentType)
 		{
 		case TINYGLTF_COMPONENT_TYPE_FLOAT:
-			buffer_view_.format = DXGI_FORMAT_R32G32_FLOAT;
-			buffer_view_.stride_in_bytes = sizeof(FLOAT) * 2;
+			bufferView.format = DXGI_FORMAT_R32G32_FLOAT;
+			bufferView.strideInBytes = sizeof(FLOAT) * 2;
 			break;
 		default:
 			_ASSERT_EXPR(FALSE, L"This accessor component type is not supported.");
@@ -475,8 +475,8 @@ GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& acces
 		switch (accessor.componentType)
 		{
 		case TINYGLTF_COMPONENT_TYPE_FLOAT:
-			buffer_view_.format = DXGI_FORMAT_R32G32B32_FLOAT;
-			buffer_view_.stride_in_bytes = sizeof(FLOAT) * 3;
+			bufferView.format = DXGI_FORMAT_R32G32B32_FLOAT;
+			bufferView.strideInBytes = sizeof(FLOAT) * 3;
 			break;
 		default:
 			_ASSERT_EXPR(FALSE, L"This accessor component type is not supported.");
@@ -487,16 +487,16 @@ GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& acces
 		switch (accessor.componentType)
 		{
 		case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT:
-			buffer_view_.format = DXGI_FORMAT_R16G16B16A16_UINT;
-			buffer_view_.stride_in_bytes = sizeof(USHORT) * 4;
+			bufferView.format = DXGI_FORMAT_R16G16B16A16_UINT;
+			bufferView.strideInBytes = sizeof(USHORT) * 4;
 			break;
 		case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT:
-			buffer_view_.format = DXGI_FORMAT_R32G32B32A32_UINT;
-			buffer_view_.stride_in_bytes = sizeof(UINT) * 4;
+			bufferView.format = DXGI_FORMAT_R32G32B32A32_UINT;
+			bufferView.strideInBytes = sizeof(UINT) * 4;
 			break;
 		case TINYGLTF_COMPONENT_TYPE_FLOAT:
-			buffer_view_.format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			buffer_view_.stride_in_bytes = sizeof(FLOAT) * 4;
+			bufferView.format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			bufferView.strideInBytes = sizeof(FLOAT) * 4;
 			break;
 		default:
 			_ASSERT_EXPR(FALSE, L"This accessor component type is not supported.");
@@ -507,6 +507,6 @@ GltfModel::buffer_view GltfModel::MakeBufferView(const tinygltf::Accessor& acces
 		_ASSERT_EXPR(FALSE, L"This accessor type is not supported.");
 		break;
 	}
-	buffer_view_.size_in_bytes = static_cast<UINT>(accessor.count * buffer_view_.stride_in_bytes);
-	return buffer_view_;
+	bufferView.sizeInBytes = static_cast<UINT>(accessor.count * bufferView.strideInBytes);
+	return bufferView;
 }

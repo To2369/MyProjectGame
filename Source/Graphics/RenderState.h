@@ -50,22 +50,22 @@ public:
 
 	ID3D11SamplerState* GetSamplerState(SAMPLER_STATE state) const
 	{ 
-		return sampler_states[static_cast<int>(state)].Get(); 
+		return samplerStates[static_cast<int>(state)].Get(); 
 	}
 
 	ID3D11DepthStencilState* GetDepthStencilStates(DEPTH_STENCIL_STATE state) const 
 	{ 
-		return depth_stencil_states[static_cast<int>(state)].Get(); 
+		return depthStencilStates[static_cast<int>(state)].Get(); 
 	}
 
 	ID3D11BlendState* GetBlendStates(BLEND_STATE state) const 
 	{ 
-		return blend_states[static_cast<int>(state)].Get(); 
+		return blendStates[static_cast<int>(state)].Get(); 
 	}
 
 	ID3D11RasterizerState* GetRasterizerStates(RASTERIZER_STATE state) const 
 	{ 
-		return rasterizer_states[static_cast<int>(state)].Get(); 
+		return rasterizerStates[static_cast<int>(state)].Get(); 
 	}
 
 	//DebugRenderer* getDebugRenderer() const { return debugRenderer.get(); }
@@ -73,10 +73,10 @@ public:
 	//LineRenderer* getLineRenderer() const { return lineRenderer.get(); }
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>		sampler_states[static_cast<int>(SAMPLER_STATE::Enum_Max)];
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_states[static_cast<int>(DEPTH_STENCIL_STATE::Enum_Max)];
-	Microsoft::WRL::ComPtr<ID3D11BlendState>		blend_states[static_cast<int>(BLEND_STATE::Enum_Max)];
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	rasterizer_states[static_cast<int>(RASTERIZER_STATE::Enum_Max)];
+	Microsoft::WRL::ComPtr<ID3D11SamplerState>		samplerStates[static_cast<int>(SAMPLER_STATE::Enum_Max)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStates[static_cast<int>(DEPTH_STENCIL_STATE::Enum_Max)];
+	Microsoft::WRL::ComPtr<ID3D11BlendState>		blendStates[static_cast<int>(BLEND_STATE::Enum_Max)];
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	rasterizerStates[static_cast<int>(RASTERIZER_STATE::Enum_Max)];
 	//std::unique_ptr<DebugRenderer> debugRenderer;
 	//std::unique_ptr<LineRenderer> lineRenderer;
 

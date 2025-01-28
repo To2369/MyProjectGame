@@ -43,15 +43,6 @@ void EnemySlime::DrawDebugGUI()
         {
             //位置
             ImGui::InputFloat3("Position", &position.x);
-            //回転
-            DirectX::XMFLOAT3 pos;
-            pos.x = DirectX::XMConvertToDegrees(angle.x);
-            pos.y = DirectX::XMConvertToDegrees(angle.y);
-            pos.z = DirectX::XMConvertToDegrees(angle.z);
-            ImGui::InputFloat3("Angle", &pos.x);
-            angle.x = DirectX::XMConvertToRadians(pos.x);
-            angle.y = DirectX::XMConvertToRadians(pos.y);
-            angle.z = DirectX::XMConvertToRadians(pos.z);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);

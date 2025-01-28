@@ -3,18 +3,18 @@
 #include "..\misc.h"
 #include <fstream>
 #include<filesystem>
-StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool flipping_v_coordinates)
+StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* objFilename, bool flippingVcoordinates)
 {
-    std::vector<vertex> vertices;
+    std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    uint32_t current_index{ 0 };
+    uint32_t currentIndex{ 0 };
 
     std::vector<DirectX::XMFLOAT3> positions;
     std::vector<DirectX::XMFLOAT3> normals;
     std::vector<DirectX::XMFLOAT2> texcoords;
-    std::vector<std::wstring> mtl_filenames;
+    std::vector<std::wstring> mtlFilenames;
 
-    std::wifstream fin(obj_filename);
+    std::wifstream fin(objFilename);
     _ASSERT_EXPR(fin, L"'OBJ file not found.");
     // objファイルのキーワード
     wchar_t command[256];
@@ -48,7 +48,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             // テクスチャ座標取得
             float u, v;
             fin >> u >> v;
-            texcoords.push_back({ u, flipping_v_coordinates ? 1.0f - v : v });
+            texcoords.push_back({ u, flippingVcoordinates ? 1.0f - v : v });
 
             // １番上にある１行を削除
             fin.ignore(1024, L'\n');
@@ -57,13 +57,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
         {
             for (size_t i = 0; i < 3; i++)
             {
-                vertex vertex_;
+                Vertex vertex;
                 size_t v, vt, vn;
 
                 // １番上にある１行目の１つ目のデータを取得し
                 // データのうちの１つ目の数値を取得
                 fin >> v;
-                vertex_.position = positions.at(v - 1);
+                vertex.position = positions.at(v - 1);
                 if (L'/' == fin.peek())
                 {
                     //１文字削除
@@ -72,7 +72,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
                     {
                         // スラッシュ区切りで次の数値を取得
                         fin >> vt;
-                        vertex_.texcoord = texcoords.at(vt - 1);
+                        vertex.texcoord = texcoords.at(vt - 1);
                     }
                     if (L'/' == fin.peek())
                     {
@@ -80,13 +80,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
                         fin.ignore(1);
                         // スラッシュ区切りで次の数値を取得
                         fin >> vn;
-                        vertex_.normal = normals.at(vn - 1);
+                        vertex.normal = normals.at(vn - 1);
                     }
                 }
                 // 頂点データを設定
-                vertices.push_back(vertex_);
+                vertices.push_back(vertex);
                 // 頂点インデックスを設定
-                indices.push_back(current_index++);
+                indices.push_back(currentIndex++);
             }
             fin.ignore(1024, L'\n');
         }
@@ -95,7 +95,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             // マテリアルファイル名を取得
             wchar_t mtllib[256];
             fin >> mtllib;
-            mtl_filenames.push_back(mtllib);
+            mtlFilenames.push_back(mtllib);
         }
         else if (0 == wcscmp(command, L"usemtl"))
         {
@@ -115,19 +115,19 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
     fin.close();
 
     // それぞれのサブセットのインデックスの数を計算していく
-    std::vector<subset>::reverse_iterator iterator_ = subsets.rbegin();
-    iterator_->index_count = static_cast<uint32_t>(indices.size()) - iterator_->index_start;
-    for (iterator_ = subsets.rbegin() + 1; iterator_ != subsets.rend(); ++iterator_)
+    std::vector<Subset>::reverse_iterator iterator = subsets.rbegin();
+    iterator->indexCount = static_cast<uint32_t>(indices.size()) - iterator->indexStart;
+    for (iterator = subsets.rbegin() + 1; iterator != subsets.rend(); ++iterator)
     {
-        iterator_->index_count = (iterator_ - 1)->index_start - iterator_->index_start;
+        iterator->indexCount = (iterator - 1)->indexStart - iterator->indexStart;
     }
 
     // MTLファイル名、OBJファイル名を設定
-    std::filesystem::path mtl_filename(obj_filename);
+    std::filesystem::path mtlFilename(objFilename);
     // ファイル名部分のみ MTL ファイル名に入れ替える
-    mtl_filename.replace_filename(std::filesystem::path(mtl_filenames[0]).filename());
+    mtlFilename.replace_filename(std::filesystem::path(mtlFilenames[0]).filename());
     // マテリアルファイルを開く
-    fin.open(mtl_filename);
+    fin.open(mtlFilename);
     // _ASSERT_EXPR(fin, L"MTL file not found.");
     while (fin)
     {
@@ -139,13 +139,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore();
 
             // テクスチャ名を読み込む
-            wchar_t map_Ka[256];
-            fin >> map_Ka;
+            wchar_t mapKa[256];
+            fin >> mapKa;
 
             // テクスチャファイル名にパスを取り付ける
-            std::filesystem::path path_(obj_filename);
-            path_.replace_filename(std::filesystem::path(map_Ka).filename());
-            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
+            std::filesystem::path path(objFilename);
+            path.replace_filename(std::filesystem::path(mapKa).filename());
+            materials.rbegin()->textureFilenames[static_cast<int>(STATICMESH_STATE::NONE)] = path;
 
             fin.ignore(1024, L'\n');
         }
@@ -154,13 +154,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore();
 
             // テクスチャ名を読み込む
-            wchar_t map_Kd[256];
-            fin >> map_Kd;
+            wchar_t mapKd[256];
+            fin >> mapKd;
 
             // テクスチャファイル名にパスを取り付ける
-            std::filesystem::path path_(obj_filename);
-            path_.replace_filename(std::filesystem::path(map_Kd).filename());
-            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
+            std::filesystem::path path(objFilename);
+            path.replace_filename(std::filesystem::path(mapKd).filename());
+            materials.rbegin()->textureFilenames[static_cast<int>(STATICMESH_STATE::NONE)] = path;
 
             fin.ignore(1024, L'\n');
         }
@@ -169,13 +169,13 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore();
 
             // テクスチャ名を読み込む
-            wchar_t map_Ks[256];
-            fin >> map_Ks;
+            wchar_t mapKs[256];
+            fin >> mapKs;
 
             // テクスチャファイル名にパスを取り付ける
-            std::filesystem::path path_(obj_filename);
-            path_.replace_filename(std::filesystem::path(map_Ks).filename());
-            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)] = path_;
+            std::filesystem::path path(objFilename);
+            path.replace_filename(std::filesystem::path(mapKs).filename());
+            materials.rbegin()->textureFilenames[static_cast<int>(STATICMESH_STATE::NONE)] = path;
 
             fin.ignore(1024, L'\n');
         }
@@ -184,12 +184,12 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore();
             // パンプマップ用のテクスチャファイル名の取得
             // パンプマッピングを適用すると凹凸の表現をする
-            wchar_t map_bump[256];
-            fin >> map_bump;
+            wchar_t mapBump[256];
+            fin >> mapBump;
 
-            std::filesystem::path path_(obj_filename);
-            path_.replace_filename(std::filesystem::path(map_bump).filename());
-            materials.rbegin()->texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)] = path_;
+            std::filesystem::path path(objFilename);
+            path.replace_filename(std::filesystem::path(mapBump).filename());
+            materials.rbegin()->textureFilenames[static_cast<int>(STATICMESH_STATE::BUMP)] = path;
             fin.ignore(1024, L'\n');
         }
         else if (0 == wcscmp(command, L"newmtl"))
@@ -197,7 +197,7 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
             fin.ignore();
             wchar_t newmtl[256];
             // 新規でマテリアルを作成
-            material mat;
+            Material mat;
             fin >> newmtl;
             mat.name = newmtl;
             // マテリアルの取り付け
@@ -235,12 +235,12 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
     fin.close();
 
     // 頂点バッファのオブジェクトの作成
-    Create_com_buffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
+    CreateComBuffers(device, vertices.data(), vertices.size(), indices.data(), indices.size());
 
     HRESULT hr{ S_OK };
 
     // 入力レイアウトオブジェクトの生成
-    D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+    D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
     {
          {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -252,107 +252,107 @@ StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* obj_filename, bool f
 
     // 頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\StaticMeshVS.cso", vertex_shader.GetAddressOf(),
-            input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\StaticMeshVS.cso", vertexShader.GetAddressOf(),
+            inputLayout.GetAddressOf(), inputElementDesc, ARRAYSIZE(inputElementDesc));
     }
 
     // ピクセルシェーダーオブジェクトの生成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\StaticMeshPS.cso",
-            pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::DEFAULT)].GetAddressOf());
+            pixelShaders[static_cast<int>(PIXEL_SHADER_STATE::DEFAULT)].GetAddressOf());
     }
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePS.cso",
-            pixel_shaders[static_cast<int>(PIXEL_SHADER_STATE::GEOMETRICPRIMITEVE)].GetAddressOf());
+            pixelShaders[static_cast<int>(PIXEL_SHADER_STATE::GEOMETRICPRIMITEVE)].GetAddressOf());
     }
 
     // 定数バッファの生成
-    D3D11_BUFFER_DESC buffer_desc{};
+    D3D11_BUFFER_DESC bufferDesc{};
     {
-        buffer_desc.ByteWidth = sizeof(constants);
-        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-        buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
+        bufferDesc.ByteWidth = sizeof(Constants);
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        hr = device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 
     if (materials.size() == 0)
     {
-        for (const subset& subset_ : subsets)
+        for (const Subset& subset : subsets)
         {
-            materials.push_back({ subset_.usemtl });
+            materials.push_back({ subset.usemtl });
         }
     }
 
     // 読み込んだテクスチャを生成
-    D3D11_TEXTURE2D_DESC texture2d_desc{};
+    D3D11_TEXTURE2D_DESC texture2dDesc{};
     {
-        for (material& mat : materials)
+        for (Material& mat : materials)
         {
-            if (mat.texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)].size() > 0)
+            if (mat.textureFilenames[static_cast<int>(STATICMESH_STATE::NONE)].size() > 0)
             {
-                ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filenames[static_cast<int>(STATICMESH_STATE::NONE)].c_str(),
-                    mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(), &texture2d_desc);
+                ShaderManager::Instance()->LoadTextureFromFile(device, mat.textureFilenames[static_cast<int>(STATICMESH_STATE::NONE)].c_str(),
+                    mat.shaderResourceView[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(), &texture2dDesc);
             }
             else
             {
                 // ダミー用のカラーマップテクスチャを生成し設定する
-                ShaderManager::Instance()->MakeDummyTexture(device, mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(),
+                ShaderManager::Instance()->MakeDummyTexture(device, mat.shaderResourceView[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf(),
                     0xFFFFFFFF, 16);
             }
 
-            if (mat.texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)].size() > 0)
+            if (mat.textureFilenames[static_cast<int>(STATICMESH_STATE::BUMP)].size() > 0)
             {
-                ShaderManager::Instance()->LoadTextureFromFile(device, mat.texture_filenames[static_cast<int>(STATICMESH_STATE::BUMP)].c_str(),
-                    mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(), &texture2d_desc);
+                ShaderManager::Instance()->LoadTextureFromFile(device, mat.textureFilenames[static_cast<int>(STATICMESH_STATE::BUMP)].c_str(),
+                    mat.shaderResourceView[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(), &texture2dDesc);
             }
             else
             {
                 // ダミー用の法線マップテクスチャを生成し設定する
-                ShaderManager::Instance()->MakeDummyTexture(device, mat.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(),
+                ShaderManager::Instance()->MakeDummyTexture(device, mat.shaderResourceView[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf(),
                     0xFFFFFFFF, 16);
             }
         }
         // 読み込んだ頂点座標の x y z の最小、最大をそれぞれバウンディングボックスに設定する
-        for (const vertex& v : vertices)
+        for (const Vertex& v : vertices)
         {
-            bounding_box[0].x = std::min<float>(bounding_box[0].x, v.position.x);
-            bounding_box[0].y = std::min<float>(bounding_box[0].y, v.position.y);
-            bounding_box[0].z = std::min<float>(bounding_box[0].z, v.position.z);
-            bounding_box[1].x = std::max<float>(bounding_box[1].x, v.position.x);
-            bounding_box[1].y = std::max<float>(bounding_box[1].y, v.position.y);
-            bounding_box[1].z = std::max<float>(bounding_box[1].z, v.position.z);
+            boundingBox[0].x = std::min<float>(boundingBox[0].x, v.position.x);
+            boundingBox[0].y = std::min<float>(boundingBox[0].y, v.position.y);
+            boundingBox[0].z = std::min<float>(boundingBox[0].z, v.position.z);
+            boundingBox[1].x = std::max<float>(boundingBox[1].x, v.position.x);
+            boundingBox[1].y = std::max<float>(boundingBox[1].y, v.position.y);
+            boundingBox[1].z = std::max<float>(boundingBox[1].z, v.position.z);
         }
     }
 }
 
 // 描画処理
-void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
-    const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color,
+void StaticMesh::Render(ID3D11DeviceContext* dc,
+    const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& materialColor,
     PIXEL_SHADER_STATE state)
 {
-    uint32_t stride{ sizeof(vertex) };
+    uint32_t stride{ sizeof(Vertex) };
     uint32_t offset{ 0 };
-    immediate_context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
+    dc->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
     // インデックスバッファオブジェクトの設定
-    immediate_context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-    immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    immediate_context->IASetInputLayout(input_layout.Get());
+    dc->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+    dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    dc->IASetInputLayout(inputLayout.Get());
 
-    immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+    dc->VSSetShader(vertexShader.Get(), nullptr, 0);
     // 切替用のピクセルシェーダーがあったらそちらを設定
-    immediate_context->PSSetShader(pixel_shaders[static_cast<int>(state)].Get(), nullptr, 0);
-    for (const material& material_ : materials)
+    dc->PSSetShader(pixelShaders[static_cast<int>(state)].Get(), nullptr, 0);
+    for (const Material& material : materials)
     {
-        immediate_context->PSSetShaderResources(0, 1, 
-            material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf());
-        immediate_context->PSSetShaderResources(1, 1,
-            material_.shader_resource_view[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf());
+        dc->PSSetShaderResources(0, 1, 
+            material.shaderResourceView[static_cast<int>(STATICMESH_STATE::NONE)].GetAddressOf());
+        dc->PSSetShaderResources(1, 1,
+            material.shaderResourceView[static_cast<int>(STATICMESH_STATE::BUMP)].GetAddressOf());
 #if 1
         // 定数バッファとして、ワールド行列とマテリアルカラーを設定
-        constants data{ world,material_.Ka,material_.Kd,material_.Ks };
+        Constants data{ world,material.Ka,material.Kd,material.Ks };
         // マテリアルカラーは読み込んだ色も反映
-        DirectX::XMStoreFloat4(&data.Kd, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&material_color), DirectX::XMLoadFloat4(&material_.Kd)));
+        DirectX::XMStoreFloat4(&data.Kd, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&materialColor), DirectX::XMLoadFloat4(&material.Kd)));
 # else
         // 定数バッファとして、ワールド行列とマテリアルカラーを設定
         constants data{ world,material_color };
@@ -360,50 +360,50 @@ void StaticMesh::Render(ID3D11DeviceContext* immediate_context,
         DirectX::XMStoreFloat4(&data.material_color, DirectX::XMVectorMultiply(
             DirectX::XMLoadFloat4(&material_color), DirectX::XMLoadFloat4(&material_.Kd)));
 # endif
-        immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+        dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &data, 0, 0);
         // 定数(コンスタント)バッファオブジェクトの設定
-        immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
-        immediate_context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+        dc->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+        dc->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
         // サブセットを捜査
-        for (const subset& subset_ : subsets)
+        for (const Subset& subset : subsets)
         {
             // サブセットにあるマテリアル名と一致するものをチェック
-            if (material_.name == subset_.usemtl)
+            if (material.name == subset.usemtl)
             {
                 // 一致したサブセットのインデックスの数と開始番号を指定
-                immediate_context->DrawIndexed(subset_.index_count, subset_.index_start, 0);
+                dc->DrawIndexed(subset.indexCount, subset.indexStart, 0);
             }
         }
     }
 }
 
 // 頂点バッファオブジェクトの作成
-void StaticMesh::Create_com_buffers(ID3D11Device* device,
-    vertex* vertices, size_t vertex_count,
-    uint32_t* indices, size_t index_count)
+void StaticMesh::CreateComBuffers(ID3D11Device* device,
+    Vertex* vertices, size_t vertexCount,
+    uint32_t* indices, size_t indexCount)
 {
     HRESULT hr{ S_OK };
 
     // 頂点座標が設定されている配列を設定
-    buffer_desc.ByteWidth = static_cast<UINT>(sizeof(vertex) * vertex_count);
-    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-    buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    buffer_desc.CPUAccessFlags = 0;
-    buffer_desc.MiscFlags = 0;
-    buffer_desc.StructureByteStride = 0;
+    bufferDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * vertexCount);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+    bufferDesc.StructureByteStride = 0;
 
     // 頂点座標が設定されている配列を設定
-    subresource_data.pSysMem = vertices;
-    subresource_data.SysMemPitch = 0;
-    subresource_data.SysMemSlicePitch = 0;
-    hr = device->CreateBuffer(&buffer_desc, &subresource_data,
-        vertex_buffer.ReleaseAndGetAddressOf());
+    subresourceData.pSysMem = vertices;
+    subresourceData.SysMemPitch = 0;
+    subresourceData.SysMemSlicePitch = 0;
+    hr = device->CreateBuffer(&bufferDesc, &subresourceData,
+        vertexBuffer.ReleaseAndGetAddressOf());
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-    buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * index_count);
-    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-    buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    subresource_data.pSysMem = indices;
-    hr = device->CreateBuffer(&buffer_desc, &subresource_data, index_buffer.ReleaseAndGetAddressOf());
+    bufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * indexCount);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    subresourceData.pSysMem = indices;
+    hr = device->CreateBuffer(&bufferDesc, &subresourceData, indexBuffer.ReleaseAndGetAddressOf());
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }

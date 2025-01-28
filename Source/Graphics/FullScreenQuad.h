@@ -9,11 +9,11 @@ public:
 	virtual ~FullScreenQuad() = default;
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> embedded_vertex_shader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> embedded_pixel_shader;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> embeddedVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> embeddedPixelShader;
 
 public:
 	// オフスクリーン描画したテクスチャのスクリーンへの最終的な描画処理
-	void Blit(ID3D11DeviceContext* immediate_context, ID3D11ShaderResourceView** shader_resource_view,
-		uint32_t start_slot, uint32_t num_views, ID3D11PixelShader* replaced_pixel_shader = nullptr);
+	void Blit(ID3D11DeviceContext* dc, ID3D11ShaderResourceView** shaderResourceView,
+		uint32_t startSlot, uint32_t numViews, ID3D11PixelShader* replacedPixelShader = nullptr);
 };

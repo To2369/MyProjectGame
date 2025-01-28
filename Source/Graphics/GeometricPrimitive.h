@@ -11,9 +11,9 @@ public:
     // コンストラクタはprotectedに
     virtual ~GeometricPrimitive() = default;
 
-    void Render(ID3D11DeviceContext* immediate_context,
+    void Render(ID3D11DeviceContext* dc,
         const DirectX::XMFLOAT4X4& world,
-        const DirectX::XMFLOAT4& material_color);
+        const DirectX::XMFLOAT4& materialColor);
 
     // 頂点フォーマット
     struct vertex
@@ -25,34 +25,34 @@ public:
     struct constants
     {
         DirectX::XMFLOAT4X4 world;          // ワールド行列
-        DirectX::XMFLOAT4 material_color;   // マテリアルカラー
+        DirectX::XMFLOAT4 materialColor;   // マテリアルカラー
     };
 protected:
     GeometricPrimitive(ID3D11Device* device);
 
     // 頂点バッファのオブジェクトの作成
-    void CreateComBuffers(ID3D11Device* device, vertex* vertices, size_t vertex_count,
-        uint32_t* indices, size_t index_count);
+    void CreateComBuffers(ID3D11Device* device, vertex* vertices, size_t vertexCount,
+        uint32_t* indices, size_t indexCount);
 
     // 頂点シェーダーオブジェクト
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     // ピクセルシェーダーオブジェクト
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
 
     // 入力レイアウトオブジェクト
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
     // 定数バッファのオブジェクト
-    Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
 
     // 定数バッファ
-    D3D11_BUFFER_DESC buffer_desc{};
+    D3D11_BUFFER_DESC bufferDesc{};
 private:
     // 頂点バッファ
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
     // インデックスバッファ
-    Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
 
-    D3D11_SUBRESOURCE_DATA subresource_data{};
+    D3D11_SUBRESOURCE_DATA subresourceData{};
 };
 
 // 正方形
@@ -88,6 +88,6 @@ public:
         float height,
         float radius,
         uint32_t slices,
-        uint32_t ellipsoid_stacks,
+        uint32_t ellipsoidStacks,
         uint32_t stacks);
 };

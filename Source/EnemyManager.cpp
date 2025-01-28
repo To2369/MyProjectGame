@@ -61,7 +61,7 @@ void EnemyManager::CollisionEnemiesAndEnemies()
             DirectX::XMFLOAT3 outVec;
 
             //Õ“Ëˆ—
-            if (Collision::IntersectCylinderAndCylinder(
+            if (Collision::IntersectCylinderVsCylinder(
                 (enemyA->GetPosition()),
                 enemyA->GetRadius(),
                 enemyA->GetHeight(),

@@ -40,7 +40,6 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::UseSkill), new SkillSelectState(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::HitDamege), new DamegeState(this));
-    //bulletMgr = std::make_unique<BulletManager>();
 
     // ヒットエフェクト読み込み
     //hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
@@ -61,29 +60,14 @@ void Player::Update(float elapsedTime)
     // 速度処理更新
     UpdateVelocity(elapsedTime);
 
-    //InputMove(elapsedTime);
-
     //InputFlying(elapsedTime);
 
-    // 入力による弾発射処理
-   /* InputLaunchBullet();
-
-    InputArts();
-
-    InputAttack();*/
-    //InputArts();
-    //InputMove(elapsedTime);
     // プレイヤーと敵との衝突処置
     CollisionPlayerAndEnemies();
 
     CollisionArtsAndEnemies();
     //CollisionPlayerAndArts();
     artsMgr.Update(elapsedTime);
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    {
-        
-        
-    }
 
     //Lock();
 
@@ -94,9 +78,6 @@ void Player::Update(float elapsedTime)
 
 	// ワールド行列更新
 	UpdateTransform();
-
-    p = position;
-    p.y += height / 2;
 }
 void Player::UpdateAnimation(float elapsedTime)
 {
@@ -332,8 +313,6 @@ void Player::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
     artsMgr.Render(dc);
-    //ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-    //artsSkillStraightBallet->Render(dc);//Launch(dir, pos);
 }
 float c = 0;
 void Player::DrawDebugGUI()
@@ -455,42 +434,32 @@ void Player::DrawDebugGUI()
 }
 
 void Player::DrawDebugPrimitive()
-{
-    DebugRenderer* debugRenderer = Graphics::Instance()->GetDebugRenderer();
-
-    // 衝突判定用のデバッグ球を描画
-    //debugRenderer->DrawSphere(position, radius, { 0, 0, 1, 1 });
-
-    // 衝突判定用のデバッグ用円柱を描画
-    //debugRenderer->DrawCylinder(position, radius, height, { 0, 0, 0, 1 });
+{;
 
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    //debugPrimitive->DrawSphere(position, radius, { 0,0,1,1 });
-    //debugPrimitive->DrawCube(position, {1,1,1}, { 1,1,1,1 });
-    debugPrimitive->DrawCylinder(position, angle,radius, height, { 1,1,1,1 });
+    debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
     {
-        //debugPrimitive->DrawCapsule(p, angle,radius, height, { 1,1,1,1 });
-       /* if(a==1)
-        debugPrimitive->DrawCapsule(position, { radius,radius,radius }, height, { 1,1,1,1 });*/
+
     }
-    Skeleton::Bone* bone = model->FindNode("ik_hand_l");
-    if (bone && !model->keyframe.nodes.empty())
+    if (attackCollisionFlag)
     {
-        //  外套のボーンのノードの市政情報を取得
-        auto& node = model->keyframe.nodes[bone->nodeIndex];
-        auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
-        DirectX::XMFLOAT4X4 worldTransform;
-        DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
-        debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
-            worldTransform._41,
-            worldTransform._42,
-            worldTransform._43),
-            angle,
-            0.1f,
-            DirectX::XMFLOAT4(0, 1, 0, 1)
-        );
+        Skeleton::Bone* bone = model->FindNode("ball_l");
+        if (bone && !model->keyframe.nodes.empty())
+        {
+            //  外套のボーンのノードの市政情報を取得
+            auto& node = model->keyframe.nodes[bone->nodeIndex];
+            auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
+            DirectX::XMFLOAT4X4 worldTransform;
+            DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
+            debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
+                worldTransform._41,
+                worldTransform._42,
+                worldTransform._43),
+                0.3f,
+                DirectX::XMFLOAT4(0, 1, 0, 1)
+            );
+        }
     }
-    //artsMgr.DrawDebugPrimitive();
 }
 
 //入力値から移動ベクトルを取得
@@ -743,7 +712,7 @@ void Player::CollisionPlayerAndEnemies()
         DirectX::XMFLOAT3 outVec;
 
         // 衝突処理
-        if (Collision::IntersectCylinderAndCylinder(
+        if (Collision::IntersectCylinderVsCylinder(
             position,
             radius,
             height,
@@ -798,7 +767,7 @@ void Player::CollisionArtsAndEnemies()
             DirectX::XMFLOAT3 outPos;
             if (arts->GetType() == BalletType::Normal || arts->GetType() == BalletType::SpiritExplosion)
             {
-                if (Collision::IntersectSphereAndCylinder(
+                if (Collision::IntersectSphereVsCylinder(
                     arts->GetPosition(),
                     arts->GetRadius(),
                     enemy->GetPosition(),
@@ -831,7 +800,7 @@ void Player::CollisionArtsAndEnemies()
             else if (arts->GetType() == BalletType::SkillStraight)
             {
                 IntersectionResult* result = {};
-                if (Collision::IntersectCapsuleAndCapsule(
+                if (Collision::IntersectCapsuleVsCapsule(
                     DirectX::XMLoadFloat3(&arts->GetPosition()),
                     DirectX::XMLoadFloat3(&arts->GetDirection()),
                     arts->GetCurrentCapsuleHeight(),
@@ -885,7 +854,7 @@ void Player::CollisionPlayerAndArts()
             DirectX::XMFLOAT3 plPos = position;
             //plPos.y += height / 2;
             //float h = height / 2;
-            if (Collision::IntersectCapsuleAndCapsule(
+            if (Collision::IntersectCapsuleVsCapsule(
                 DirectX::XMLoadFloat3(&plPos),
                 DirectX::XMLoadFloat3(&dir),
                 height,
@@ -913,6 +882,7 @@ void Player::CollisionPlayerAndArts()
 
 void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
 {
+    attackCollisionFlag = true;
     //ノード取得
     Skeleton::Bone* bone = model->FindNode(nodeName);
     auto& node = model->keyframe.nodes[bone->nodeIndex];
@@ -1015,10 +985,10 @@ void Player::TeleportBehindEnemy()
             DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
 
             // 敵の前方方向を計算 (敵の向いている方向を仮定)
-            DirectX::XMFLOAT3 enemyForward;
-            enemyForward.x = sinf(closestEnemy->GetAngle().y);
+            DirectX::XMFLOAT3 enemyForward = {};
+           /* enemyForward.x = sinf(closestEnemy->GetAngle().y);
             enemyForward.y = 0.0f;
-            enemyForward.z = cosf(closestEnemy->GetAngle().y);
+            enemyForward.z = cosf(closestEnemy->GetAngle().y);*/
 
             // 敵の後ろの位置 = 敵の位置 - 前方方向 * 2.0f (距離を調整)
             const float distanceBehindEnemy = 2.0f; // プレイヤーが敵から後ろに飛ぶ距離
@@ -1274,179 +1244,3 @@ void Player::Lock()
         DirectX::XMStoreFloat4(&quaternion, smoothedQuaternion);
     }
 }
-
-////待機ステート更新処理
-//void Player::UpdateIdleState(float elapsedTime)
-//{
-//    //移動入力処理
-//    InputMove(elapsedTime);
-//    if (InputMove(elapsedTime))
-//    {
-//        //移動ステートへの遷移
-//        TransitionMoveState();
-//    }
-//
-//    GamePad* gamePad = InputManager::Instance()->getGamePad();
-//    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
-//    {
-//        TeleportBehindEnemy();
-//    }
-//
-//    if (InputDashTowardsEnemy(elapsedTime))
-//    {
-//        TransitionDashToEnemyState();
-//    }
-//    if (InputRecoverySkillEnergy(elapsedTime))
-//    {
-//        TransitionRecoverySkillEnergy();
-//    }
-//    ////ジャンプ入力処理
-//    //InputJump();
-//    //if (InputJump() == true)
-//    //{
-//    //    //ジャンプステートへの遷移
-//    //    TransitionJumpState();
-//    //}
-//
-//    //攻撃入力処理
-//    InputAttack();
-//    if (InputAttack())
-//    {
-//        TransitionAttackState();
-//    }
-//    ////弾丸入力処理
-//    //InputProjectile();
-//}
-
-//void IdleState<Player>::Enter()
-//{
-//    this->owner->GetModel()->PlayAnimation(static_cast<int>(Animation::AnimIdle), true);
-//}
-//void IdleState<Player>::Execute(float elapsedTime)
-//{
-//}
-////移動ステート
-//void Player::TransitionMoveState()
-//{
-//    state = State::Move;
-//
-//    //アニメーション再生
-//    model->PlayAnimation(0, true);
-//}
-//
-////移動ステート更新処理
-//void Player::UpdateMoveState(float elapsedTime)
-//{
-//    //移動入力処理
-//    if (!InputMove(elapsedTime))
-//    {
-//        //移動ステートへの遷移
-//        TransitionIdleState();
-//    }
-//
-//    GamePad* gamePad = InputManager::Instance()->getGamePad();
-//    if (gamePad->GetButtonDown() & GamePad::BTN_B)//x
-//    {
-//        TeleportBehindEnemy();
-//    }
-//
-//    if (InputDash(elapsedTime))
-//    {
-//        TransitionDashState();
-//    }
-//
-//    if (InputDashTowardsEnemy(elapsedTime))
-//    {
-//        TransitionDashToEnemyState();
-//    }
-//
-//    if (InputRecoverySkillEnergy(elapsedTime))
-//    {
-//        TransitionRecoverySkillEnergy();
-//    }
-//    ////ジャンプ入力処理
-//    //InputJump();
-//    //if (InputJump() == true)
-//    //{
-//    //    //ジャンプステートへの遷移
-//    //    TransitionJumpState();
-//    //}
-//
-//    ////攻撃入力処理
-//    //InputAttack();
-//    //if (InputAttack())
-//    //{
-//    //    TransitionAttackState();
-//    //}
-//    ////弾丸入力処理
-//    //InputProjectile();
-//}
-//
-////ダッシュステート
-//void Player::TransitionDashState()
-//{
-//    state = State::Dash;
-//}
-//
-////ダッシュステート更新処理
-//void Player::UpdateDashState(float elapsedTime)
-//{
-//    InputDash(elapsedTime);
-//    if (!InputDash(elapsedTime))
-//    {
-//        TransitionIdleState();
-//    }
-//}
-//
-////敵へダッシュステート
-//void Player::TransitionDashToEnemyState()
-//{
-//    state = State::DashToEnemy;
-//
-//    //アニメーション再生
-//    //model->PlayAnimation(0, true);
-//}
-//
-////敵へダッシュステート更新処理
-//void Player::UpdateDashToEnemyState(float elapsedTime)
-//{
-//
-//    InputDashTowardsEnemy(elapsedTime);
-//    if (!InputDashTowardsEnemy(elapsedTime))
-//    {
-//        TransitionMoveState();
-//    }
-//
-//}
-//
-//// 技力回復
-//void Player::TransitionRecoverySkillEnergy()
-//{
-//    state = State::RecoverySkillEnergy;
-//}
-//
-//// 技力回復更新処理
-//void Player::UpdateRecoverySkillEnergyState(float elapsedTime)
-//{
-//    InputRecoverySkillEnergy(elapsedTime);
-//    if (!InputRecoverySkillEnergy(elapsedTime))
-//    {
-//        TransitionIdleState();
-//    }
-//}
-//
-//void Player::TransitionAttackState()
-//{
-//    state = State::Attack;
-//    model->PlayAnimation(FullAttack, false);
-//}
-//
-//void Player::UpdateAttackState(float elapsedTime)
-//{
-//
-//    if (!model->IsPlayAnimation())
-//    {
-//        TransitionIdleState();
-//    }
-//    CollisionNodeVsEnemies("ik_hand_l", 5.0f);
-//}

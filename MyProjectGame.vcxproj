@@ -189,7 +189,6 @@
     <ClInclude Include="Source\Graphics\CapsuleOneWay.h" />
     <ClInclude Include="Source\Graphics\ColorGrading.h" />
     <ClInclude Include="Source\Graphics\DebugPrimitive.h" />
-    <ClInclude Include="Source\Graphics\DebugRenderer.h" />
     <ClInclude Include="Source\Graphics\FrameBuffer.h" />
     <ClInclude Include="Source\Graphics\FullScreenQuad.h" />
     <ClInclude Include="Source\Graphics\GeometricPrimitive.h" />
@@ -247,7 +246,6 @@
     <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp" />
     <ClCompile Include="Source\Graphics\ColorGrading.cpp" />
     <ClCompile Include="Source\Graphics\DebugPrimitive.cpp" />
-    <ClCompile Include="Source\Graphics\DebugRenderer.cpp" />
     <ClCompile Include="Source\Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Source\Graphics\FullScreenQuad.cpp" />
     <ClCompile Include="Source\Graphics\GeometricPrimitive.cpp" />

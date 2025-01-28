@@ -156,7 +156,7 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device* device)
     HRESULT hr{ S_OK };
 
     // 入力レイアウトオブジェクトの設定
-    D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+    D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
     {
         {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -166,81 +166,81 @@ GeometricPrimitive::GeometricPrimitive(ID3D11Device* device)
 
     // 頂点シェーダーオブジェクトの作成(入力レイアウトもこの中で作成しています)
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVs.cso", vertex_shader.GetAddressOf(),
-            input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVs.cso", vertexShader.GetAddressOf(),
+            inputLayout.GetAddressOf(), inputElementDesc, ARRAYSIZE(inputElementDesc));
     }
 
     // ピクセルシェーダーオブジェクトの作成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePs.cso",
-            pixel_shader.GetAddressOf());
+            pixelShader.GetAddressOf());
     }
     // 定数(コンスタント)バッファの作成
     {
-        buffer_desc.ByteWidth = sizeof(constants);
-        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-        buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
+        bufferDesc.ByteWidth = sizeof(constants);
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        hr = device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 }
 
 // 描画
-void GeometricPrimitive::Render(ID3D11DeviceContext* immediate_context,
+void GeometricPrimitive::Render(ID3D11DeviceContext* dc,
     const DirectX::XMFLOAT4X4& world,
-    const DirectX::XMFLOAT4& material_color)
+    const DirectX::XMFLOAT4& materialColor)
 {
     uint32_t stride{ sizeof(vertex) };
     uint32_t offset{ 0 };
-    immediate_context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
+    dc->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
     // インデックスバッファオブジェクトの設定
-    immediate_context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-    immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    immediate_context->IASetInputLayout(input_layout.Get());
+    dc->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+    dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    dc->IASetInputLayout(inputLayout.Get());
 
-    immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-    immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+    dc->VSSetShader(vertexShader.Get(), nullptr, 0);
+    dc->PSSetShader(pixelShader.Get(), nullptr, 0);
 
     // 定数バッファとして、ワールド行列とマテリアルカラーを設定
-    constants data{ world,material_color };
-    immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+    constants data{ world,materialColor };
+    dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &data, 0, 0);
     // 定数(コンスタント)バッファオブジェクトの設定
-    immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+    dc->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
     // インデックスを指定して描画
     D3D11_BUFFER_DESC buffer_desc{};
-    index_buffer->GetDesc(&buffer_desc);
-    immediate_context->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
+    indexBuffer->GetDesc(&buffer_desc);
+    dc->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
 }
 
 // 頂点バッファオブジェクトの作成
 void GeometricPrimitive::CreateComBuffers(ID3D11Device* device, 
-    vertex* vertices, size_t vertex_count,
-    uint32_t* indices, size_t index_count)
+    vertex* vertices, size_t vertexCount,
+    uint32_t* indices, size_t indexCount)
 {
     HRESULT hr{ S_OK };
 
     // 頂点座標が設定されている配列を設定
-    buffer_desc.ByteWidth = static_cast<UINT>(sizeof(vertex) * vertex_count);
-    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-    buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    buffer_desc.CPUAccessFlags = 0;
-    buffer_desc.MiscFlags = 0;
-    buffer_desc.StructureByteStride = 0;
+    bufferDesc.ByteWidth = static_cast<UINT>(sizeof(vertex) * vertexCount);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+    bufferDesc.StructureByteStride = 0;
 
     // 頂点座標が設定されている配列を設定
-    subresource_data.pSysMem = vertices;
-    subresource_data.SysMemPitch = 0;
-    subresource_data.SysMemSlicePitch = 0;
-    hr = device->CreateBuffer(&buffer_desc, &subresource_data,
-        vertex_buffer.ReleaseAndGetAddressOf());
+    subresourceData.pSysMem = vertices;
+    subresourceData.SysMemPitch = 0;
+    subresourceData.SysMemSlicePitch = 0;
+    hr = device->CreateBuffer(&bufferDesc, &subresourceData,
+        vertexBuffer.ReleaseAndGetAddressOf());
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 
-    buffer_desc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * index_count);
-    buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-    buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    subresource_data.pSysMem = indices;
-    hr = device->CreateBuffer(&buffer_desc, &subresource_data, index_buffer.ReleaseAndGetAddressOf());
+    bufferDesc.ByteWidth = static_cast<UINT>(sizeof(uint32_t) * indexCount);
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    subresourceData.pSysMem = indices;
+    hr = device->CreateBuffer(&bufferDesc, &subresourceData, indexBuffer.ReleaseAndGetAddressOf());
     _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 
@@ -398,7 +398,7 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
     HRESULT hr{ S_OK };
 
     // 入力レイアウトオブジェクトの設定
-    D3D11_INPUT_ELEMENT_DESC input_element_desc[]
+    D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
     {
         {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
         D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -408,22 +408,22 @@ GeometricCube::GeometricCube(ID3D11Device* device) :GeometricPrimitive(device)
 
     // 頂点シェーダーオブジェクトの作成(入力レイアウトもこの中で作成しています)
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVS.cso", vertex_shader.GetAddressOf(),
-            input_layout.GetAddressOf(), input_element_desc, ARRAYSIZE(input_element_desc));
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\GeometricPrimitiveVS.cso", vertexShader.GetAddressOf(),
+            inputLayout.GetAddressOf(), inputElementDesc, ARRAYSIZE(inputElementDesc));
     }
 
     // ピクセルシェーダーオブジェクトの作成
     {
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePS.cso",
-            pixel_shader.GetAddressOf());
+            pixelShader.GetAddressOf());
     }
 
     // 定数(コンスタント)バッファの作成
     {
-        buffer_desc.ByteWidth = sizeof(constants);
-        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-        buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
+        bufferDesc.ByteWidth = sizeof(constants);
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        hr = device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
     }
 }
@@ -472,11 +472,11 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius, float h
     indices[slices * 3 - 1] = slices;
 
     // 下の円
-    int base_slices = slices + 1;
+    int baseSlices = slices + 1;
 
     // 下の円の真ん中の頂点座標と法線
-    vertices[base_slices].position = { 0.0f, 0.0f, 0.0f };
-    vertices[base_slices].normal = { 0.0f, -1.0f, 0.0f };
+    vertices[baseSlices].position = { 0.0f, 0.0f, 0.0f };
+    vertices[baseSlices].normal = { 0.0f, -1.0f, 0.0f };
 
     // 円の周りの頂点座標と法線を設定
     for (int i = 0; i < slices; ++i)
@@ -490,17 +490,17 @@ GeometricCylinder::GeometricCylinder(ID3D11Device* device, float radius, float h
     }
 
     // 下の円のインデックスの設定
-    int base_index = slices + 1;
+    int baseIndex = slices + 1;
     for (uint32_t i = 0; i < slices - 1; ++i)
     {
-        indices[(slices * 3) + (i * 3) + 0] = base_index + 0;
-        indices[(slices * 3) + (i * 3) + 1] = base_index + i + 1;
-        indices[(slices * 3) + (i * 3) + 2] = base_index + i + 2;
+        indices[(slices * 3) + (i * 3) + 0] = baseIndex + 0;
+        indices[(slices * 3) + (i * 3) + 1] = baseIndex + i + 1;
+        indices[(slices * 3) + (i * 3) + 2] = baseIndex + i + 2;
     }
 
-    indices[(slices * 3 * 2) - 1] = base_index + 1;
+    indices[(slices * 3 * 2) - 1] = baseIndex + 1;
     indices[(slices * 3 * 2) - 2] = slices * 2 + 1;
-    indices[(slices * 3 * 2) - 3] = base_index;
+    indices[(slices * 3 * 2) - 3] = baseIndex;
 
 
     // 側面
@@ -561,29 +561,29 @@ GeometricSphere::GeometricSphere(
     float r{ radius };
 
     // 上部と下部の頂点を作成
-    vertex top_vertex{};
-    top_vertex.position = { 0.0f, +r, 0.0f };
-    top_vertex.normal = { 0.0f, +1.0f, 0.0f };
+    vertex topVertex{};
+    topVertex.position = { 0.0f, +r, 0.0f };
+    topVertex.normal = { 0.0f, +1.0f, 0.0f };
 
-    vertex bottom_vertex{};
-    bottom_vertex.position = { 0.0f, -r, 0.0f };
-    bottom_vertex.normal = { 0.0f, -1.0f, 0.0f };
+    vertex bottomVertex{};
+    bottomVertex.position = { 0.0f, -r, 0.0f };
+    bottomVertex.normal = { 0.0f, -1.0f, 0.0f };
 
     // 頂点リストに上部の頂点を追加
-    vertices.emplace_back(top_vertex);
+    vertices.emplace_back(topVertex);
 
     // 経度方向の分割数に基づいて縦方向のループを実行
-    float phi_step{ DirectX::XM_PI / stacks };
-    float theta_step{ 2.0f * DirectX::XM_PI / slices };
+    float phiStep{ DirectX::XM_PI / stacks };
+    float thetaStep{ 2.0f * DirectX::XM_PI / slices };
 
     for (uint32_t i = 1; i <= stacks - 1; ++i)
     {
-        float phi{ i * phi_step };
+        float phi{ i * phiStep };
 
         // 経度方向のループを実行
         for (uint32_t j = 0; j <= slices; ++j)
         {
-            float theta{ j * theta_step };
+            float theta{ j * thetaStep };
 
             vertex v{};
 
@@ -602,7 +602,7 @@ GeometricSphere::GeometricSphere(
     }
 
     // 頂点リストに下部の頂点を追加
-    vertices.emplace_back(bottom_vertex);
+    vertices.emplace_back(bottomVertex);
 
     // インデックスの生成
     // 三角形ストリップの各頂点インデックスを生成
@@ -614,34 +614,34 @@ GeometricSphere::GeometricSphere(
     }
 
     // 経度方向のループで三角形ストリップを生成
-    uint32_t base_index{ 1 };
-    uint32_t ring_vertex_count{ slices + 1 };
+    uint32_t baseIndex{ 1 };
+    uint32_t ringVertexCount{ slices + 1 };
     for (uint32_t i = 0; i < stacks - 2; ++i)
     {
         for (uint32_t j = 0; j < slices; ++j)
         {
-            indices.emplace_back(base_index + i * ring_vertex_count + j);
-            indices.emplace_back(base_index + i * ring_vertex_count + j + 1);
-            indices.emplace_back(base_index + (i + 1) * ring_vertex_count + j);
+            indices.emplace_back(baseIndex + i * ringVertexCount + j);
+            indices.emplace_back(baseIndex + i * ringVertexCount + j + 1);
+            indices.emplace_back(baseIndex + (i + 1) * ringVertexCount + j);
 
-            indices.emplace_back(base_index + (i + 1) * ring_vertex_count + j);
-            indices.emplace_back(base_index + i * ring_vertex_count + j + 1);
-            indices.emplace_back(base_index + (i + 1) * ring_vertex_count + j + 1);
+            indices.emplace_back(baseIndex + (i + 1) * ringVertexCount + j);
+            indices.emplace_back(baseIndex + i * ringVertexCount + j + 1);
+            indices.emplace_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
         }
     }
 
     // 南極点のインデックスを取得
-    uint32_t south_pole_index{ static_cast<uint32_t>(vertices.size() - 1) };
+    uint32_t southPoleIndex{ static_cast<uint32_t>(vertices.size() - 1) };
 
     // 南極点の直上のリングのベースインデックスを取得
-    base_index = south_pole_index - ring_vertex_count;
+    baseIndex = southPoleIndex - ringVertexCount;
 
     // 南極点を中心とした三角形ストリップを生成
     for (uint32_t i = 0; i < slices; ++i)
     {
-        indices.emplace_back(south_pole_index);
-        indices.emplace_back(base_index + i);
-        indices.emplace_back(base_index + i + 1);
+        indices.emplace_back(southPoleIndex);
+        indices.emplace_back(baseIndex + i);
+        indices.emplace_back(baseIndex + i + 1);
     }
 
     // 頂点バッファのオブジェクトの作成
@@ -650,28 +650,28 @@ GeometricSphere::GeometricSphere(
 
 // カプセル
 GeometricCapsule::GeometricCapsule(ID3D11Device* device,
-    float mantle_height,
+    float mantleHeight,
     float radius,
     uint32_t slices,
-    uint32_t ellipsoid_stacks,
+    uint32_t ellipsoidStacks,
     uint32_t stacks) :GeometricPrimitive(device)
 {
     std::vector<vertex> vertices;
     std::vector<uint32_t> indices;
-    const int base_offset = 0;
+    const int baseOffset = 0;
 
     slices = std::max<uint32_t>(3u, slices);
     stacks = std::max<uint32_t>(1u, stacks);
-    ellipsoid_stacks = std::max<uint32_t>(2u, ellipsoid_stacks);
+    ellipsoidStacks = std::max<uint32_t>(2u, ellipsoidStacks);
 
-    const float inv_slices = 1.0f / static_cast<float>(slices);
-    const float inv_mantle_stacks = 1.0f / static_cast<float>(stacks);
-    const float inv_ellipsoid_stacks = 1.0f / static_cast<float>(ellipsoid_stacks);
+    const float invSlices = 1.0f / static_cast<float>(slices);
+    const float invMantleStacks = 1.0f / static_cast<float>(stacks);
+    const float invEllipsoidStacks = 1.0f / static_cast<float>(ellipsoidStacks);
 
-    const float pi_2{ 3.14159265358979f * 2.0f };
-    const float pi_0_5{ 3.14159265358979f * 0.5f };
-    const float angle_steps = inv_slices * pi_2;
-    const float half_height = mantle_height * 0.5f;
+    const float pi2{ 3.14159265358979f * 2.0f };
+    const float pi05{ 3.14159265358979f * 0.5f };
+    const float angleSteps = invSlices * pi2;
+    const float halfHeight = mantleHeight * 0.5f;
 
     /* Generate mantle vertices */
     struct spherical {
@@ -703,40 +703,40 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
         normal.z = normal.z / magnitude;
 
         /* 上部と下部の頂点を追加 */
-        texcoord.x = static_cast<float>(slices - u) * inv_slices;
+        texcoord.x = static_cast<float>(slices - u) * invSlices;
 
         for (uint32_t v = 0; v <= stacks; ++v)
         {
-            texcoord.y = static_cast<float>(v) * inv_mantle_stacks;
+            texcoord.y = static_cast<float>(v) * invMantleStacks;
 #if _HAS_CXX20
             position.y = lerp(half_height, -half_height, texcoord.y);
 #else
-            position.y = half_height * (1 - texcoord.y) + -half_height * texcoord.y;
+            position.y = halfHeight * (1 - texcoord.y) + -halfHeight * texcoord.y;
 #endif
 
             vertices.push_back({ position, normal });
         }
 
         /* 次のスライス用に角度を増加 */
-        angle += angle_steps;
+        angle += angleSteps;
     }
 
-    const float top_cover_side = { 1 };
-    uint32_t top_base_offset_ellipsoid = { 0 };
+    const float topCoverSide = { 1 };
+    uint32_t topBaseOffsetEllipsoid = { 0 };
 
-    top_base_offset_ellipsoid = static_cast<uint32_t>(vertices.size());
+    topBaseOffsetEllipsoid = static_cast<uint32_t>(vertices.size());
 
-    for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
+    for (uint32_t v = 0; v <= ellipsoidStacks; ++v)
     {
         /* 球面座標系のθの計算 */
-        texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
-        point.theta = texcoord.y * pi_0_5;
+        texcoord.y = static_cast<float>(v) * invEllipsoidStacks;
+        point.theta = texcoord.y * pi05;
 
         for (uint32_t u = 0; u <= slices; ++u)
         {
             /* 球面座標系のφの計算 */
-            texcoord.x = static_cast<float>(u) * inv_slices;
-            point.phi = texcoord.x * pi_2 * top_cover_side + pi_0_5;
+            texcoord.x = static_cast<float>(u) * invSlices;
+            point.phi = texcoord.x * pi2 * topCoverSide + pi05;
 
             /* 球面座標系を直交座標系に変換して、法線をセット */
             const float sin_theta = sinf(point.theta);
@@ -745,7 +745,7 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             position.z = point.radius * cosf(point.theta);
 
             std::swap(position.y, position.z);
-            position.y *= top_cover_side;
+            position.y *= topCoverSide;
 
             /* 法線を求めて半球体を移動 */
             float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
@@ -757,29 +757,29 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             position.x *= radius;
             position.y *= radius;
             position.z *= radius;
-            position.y += half_height * top_cover_side;
+            position.y += halfHeight * topCoverSide;
 
             // 頂点の座標に回転を適用
             vertices.push_back({ position, normal });
         }
     }
 
-    const float bottom_cover_side = { -1 };
-    uint32_t bottom_base_offset_ellipsoid = { 0 };
+    const float bottomCoverSide = { -1 };
+    uint32_t bottomBaseOffsetEllipsoid = { 0 };
 
-    bottom_base_offset_ellipsoid = static_cast<uint32_t>(vertices.size());
+    bottomBaseOffsetEllipsoid = static_cast<uint32_t>(vertices.size());
 
-    for (uint32_t v = 0; v <= ellipsoid_stacks; ++v)
+    for (uint32_t v = 0; v <= ellipsoidStacks; ++v)
     {
         /* 球面座標系のθの計算 */
-        texcoord.y = static_cast<float>(v) * inv_ellipsoid_stacks;
-        point.theta = texcoord.y * pi_0_5;
+        texcoord.y = static_cast<float>(v) * invEllipsoidStacks;
+        point.theta = texcoord.y * pi05;
 
         for (uint32_t u = 0; u <= slices; ++u)
         {
             /* 球面座標系のφの計算 */
-            texcoord.x = static_cast<float>(u) * inv_slices;
-            point.phi = texcoord.x * pi_2 * bottom_cover_side + pi_0_5;
+            texcoord.x = static_cast<float>(u) * invSlices;
+            point.phi = texcoord.x * pi2 * bottomCoverSide + pi05;
 
             /* 球面座標系を直交座標系に変換して、法線をセット */
             const float sin_theta = sinf(point.theta);
@@ -788,7 +788,7 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             position.z = point.radius * cosf(point.theta);
 
             std::swap(position.y, position.z);
-            position.y *= bottom_cover_side;
+            position.y *= bottomCoverSide;
 
             /* 法線を求めて半球体を移動 */
             float magnitude = sqrtf(position.x * position.x + position.y * position.y + position.z * position.z);
@@ -800,14 +800,14 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             position.x *= radius;
             position.y *= radius;
             position.z *= radius;
-            position.y += half_height * bottom_cover_side;
+            position.y += halfHeight * bottomCoverSide;
 
             // 頂点の座標に回転を適用
             vertices.push_back({ position, normal });
         }
     }
     /* Generate indices for the mantle */
-    int offset = base_offset;
+    int offset = baseOffset;
     for (uint32_t u = 0; u < slices; ++u)
     {
         for (uint32_t v = 0; v < stacks; ++v)
@@ -828,7 +828,7 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
     }
 
     /* Generate indices for the top and bottom */
-    for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
+    for (uint32_t v = 0; v < ellipsoidStacks; ++v)
     {
         for (uint32_t u = 0; u < slices; ++u)
         {
@@ -840,15 +840,15 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             auto i3 = (v + 1) * (slices + 1) + u;
 
             /* Add new indices */
-            indices.emplace_back(i0 + top_base_offset_ellipsoid);
-            indices.emplace_back(i1 + top_base_offset_ellipsoid);
-            indices.emplace_back(i3 + top_base_offset_ellipsoid);
-            indices.emplace_back(i1 + top_base_offset_ellipsoid);
-            indices.emplace_back(i2 + top_base_offset_ellipsoid);
-            indices.emplace_back(i3 + top_base_offset_ellipsoid);
+            indices.emplace_back(i0 + topBaseOffsetEllipsoid);
+            indices.emplace_back(i1 + topBaseOffsetEllipsoid);
+            indices.emplace_back(i3 + topBaseOffsetEllipsoid);
+            indices.emplace_back(i1 + topBaseOffsetEllipsoid);
+            indices.emplace_back(i2 + topBaseOffsetEllipsoid);
+            indices.emplace_back(i3 + topBaseOffsetEllipsoid);
         }
     }
-    for (uint32_t v = 0; v < ellipsoid_stacks; ++v)
+    for (uint32_t v = 0; v < ellipsoidStacks; ++v)
     {
         for (uint32_t u = 0; u < slices; ++u)
         {
@@ -860,12 +860,12 @@ GeometricCapsule::GeometricCapsule(ID3D11Device* device,
             auto i3 = (v + 1) * (slices + 1) + u;
 
             /* Add new indices */
-            indices.emplace_back(i0 + bottom_base_offset_ellipsoid);
-            indices.emplace_back(i1 + bottom_base_offset_ellipsoid);
-            indices.emplace_back(i3 + bottom_base_offset_ellipsoid);
-            indices.emplace_back(i1 + bottom_base_offset_ellipsoid);
-            indices.emplace_back(i2 + bottom_base_offset_ellipsoid);
-            indices.emplace_back(i3 + bottom_base_offset_ellipsoid);
+            indices.emplace_back(i0 + bottomBaseOffsetEllipsoid);
+            indices.emplace_back(i1 + bottomBaseOffsetEllipsoid);
+            indices.emplace_back(i3 + bottomBaseOffsetEllipsoid);
+            indices.emplace_back(i1 + bottomBaseOffsetEllipsoid);
+            indices.emplace_back(i2 + bottomBaseOffsetEllipsoid);
+            indices.emplace_back(i3 + bottomBaseOffsetEllipsoid);
         }
     }
 

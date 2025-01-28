@@ -24,7 +24,7 @@ class Collision
 {
 public:
 	// ‹…‚Æ‹…‚ÌŒğ·”»’è
-	static bool IntersectSphereAndSphere(
+	static bool IntersectSphereVsSphere(
 		const DirectX::XMFLOAT3& positionA,
 		float radiusA,
 		const DirectX::XMFLOAT3& positionB,
@@ -33,7 +33,7 @@ public:
 	);
 
 	// ‰~’Œ‚Æ‰~’Œ‚ÌŒğ·”»’è
-	static bool IntersectCylinderAndCylinder(
+	static bool IntersectCylinderVsCylinder(
 		const DirectX::XMFLOAT3& positionA,
 		float radiusA,
 		float heightA,
@@ -43,7 +43,7 @@ public:
 		DirectX::XMFLOAT3& outVec);
 
 	// ƒJƒvƒZƒ‹‚ÆƒJƒvƒZƒ‹‚ÌŒğ·”»’è
-	static bool IntersectCapsuleAndCapsule(
+	static bool IntersectCapsuleVsCapsule(
 		const DirectX::XMVECTOR& position1,	// ’†S
 		const DirectX::XMVECTOR& direction1,	// Œü‚«i³‹K‰»j
 		const float					length1,	// ’·‚³
@@ -64,7 +64,7 @@ public:
 		DirectX::XMVECTOR* nearPoint2);
 
 	// ‹…‚Æ‰~’Œ‚ÌŒğ·”½‰f
-	static bool IntersectSphereAndCylinder(
+	static bool IntersectSphereVsCylinder(
 		const DirectX::XMFLOAT3& positionA,
 		float radiusA,
 		const DirectX::XMFLOAT3& positionB,
@@ -73,19 +73,9 @@ public:
 		DirectX::XMFLOAT3& outVec);
 
 	// ƒŒƒC‚Æƒ‚ƒfƒ‹‚ÌŒğ·”»’è
-	static bool IntersectRayAndModel(
+	static bool IntersectRayVsModel(
 		const DirectX::XMFLOAT3& start,
 		const DirectX::XMFLOAT3& end,
 		const Model* model,
 		HitResult& result);
-
-	// ‹…‚Æ‰~’Œ‚ÌŒğ·”»’è
-	static bool IntersectSphereVsCylinder(
-		const DirectX::XMFLOAT3& spherePosition,    //‹…ˆÊ’u
-		float sphereRadius,                         //‹…‚Ì”¼Œa
-		const DirectX::XMFLOAT3& cylinderPosition,  //‰~’ŒˆÊ’u
-		float cylinderRadius,                       //‰~’Œ‚Ì”¼Œa
-		float cylinderHeight,                       //‰~’Œ‚Ì‚‚³
-		DirectX::XMFLOAT3& outCylinderPosition
-	);
 };

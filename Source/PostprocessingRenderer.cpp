@@ -32,7 +32,7 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
 #if 1
     deviceContext->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     deviceContext->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    bitBlockTransfer->Blit(deviceContext, framebuffers[0]->shader_resource_views[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
+    bitBlockTransfer->Blit(deviceContext, framebuffers[0]->shaderResourceViews[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);
 #endif
     RenderContext rc;
     rc.deviceContext = deviceContext;

@@ -10,14 +10,14 @@
 class GltfModel
 {
 public:
-	struct scene
+	struct GltfModelScene
 	{
 		std::string name;
 		std::vector<int> nodes; // Array of 'root' nodes
 	};
-	std::vector<scene> scenes;
+	std::vector<GltfModelScene> scenes;
 
-	struct node
+	struct Node
 	{
 		std::string name;
 		int skin{ -1 }; //index of skin refereced by this node
@@ -30,138 +30,138 @@ public:
 		DirectX::XMFLOAT3 scale{ 1,1,1 };
 		DirectX::XMFLOAT3 translation{ 0,0,0 };
 
-		DirectX::XMFLOAT4X4 global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		DirectX::XMFLOAT4X4 globalTransform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	};
-	std::vector<node> nodes;
+	std::vector<Node> nodes;
 
-	struct buffer_view
+	struct BufferView
 	{
 		DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
-		size_t stride_in_bytes{ 0 };
-		size_t size_in_bytes{ 0 };
+		size_t strideInBytes{ 0 };
+		size_t sizeInBytes{ 0 };
 		size_t count() const
 		{
-			return size_in_bytes / stride_in_bytes;
+			return sizeInBytes / strideInBytes;
 		}
 	};
-	struct mesh
+	struct Mesh
 	{
 		std::string name;
-		struct  primitive
+		struct  Primitive
 		{
 			int material;
-			std::map<std::string, buffer_view> vertex_buffer_views;
-			buffer_view index_buffer_view;
+			std::map<std::string, BufferView> vertexBufferViews;
+			BufferView indexBufferView;
 		};
-		std::vector<primitive> primitives;
+		std::vector<Primitive> primitives;
 	};
-	std::vector<mesh> meshes;
+	std::vector<Mesh> meshes;
 
-	struct texture_info
+	struct TextureInfo
 	{
 		int index = -1;
 		int texcoord = 0;
 	};
 
-	struct normal_texture_info
+	struct NormalTextureInfo
 	{
 		int index = -1;
 		int texcoord = 0;
 		float scale = 1;
 	};
 
-	struct occlusion_texture_info
+	struct OcclusionTextureInfo
 	{
 		int index = -1;
 		int texcoord = 0;
 		float strength = 1;
 	};
 
-	struct pbr_metalic_roughness
+	struct PbrMetalicRoughness
 	{
-		float basecolor_factor[4] = { 1,1,1,1 };
-		texture_info basecolor_texture;
-		float metallic_factor = 1;
-		float roughness_factor = 1;
-		texture_info metalic_roughness_texture;
+		float baseColorFactor[4] = { 1,1,1,1 };
+		TextureInfo baseColorTexture;
+		float metallicFactor = 1;
+		float roughnessFactor = 1;
+		TextureInfo metalicRoughnessTexture;
 	};
 
-	struct material {
+	struct Material {
 		std::string name;
-		struct cbuffer
+		struct Cbuffer
 		{
-			float emissive_factor[3] = { 0,0,0 };
-			int alpha_mode = 0;	// "OPAQUE":0,"MASK":1,"BLEND":2
-			float alpha_cutoff = 0.5f;
-			bool double_sided = false;
+			float emissiveFactor[3] = { 0,0,0 };
+			int alphaMode = 0;	// "OPAQUE":0,"MASK":1,"BLEND":2
+			float alphaCutoff = 0.5f;
+			bool doubleSided = false;
 
-			pbr_metalic_roughness pbr_metallic_rougness_;
+			PbrMetalicRoughness pbrMetallicRougness;
 
-			normal_texture_info normal_texture;
-			occlusion_texture_info occlusion_texture;
-			texture_info emissive_texture;
+			NormalTextureInfo normalTexture;
+			OcclusionTextureInfo occlusionTexture;
+			TextureInfo emissiveTexture;
 		};
-		cbuffer data;
+		Cbuffer data;
 	};
-	std::vector<material> materials;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> material_resource_view;
+	std::vector<Material> materials;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> materialResourceView;
 
-	struct texture
+	struct Texture
 	{
 		std::string name;
 		int source{ -1 };
 	};
-	std::vector<texture> textures;
+	std::vector<Texture> textures;
 
-	struct image
+	struct Image
 	{
 		std::string name;
 		int width{ -1 };
 		int height{ -1 };
 		int component{ -1 };
 		int bits{ -1 };
-		int pixel_type{ -1 };
-		int buffer_view;
-		std::string mime_type;
+		int pixelType{ -1 };
+		int bufferView;
+		std::string mimeType;
 		std::string uri;
-		bool as_is{ false };
+		bool asIs{ false };
 	};
-	std::vector<image> images;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> texture_resource_views;
+	std::vector<Image> images;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> textureResourceViews;
 public:
 	GltfModel(ID3D11Device* device, const std::string& filename);
 	virtual ~GltfModel() = default;
 
-	void Render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world);
+	void Render(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& world);
 
-	void CumulateTransforms(std::vector<node>& nodes);
+	void CumulateTransforms(std::vector<Node>& nodes);
 
 	// ノード情報の取り出し
-	void FetchNodes(const tinygltf::Model& gltf_model);
+	void FetchNodes(const tinygltf::Model& gltfModel);
 
 	// メッシュ情報の取り出し
-	void FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltf_model);
+	void FetchMeshes(ID3D11Device* device, const tinygltf::Model& gltfModel);
 
 	// マテリアル情報の取り出し
-	void FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltf_model);
+	void FetchMaterials(ID3D11Device* device, const tinygltf::Model& gltfModel);
 
 	//テクスチャ情報取り出し
-	void FetchTextures(ID3D11Device* device, const tinygltf::Model& gltf_model);
+	void FetchTextures(ID3D11Device* device, const tinygltf::Model& gltfModel);
 
-	buffer_view MakeBufferView(const tinygltf::Accessor& accessor);
+	BufferView MakeBufferView(const tinygltf::Accessor& accessor);
 private:
 	std::string filename;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
-	struct primitive_constants
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
+	struct primitiveConstants
 	{
 		DirectX::XMFLOAT4X4 world;
 		int material{ -1 };
-		int has_tangent{ 0 };
+		int hasTangent{ 0 };
 		int skin{ -1 };
 		int pad;
 	};
-	Microsoft::WRL::ComPtr<ID3D11Buffer> primitive_cbuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> primitiveCbuffer;
 };

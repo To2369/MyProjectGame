@@ -22,12 +22,6 @@ void StateMachine::SetState(int setState)
 // ステート変更
 void StateMachine::ChangeState(int newState)
 {
-	// TODO 02_02 ステートの切り替え。
-	// 現在のステートのExit関数を実行、新しいステートをセット、新しいステートのEnter関数を呼び出す。
-	/*currentState->Exit();
-	currentState = statePool.at(newState);
-
-	currentState->Enter();*/
 	currentState->GetSubState()->Exit();
 	currentState->Exit();
 	currentState = statePool.at(newState);

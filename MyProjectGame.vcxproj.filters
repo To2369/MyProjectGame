@@ -210,6 +210,9 @@
     <ClInclude Include="Source\Graphics\CapsuleOneWay.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Mask.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -371,6 +374,9 @@
     <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Mask.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -413,6 +419,9 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\GaussianFiltering.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\SpriteDissolve.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -487,6 +496,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\GaussianFilteringPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\SpriteDissolveVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\SpriteDissolvePS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

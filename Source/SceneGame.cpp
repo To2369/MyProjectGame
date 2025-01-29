@@ -59,6 +59,7 @@ void SceneGame::Initialize()
     skillArtsSellect = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Fonts\\font4.png");
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
         gaussian_filter_pixel_shader.GetAddressOf());
+    dummy_sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\chip_win.png");
 }
 
 //èIóπâª
@@ -393,6 +394,11 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
             static_cast<float>(spritEnergyGauge->GetTextureHeight())
         ); 
     }
+
+    dummy_sprite->Render(dc,
+        256,
+        128,
+        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);
 }
 
 void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)

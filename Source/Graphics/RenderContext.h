@@ -7,6 +7,15 @@ struct LightData
 	DirectX::XMFLOAT4 color;	// 色
 };
 
+// マスクデータ
+struct MaskData
+{
+	ID3D11ShaderResourceView* maskTexture;
+	float						dissolveThreshold;
+	float						edgeThreshold;		// 縁の閾値
+	DirectX::XMFLOAT4			edgeColor;			// 縁の色
+};
+
 // 色調補正情報
 struct ColorGradingData
 {
@@ -27,6 +36,7 @@ struct RenderContext
 	//色調補正情報
 	ColorGradingData colorGradingData;
 	LightData lightData;
+	MaskData maskData;
 	//GlitchNoiseData glitchnoiseData;
 };
 

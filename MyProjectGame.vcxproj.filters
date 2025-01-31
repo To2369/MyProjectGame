@@ -210,9 +210,6 @@
     <ClInclude Include="Source\Graphics\CapsuleOneWay.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\Mask.h">
-      <Filter>Sources\Graphics</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -372,9 +369,6 @@
       <Filter>Sources\Skill</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp">
-      <Filter>Sources\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\Mask.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

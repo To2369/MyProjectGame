@@ -69,7 +69,10 @@ void Player::Update(float elapsedTime)
     //CollisionPlayerAndArts();
     artsMgr.Update(elapsedTime);
 
-    //Lock();
+    Lock();
+    {
+        
+    }
 
     UpdateStatus(elapsedTime);
 
@@ -463,17 +466,12 @@ void Player::DrawDebugPrimitive()
 }
 
 //入力値から移動ベクトルを取得
-DirectX::XMFLOAT3 Player::GetMoveVec() const
+DirectX::XMFLOAT3 Player::GetMoveVec(const DirectX::XMFLOAT3& cameraRight, const DirectX::XMFLOAT3& cameraFront) const
 {
     //入力情報を取得
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     float ax = gamePad->GetAxisLX();
     float ay = gamePad->GetAxisLY();
-
-    //カメラ方向を取得
-    Camera& camera = Camera::Instance();
-    const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
-    const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
 
     //移動ベクトルはXZ平面なベクトルになるようにする
     //カメラ右方向ベクトルをXZ単位ベクトルに変換
@@ -510,14 +508,23 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
 //操作移動
 bool Player::InputMove(float elapsedTime)
 {
+    Camera& camera = Camera::Instance();
+    DirectX::XMFLOAT3 cameraRight = camera.GetRight();
+    DirectX::XMFLOAT3 cameraFront = camera.GetFront();
+    cameraFront = lockDirection;
+    DirectX::XMVECTOR	z = DirectX::XMLoadFloat3(&lockDirection);
+    DirectX::XMVECTOR	y = DirectX::XMVectorSet(0, 1, 0, 0);
+    DirectX::XMVECTOR	x = DirectX::XMVector3Cross(y, z);
+    DirectX::XMStoreFloat3(&cameraRight, x);
+
     //進行ベクトルを取得
-    DirectX::XMFLOAT3 moveVec = GetMoveVec();
+    DirectX::XMFLOAT3 moveVec = GetMoveVec(cameraRight, cameraFront);
 
     Move(moveVec.x, moveVec.z, this->moveSpeed);
 
     //旋回処理
-    Turn(elapsedTime, moveVec.x, moveVec.z, this->turnSpeed);
-
+    //Turn(elapsedTime, moveVec.x, moveVec.z, this->turnSpeed);
+    Turn(elapsedTime, cameraFront.x, cameraFront.z, this->turnSpeed);
 
     //進行ベクトルがゼロベクトルでない場合は入力された
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
@@ -1179,68 +1186,37 @@ bool Player::InputAttack()
 
 void Player::Lock()
 {
-    /// 一番近くの敵をターゲットに設定
-    float minDistance = FLT_MAX;
-    Enemy* closestEnemy = nullptr;
-    EnemyManager& enemyMgr = EnemyManager::Instance();
-    int enemyCount = enemyMgr.GetEnemyCount();
-
-    for (int i = 0; i < enemyCount; ++i)
+    DirectX::XMVECTOR p, t, v;
+    Mouse* mouse = InputManager::Instance()->getMouse();
+    if (mouse->GetButtonDown()&Mouse::BTN_MIDDLE)
     {
-        Enemy* enemy = enemyMgr.GetEnemy(i);
-
-        // 敵との距離を計算
-        DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
-        DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-        DirectX::XMVECTOR vecToEnemy = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
-        DirectX::XMVECTOR lengthSqVec = DirectX::XMVector3LengthSq(vecToEnemy);
-
-        float distance;
-        DirectX::XMStoreFloat(&distance, lengthSqVec);
-        if (distance < minDistance)
+        if (lockon)
         {
-            minDistance = distance;
-            closestEnemy = enemy;
-        }
-    }
-
-    if (closestEnemy)
-    {
-        // 敵の方向を計算
-        DirectX::XMFLOAT3 enemyPos = closestEnemy->GetPosition();
-        DirectX::XMVECTOR enemyPosVec = DirectX::XMLoadFloat3(&enemyPos);
-        DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&position);
-        DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(enemyPosVec, playerPosVec);
-        directionVec = DirectX::XMVector3Normalize(directionVec);
-
-        // 敵の方向を向くための回転クォータニオンを設定
-        DirectX::XMVECTOR cross = DirectX::XMVector3Cross(front, directionVec);
-        float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(front, directionVec));
-
-        // ターゲット方向への回転クォータニオンを求める
-        DirectX::XMVECTOR targetQuaternion;
-        if (!DirectX::XMVector3Equal(cross, DirectX::XMVectorZero()))
-        {
-            // 外積がゼロでない場合、通常の回転軸でクォータニオンを生成
-            float angleRadians = acosf(dot);
-            targetQuaternion = DirectX::XMQuaternionRotationAxis(DirectX::XMVector3Normalize(cross), angleRadians);
+            lockon = false;
         }
         else
         {
-            // 外積がゼロの場合、完全に同方向または反対方向
-            if (dot > 0.0f)
+            lockon = true;
+        }
+    }
+    if (lockon)
+    {
+        EnemyManager& enemyMgr = EnemyManager::Instance();
+        int enemyCount = enemyMgr.GetEnemyCount();
+        {
+            Enemy* enemy = enemyMgr.GetEnemy(0);
+
             {
-                targetQuaternion = DirectX::XMQuaternionIdentity();  // 同方向の場合、回転不要
-            }
-            else
-            {
-                targetQuaternion = DirectX::XMQuaternionRotationAxis(up, DirectX::XM_PI); // 反対方向の場合、180度回転
+                p = DirectX::XMLoadFloat3(&position);
+                t = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                v = DirectX::XMVectorSubtract(t, p);
+
+                DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
             }
         }
+    }
+    else
+    {
 
-        // スムーズに補間して回転を設定する（例えば0.1の割合で補間）
-        DirectX::XMVECTOR currentQuaternion = DirectX::XMLoadFloat4(&quaternion);
-        DirectX::XMVECTOR smoothedQuaternion = DirectX::XMQuaternionSlerp(currentQuaternion, targetQuaternion, 0.1f);
-        DirectX::XMStoreFloat4(&quaternion, smoothedQuaternion);
     }
 }

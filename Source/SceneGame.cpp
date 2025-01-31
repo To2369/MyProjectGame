@@ -60,6 +60,10 @@ void SceneGame::Initialize()
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
         gaussian_filter_pixel_shader.GetAddressOf());
     dummy_sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\chip_win.png");
+
+    dissolveThreshold = 0.0f;
+    edgeThreshold = 0.2f;		// 縁の閾値
+    edgeColor = { 1,0,0,1 };	// 縁の色
 }
 
 //終了化
@@ -172,6 +176,14 @@ void SceneGame::Update(float elapsedTime)
         ImGui::TreePop();
     }
     ImGui::Separator();
+    if (ImGui::TreeNode("Mask"))
+    {
+        ImGui::SliderFloat("Dissolve Threshold", &dissolveThreshold, 0.0f, 1.0f);
+        ImGui::SliderFloat("Edge Threshold", &edgeThreshold, 0.0f, 1.0f);
+        ImGui::ColorEdit4("Edge Color", &edgeColor.x);
+        ImGui::TreePop();
+    }
+    ImGui::Separator();
 
     ImGui::End();
 #endif
@@ -275,10 +287,9 @@ void SceneGame::Render()
     {
         SpriteShader* shader = graphics->GetShader(SpriteShaderId::ColorGrading);
         shader->Begin(rc);
-
+        
         //rc.colorGradingData = colorGradingData;
-
-        sprite->SetShaderResourceView(framebuffers[0]->shaderResourceViews[0], 1280, 720);
+        sprite->SetShaderResourceView(framebuffers[0]->shaderResourceViews[0], 1920, 1080);
         shader->Draw(rc, sprite.get());
         //sprite->Render(dc, 256, 128, 1280-256*2, 720-128*2, 1, 1, 1, 1, 0);
         //	ガウスフィルター
@@ -292,7 +303,6 @@ void SceneGame::Render()
             sprite->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);*/
         }
         shader->End(rc);
-
     }
 
     // 2D 描画設定
@@ -395,10 +405,10 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         ); 
     }
 
-    dummy_sprite->Render(dc,
+  /*  dummy_sprite->Render(dc,
         256,
         128,
-        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);
+        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);*/
 }
 
 void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)

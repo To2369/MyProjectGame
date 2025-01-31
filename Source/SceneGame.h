@@ -138,5 +138,8 @@ private:
     D3D11_TEXTURE2D_DESC mask_texture2dDesc;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mask_texture;
     std::unique_ptr<Sprite> dummy_sprite;
+    float						dissolveThreshold;
+    float						edgeThreshold;		// ‰‚Ìè‡’l
+    DirectX::XMFLOAT4			edgeColor;			// ‰‚ÌF
 
 };

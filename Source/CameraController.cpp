@@ -7,8 +7,6 @@
 #include "../Imgui/imgui_internal.h"
 #include "../Imgui/imgui_impl_dx11.h"
 #include "../Imgui/imgui_impl_win32.h"
-//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-//extern ImWchar glyphRangesJapanese[];
 #endif
 //更新処理
 void CameraController::Update(float elapsedTime)
@@ -18,82 +16,77 @@ void CameraController::Update(float elapsedTime)
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     Mouse* mouse = InputManager::Instance()->getMouse();
 
- /*   DirectX::XMFLOAT2 mouseOldPosition = { (float)mouse->GetOldPositionX(),(float)mouse->GetOldPositionY() };
-    float ax = gamePad->GetAxisRX();
-    float ay = gamePad->GetAxisRY();*/
+    POINT mousePosition;
+    GetCursorPos(&mousePosition);
+
+    // 画面中央
+    const float centerX = 1920 / 2;
+    const float centerY = 1080 / 2;
+
+    //　マウス移動量
+    float deltaX = static_cast<float>(mousePosition.x - centerX);
+    float deltaY = static_cast<float>(mousePosition.y - centerY);
     if (mouseMoveFlag)
     {
-        // マウスの現在の位置
-        POINT mousePosition;
-        GetCursorPos(&mousePosition);
-
-        // 画面中央
-        const float centerX = 1920 / 2;
-        const float centerY = 1080 / 2;
-
-        //　マウス移動量
-        float deltaX = static_cast<float>(mousePosition.x - centerX);
-        float deltaY = static_cast<float>(mousePosition.y - centerY);
-
         // マウスカーソルを中央に戻す
         SetCursorPos(centerX, centerY);
-        //カメラの回転速度
-        constexpr float rollSpeed = DirectX::XMConvertToRadians(90);
-        float speed = rollSpeed * elapsedTime;
-        float ax = gamePad->GetAxisRX();
-        float ay = gamePad->GetAxisRY();
+    }
+    //カメラの回転速度
+    constexpr float rollSpeed = DirectX::XMConvertToRadians(90);
+    float speed = rollSpeed * elapsedTime;
+    float ax = gamePad->GetAxisRX();
+    float ay = gamePad->GetAxisRY();
 
-        // コントローラーでカメラ操作する場合
-        if (ax!=0||ay!=0)
-        {
-            cameraAngle.x += ay * speed;
-            cameraAngle.y += ax * speed;
-        }
-        // マウスでカメラ操作
-        else
-        {
-            cameraAngle.y += deltaX * sensi*0.5f;
-            cameraAngle.x += deltaY * sensi*0.5f;
-        }
-        //X軸のカメラ回転を上下45度に制限
-        constexpr float maxAngle = DirectX::XMConvertToRadians(45);
-        constexpr float minAngle = DirectX::XMConvertToRadians(-45);
+    // コントローラーでカメラ操作する場合
+    if (ax != 0 || ay != 0)
+    {
+        cameraAngle.x += ay * speed;
+        cameraAngle.y += ax * speed;
+    }
+    // マウスでカメラ操作
+    else
+    {
+        cameraAngle.y += deltaX * sensi * 0.5f;
+        cameraAngle.x += deltaY * sensi * 0.5f;
+    }
+    //X軸のカメラ回転を上下45度に制限
+    constexpr float maxAngle = DirectX::XMConvertToRadians(45);
+    constexpr float minAngle = DirectX::XMConvertToRadians(-45);
 
-        //X軸のカメラ回転を制限
-        if (cameraAngle.x < minAngle)
-        {
-            cameraAngle.x = minAngle;
-        }
+    //X軸のカメラ回転を制限
+    if (cameraAngle.x < minAngle)
+    {
+        cameraAngle.x = minAngle;
+    }
 
-        if (cameraAngle.x > maxAngle)
-        {
-            cameraAngle.x = maxAngle;
-        }
+    if (cameraAngle.x > maxAngle)
+    {
+        cameraAngle.x = maxAngle;
+    }
 
-        //Y軸の回転値を-3.14~3.14に収まるようにする
-        if (cameraAngle.y < -DirectX::XM_PI)
-        {
-            cameraAngle.y += DirectX::XM_2PI;
-        }
-        if (cameraAngle.y > DirectX::XM_PI)
-        {
-            cameraAngle.y -= DirectX::XM_2PI;
-        }
+    //Y軸の回転値を-3.14~3.14に収まるようにする
+    if (cameraAngle.y < -DirectX::XM_PI)
+    {
+        cameraAngle.y += DirectX::XM_2PI;
+    }
+    if (cameraAngle.y > DirectX::XM_PI)
+    {
+        cameraAngle.y -= DirectX::XM_2PI;
+    }
 
-        if (cutInFlag)
-        {
-            cameraAngle.x = 0.5f;
-            cameraAngle.y = 3.0f;
-            range = 2;
-            targetY = 1;
-            sensi = 0;
-        }
-        else
-        {
-            range = 10.0f;
-            targetY = 1;
-            sensi = 0.005f;
-        }
+    if (cutInFlag)
+    {
+        cameraAngle.x = 0.5f;
+        cameraAngle.y = 3.0f;
+        range = 2;
+        targetY = 1;
+        sensi = 0;
+    }
+    else
+    {
+        range = 10.0f;
+        targetY = 1;
+        sensi = 0.005f;
     }
     //カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(cameraAngle.x, cameraAngle.y, cameraAngle.z);

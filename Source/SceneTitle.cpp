@@ -25,8 +25,7 @@ void SceneTitle::Initialize()
         DirectX::XMFLOAT3(0, 1, 0)			//カメラの上方向
     );
     cameraCtrl = std::make_unique<CameraController>();
-
-
+    sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\screenshot.jpg");
 }
 
 //終了化
@@ -93,14 +92,10 @@ void SceneTitle::Render()
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // 2D 描画
     {
-
-
-        /* sprite_batches[0]->Begin(dc,sprite_batches[0]->GetReplaced_pixel_shader(),sprite_batches[0]->GetReplaced_Shader_resource_view());
-         sprite_batches[0]->Render(dc,0,0,1280,720);
-         sprite_batches[0]->End(dc);*/
-
-         //dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
-         //spr[0]->Textout(dc, "ECC", 0, 0, 16, 16, 1, 1, 1, 1);
+        sprite->Render(
+            dc,
+            0, 0,
+            1920, 1080, 1, 1, 1, 1, 0);
     }
     // 2DデバッグGUI描画
     {
@@ -120,15 +115,6 @@ void SceneTitle::Render()
     {
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
-
-        ////ステージの描画
-        //StageManager::Instance()->render(dc);
-
-        ////プレイヤーの描画
-        //PlayerManager::Instance()->render(dc);
-
-        ////敵描画
-        //EnemyManager::instance()->render(dc);
     }
 
     // 3Dデバッグ描画

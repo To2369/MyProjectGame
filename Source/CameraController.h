@@ -12,6 +12,8 @@ public:
     //更新処理
     void Update(float elapsedTime);
 
+    void LockOnMode();
+
     //ターゲットの位置設定
     void SetTarget(const DirectX::XMFLOAT3& t) { this->target = t; }
 

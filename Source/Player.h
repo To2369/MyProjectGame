@@ -53,6 +53,8 @@ enum AnimationNum
 	AnimConbo01,
 	AnimConbo02,
 };
+
+
 // プレイヤー
 class Player :public Character
 {
@@ -128,7 +130,7 @@ public:
 	bool artSkillReady = false;
 	bool artUltSkillReady = false;
 	void InputFlying(float elapsedTime);
-	DirectX::XMFLOAT3 GetMoveVec() const;
+	DirectX::XMFLOAT3 GetMoveVec(const DirectX::XMFLOAT3& cameraRight, const DirectX::XMFLOAT3& cameraFront) const;
 
 	void Lock();
 
@@ -152,6 +154,12 @@ private:
 	std::unique_ptr<StateMachine> stateMachine;
 	std::unique_ptr<Model> model;
 	std::unique_ptr<GeometricPrimitive> geo;
+
+	enum class LockonState
+	{
+		NotLocked,
+		Locked,
+	};
 	// 移動スピード
 	float moveSpeed = 5.0f;
 	// 旋回スピード
@@ -195,4 +203,10 @@ private:
 	float totalAnimationTime = 0;
 
 	int hit = 0;
+
+	DirectX::XMFLOAT3	lockDirection;
+
+	bool lockon = false;
+
+	LockonState lockonState = LockonState::NotLocked;
 };

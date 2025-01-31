@@ -33,7 +33,7 @@ public:
     // シーン定数バッファ
     Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 private:
-    std::unique_ptr<Sprite> spr[8];
+    std::unique_ptr<Sprite> sprite;
     std::unique_ptr<SpriteBatch> sprite_batches[8];
     const wchar_t* filename[8] = { 
         L".\\Data\\Fonts\\font4.png",

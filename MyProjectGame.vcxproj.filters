@@ -210,6 +210,9 @@
     <ClInclude Include="Source\Graphics\CapsuleOneWay.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\MaskShader.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -371,6 +374,9 @@
     <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\MaskShader.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -415,7 +421,10 @@
     <None Include="HLSL\GaussianFiltering.hlsli">
       <Filter>HLSL</Filter>
     </None>
-    <None Include="HLSL\SpriteDissolve.hlsli">
+    <None Include="HLSL\Mask.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\UVScroll.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -492,10 +501,16 @@
     <FxCompile Include="HLSL\GaussianFilteringPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\SpriteDissolveVS.hlsl">
+    <FxCompile Include="HLSL\MaskPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\SpriteDissolvePS.hlsl">
+    <FxCompile Include="HLSL\MaskVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\UVScrollVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\UVScrollPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

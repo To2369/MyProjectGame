@@ -8,7 +8,6 @@
 #include "DebugPrimitive.h"
 #include "Shader.h"
 #include "Light.h"
-
 enum class ModelShaderId
 {
 	Default,

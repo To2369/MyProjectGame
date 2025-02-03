@@ -16,6 +16,7 @@ void SceneGame::Initialize()
     CreateBuffer<SceneGame::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
     CreateBuffer<SceneGame::light_constants>(graphics->GetDevice(), light_constant_buffer.GetAddressOf());
     CreateBuffer<SceneGame::gaussian_filter_constants>(graphics->GetDevice(), gaussian_filter_constant_buffer.GetAddressOf());
+    CreateBuffer<SceneGame::scroll_constants>(graphics->GetDevice(), scroll_constant_buffer.GetAddressOf());
     camera = &Camera::Instance();
     float x, y;
     x = static_cast<float>(graphics->GetScreenWidth());
@@ -178,6 +179,9 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Separator();
     if (ImGui::TreeNode("Mask"))
     {
+        //ImGui::Checkbox("utility flag", &flag);
+        ImGui::SliderFloat2("scroll_direction", &scroll_direction.x, -10.0f, +10.0f);
+
         ImGui::SliderFloat("Dissolve Threshold", &dissolveThreshold, 0.0f, 1.0f);
         ImGui::SliderFloat("Edge Threshold", &edgeThreshold, 0.0f, 1.0f);
         ImGui::ColorEdit4("Edge Color", &edgeColor.x);
@@ -235,7 +239,6 @@ void SceneGame::Render()
     {
         //’è”ƒoƒbƒtƒ@‚Ì“o˜^
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
-
 
         stage->Render(dc);
         //shadowMapCaster->Render(dc);
@@ -301,6 +304,8 @@ void SceneGame::Render()
             dc->PSSetConstantBuffers(1, 1, gaussian_filter_constant_buffer.GetAddressOf());
             dc->PSSetShader(gaussian_filter_pixel_shader.Get(), nullptr, 0);
             sprite->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);*/
+        }
+        {
         }
         shader->End(rc);
     }
@@ -405,10 +410,15 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         ); 
     }
 
-  /*  dummy_sprite->Render(dc,
+    scroll_constants scroll{};
+    scroll.scroll_direction.x = scroll_direction.x;
+    scroll.scroll_direction.y = scroll_direction.y;
+
+    BindBuffer(dc, 2, scroll_constant_buffer.GetAddressOf(), &scroll);
+    dummy_sprite->Render(dc,
         256,
         128,
-        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);*/
+        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);
 }
 
 void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)

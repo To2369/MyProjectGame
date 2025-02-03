@@ -15,7 +15,7 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 	input_mgr = InputManager::Instance()->initialize(hwnd);
 
 	//ƒV[ƒ“‰Šú‰»
-	SceneManager::Instance().ChangeScene(new SceneTitle);
+	SceneManager::Instance().ChangeScene(new SceneGame);
 }
 
 Framework::~Framework()

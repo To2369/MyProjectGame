@@ -101,6 +101,16 @@ gaussian_filter_constants gaussian_filter_constant;
 Microsoft::WRL::ComPtr<ID3D11Buffer> gaussian_filter_constant_buffer;
 Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussian_filter_pixel_shader;
 
+
+struct scroll_constants
+{
+    DirectX::XMFLOAT2 scroll_direction;
+    DirectX::XMFLOAT2 scroll_dummy;
+};
+
+Microsoft::WRL::ComPtr<ID3D11Buffer> scroll_constant_buffer;
+DirectX::XMFLOAT2 scroll_direction;
+
 private:
     std::unique_ptr<FrameBuffer> framebuffers[8];
 

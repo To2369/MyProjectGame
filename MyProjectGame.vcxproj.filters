@@ -213,6 +213,10 @@
     <ClInclude Include="Source\Graphics\MaskShader.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\Mask.h">
+      <Filter>Sources\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MessageData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -377,6 +381,9 @@
     <ClCompile Include="Source\Graphics\MaskShader.cpp">
       <Filter>Sources\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Mask.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -504,13 +511,13 @@
     <FxCompile Include="HLSL\MaskPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\MaskVS.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="HLSL\UVScrollVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\UVScrollPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\MaskVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

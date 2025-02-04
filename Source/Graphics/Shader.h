@@ -3,6 +3,13 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "RenderContext.h"
+enum SPRITE_SHADER_STATE
+{
+	DEFAULT,
+	MASK,
+
+	EnumMax
+};
 
 class Sprite;
 class ShaderManager

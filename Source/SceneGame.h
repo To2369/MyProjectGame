@@ -12,6 +12,7 @@
 #include "Graphics/ColorGrading.h"
 #include "Graphics/RenderContext.h"
 #include "Graphics\Light.h"
+#include "Graphics\Mask.h"
 //タイトルシーン
 class SceneGame :public Scene
 {
@@ -123,6 +124,7 @@ private:
     std::unique_ptr<Sprite> sprite;
 
     std::unique_ptr<Sprite> skillArtsSellect;
+    std::unique_ptr<Mask> mask;
 private:
     //ライトの方向
     DirectX::XMFLOAT4 light_direction{ 0.0f,-1.0f,0.0f,0.0f };
@@ -148,8 +150,4 @@ private:
     D3D11_TEXTURE2D_DESC mask_texture2dDesc;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mask_texture;
     std::unique_ptr<Sprite> dummy_sprite;
-    float						dissolveThreshold;
-    float						edgeThreshold;		// 縁の閾値
-    DirectX::XMFLOAT4			edgeColor;			// 縁の色
-
 };

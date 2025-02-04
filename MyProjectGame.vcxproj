@@ -196,6 +196,7 @@
     <ClInclude Include="Source\Graphics\Graphics.h" />
     <ClInclude Include="Source\Graphics\Light.h" />
     <ClInclude Include="Source\Graphics\LineRenderer.h" />
+    <ClInclude Include="Source\Graphics\Mask.h" />
     <ClInclude Include="Source\Graphics\MaskShader.h" />
     <ClInclude Include="Source\Graphics\Model.h" />
     <ClInclude Include="Source\Graphics\RenderState.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Source\Input\InputManager.h" />
     <ClInclude Include="Source\Input\Mouse.h" />
     <ClInclude Include="Source\Mathf.h" />
+    <ClInclude Include="Source\MessageData.h" />
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\NormalBallet.h" />
     <ClInclude Include="Source\Player.h" />
@@ -254,6 +256,7 @@
     <ClCompile Include="Source\Graphics\Graphics.cpp" />
     <ClCompile Include="Source\Graphics\Light.cpp" />
     <ClCompile Include="Source\Graphics\LineRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\Mask.cpp" />
     <ClCompile Include="Source\Graphics\MaskShader.cpp" />
     <ClCompile Include="Source\Graphics\Model.cpp" />
     <ClCompile Include="Source\Graphics\RenderState.cpp" />

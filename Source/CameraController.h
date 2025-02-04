@@ -12,8 +12,8 @@ public:
     //更新処理
     void Update(float elapsedTime);
 
-    void LockOnMode();
-
+    void LockOnMode(float elapsedTime);
+    void FreeCamera(float elapsedTime);
     //ターゲットの位置設定
     void SetTarget(const DirectX::XMFLOAT3& t) { this->target = t; }
 
@@ -33,4 +33,10 @@ private:
     bool mouseMoveFlag = true;
     float targetY = 0;
     bool cutInFlag = false;
+
+    DirectX::XMFLOAT3	newPosition = { 0, 0, 0 };
+    DirectX::XMFLOAT3	newTarget = { 0, 0, 0 };
+    DirectX::XMFLOAT3	targetWork[2] = { { 0, 0, 0 }, { 0, 0, 0 } };	// 0 : 座標, 1 : 注視点
+    float				lengthLimit[2] = { 5, 7 };
+    float				sideValue = 1;
 };

@@ -16,7 +16,7 @@ void SceneGame::Initialize()
     CreateBuffer<SceneGame::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
     CreateBuffer<SceneGame::light_constants>(graphics->GetDevice(), light_constant_buffer.GetAddressOf());
     CreateBuffer<SceneGame::gaussian_filter_constants>(graphics->GetDevice(), gaussian_filter_constant_buffer.GetAddressOf());
-    CreateBuffer<SceneGame::scroll_constants>(graphics->GetDevice(), scroll_constant_buffer.GetAddressOf());
+   
     camera = &Camera::Instance();
     float x, y;
     x = static_cast<float>(graphics->GetScreenWidth());
@@ -61,10 +61,10 @@ void SceneGame::Initialize()
     ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
         gaussian_filter_pixel_shader.GetAddressOf());
     dummy_sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\chip_win.png");
+    ShaderManager::Instance()->LoadTextureFromFile(graphics->GetDevice(), L".\\Data\\resources\\mask\\dissolve_animation.png",
+        mask_texture.GetAddressOf(),&mask_texture2dDesc);
 
-    dissolveThreshold = 0.0f;
-    edgeThreshold = 0.2f;		// 縁の閾値
-    edgeColor = { 1,0,0,1 };	// 縁の色
+    mask = std::make_unique<Mask>(graphics->GetDevice());
 }
 
 //終了化
@@ -179,12 +179,9 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Separator();
     if (ImGui::TreeNode("Mask"))
     {
+        //ImGui::SliderFloat("dissolve_value", &mask.get()->dissolve_value, 0.0f, +1.0f);
         //ImGui::Checkbox("utility flag", &flag);
-        ImGui::SliderFloat2("scroll_direction", &scroll_direction.x, -10.0f, +10.0f);
 
-        ImGui::SliderFloat("Dissolve Threshold", &dissolveThreshold, 0.0f, 1.0f);
-        ImGui::SliderFloat("Edge Threshold", &edgeThreshold, 0.0f, 1.0f);
-        ImGui::ColorEdit4("Edge Color", &edgeColor.x);
         ImGui::TreePop();
     }
     ImGui::Separator();
@@ -343,7 +340,7 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
     dc->OMSetDepthStencilState(rc->renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(rc->renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // ゲージの長さ
-    const float lifegaugeWidth = 600.0f;
+    const float lifegaugeWidth = 800.0f;
     const float lifegaugeHeight = 50.0f;
 
     const float spiritgaugeWidth = 500.0f;
@@ -373,12 +370,13 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         dc,
         25,
         100,
-        548,
+        694*skillEnergyRate,
         16,
         1.0f, 1.0f, 1.0f, 1.0f,
         0.0f,
-        548 , 0,
-        100,
+        694,
+        0,
+        694,
         static_cast<float>(skillEnergyGauge->GetTextureHeight())
     );
     // 技力ゲージの囲い
@@ -386,12 +384,13 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         dc,
         25,
         100,
-        548,
+        694,
         16,
         1.0f, 1.0f, 1.0f, 1.0f,
         0.0f,
-        0, 0,
-        548,
+        0,
+        0,
+        694,
         static_cast<float>(skillEnergyGauge->GetTextureHeight())
     );
     for(int i=0;i<player->GetSpritGaugeCount();i++)
@@ -409,16 +408,6 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
             static_cast<float>(spritEnergyGauge->GetTextureHeight())
         ); 
     }
-
-    scroll_constants scroll{};
-    scroll.scroll_direction.x = scroll_direction.x;
-    scroll.scroll_direction.y = scroll_direction.y;
-
-    BindBuffer(dc, 2, scroll_constant_buffer.GetAddressOf(), &scroll);
-    dummy_sprite->Render(dc,
-        256,
-        128,
-        1920 - 256 * 2, 1080- 128 * 2,1,1,1,1,0);
 }
 
 void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)

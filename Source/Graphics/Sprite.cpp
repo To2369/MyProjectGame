@@ -45,13 +45,14 @@ Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)
 
     // 頂点シェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\UVScrollVS.cso",
+        ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\SpriteVS.cso",
             vertexShader.GetAddressOf(), inputLayout.GetAddressOf(), inputElementDesc, ARRAYSIZE(inputElementDesc));
     }
+   
 
     // ピクセルシェーダーオブジェクトの生成
     {
-        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\UVScrollPS.cso",
+        ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SpritePS.cso",
             pixelShader.GetAddressOf());
     }
 

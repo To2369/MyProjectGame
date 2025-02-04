@@ -9,6 +9,7 @@
 #include "ArtsSkillStraightBallet.h"
 #include "StateDerived.h"
 #include "NormalBallet.h"
+#include "MessageData.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
@@ -1212,6 +1213,8 @@ void Player::Lock()
                 v = DirectX::XMVectorSubtract(t, p);
 
                 DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                MessageData::CAMERACHANGELOCKONMODEDATA p = { position,enemy->GetPosition() };
+
             }
         }
     }

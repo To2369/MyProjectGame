@@ -135,7 +135,7 @@ protected:
 	int spiritEnergy = 500;	//‹C—Í
 	int maxSpritEnergy = 500;//Å‘å‹C—Í
 	int skillEnergy = 200;	//‹Z—Í
-	int maxSkillEnergy = 900;	//Å‘å‹Z—Í
+	int maxSkillEnergy = 700;	//Å‘å‹Z—Í
 
 	float invincibleTimer = 0.5f;   // –³“GŠÔ
 	float friction = 0.5f; // –€C

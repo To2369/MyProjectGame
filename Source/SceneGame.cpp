@@ -51,7 +51,7 @@ void SceneGame::Initialize()
 
     lifegauge= std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
     skillEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\SkillGauge.png");
-    spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\SpiritGauge.png");
+    spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
     //shadowMapCaster = std::make_unique<ShadowMapCaster>(graphics->GetDevice());
     //colorGrading = std::make_unique<ColorGraging>(graphics->GetDevice());
     framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
@@ -350,7 +350,7 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
     const float skillgaugeHeight = 25.0f;
 
     float healthRate = player->GetHealth() / static_cast<float>(player->GetMaxHealth());
-    float spiritEnergyRate = player->GetSpritOneGauge() / 100.0f;
+    float spiritEnergyRate = player->GetSpritEnergy() / static_cast<float>(player->GetMaxSpritEnergy());
     float skillEnergyRate = player->GetSkillEnergy() / static_cast<float>(player->GetMaxSkillEnergy());
     // ƒQ[ƒW•`‰æ
     lifegauge->Render(
@@ -393,21 +393,18 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         694,
         static_cast<float>(skillEnergyGauge->GetTextureHeight())
     );
-    for(int i=0;i<player->GetSpritGaugeCount();i++)
-    {
-        spritEnergyGauge->Render(
-            dc,
-            50 + (32 * i),
-            150,
-            42,
-            32 *-spiritEnergyRate,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            0.0f,
-            0, 0,
-            static_cast<float>(spritEnergyGauge->GetTextureWidth()),
-            static_cast<float>(spritEnergyGauge->GetTextureHeight())
-        ); 
-    }
+    spritEnergyGauge->Render(
+        dc,
+        50,
+        150,
+        spiritgaugeWidth * spiritEnergyRate,
+        spiritgaugeHeight,
+        0.0f, 0.3f, 1.0f, 1.0f,
+        0.0f,
+        0, 0,
+        static_cast<float>(spritEnergyGauge->GetTextureWidth()),
+        static_cast<float>(spritEnergyGauge->GetTextureHeight())
+    );
 }
 
 void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)

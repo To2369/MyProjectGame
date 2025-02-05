@@ -10,6 +10,9 @@ EnemySlime::EnemySlime()
 
 	radius = 0.5f;  // •
 	height = 1.0f;  // ‚‚³
+
+    maxHealth = 1000;
+    health = maxHealth;
 }
 
 void EnemySlime::Update(float elapsedTime)

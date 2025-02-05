@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 06a60b1578937ff40a0c7c15fc0e2b9c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262994
+  packageName: MuayThai AnimSet
+  packageVersion: 1.01
+  assetPath: Assets/MuayThai_AnimSet/AnimatorContrl/attack03.controller
+  uploadId: 712304

@@ -5,6 +5,12 @@
 //カメラ操作
 class CameraController
 {
+    // モード
+    enum class Mode
+    {
+        FreeCamera,		// フリーカメラ
+        LockonCamera,	// ロックオンカメラ
+    };
 public:
     CameraController() {}
     ~CameraController() {}
@@ -12,7 +18,7 @@ public:
     //更新処理
     void Update(float elapsedTime);
 
-    void LockOnMode(float elapsedTime);
+    void LockonCamera(float elapsedTime);
     void FreeCamera(float elapsedTime);
     //ターゲットの位置設定
     void SetTarget(const DirectX::XMFLOAT3& t) { this->target = t; }
@@ -25,6 +31,7 @@ public:
     void SetCutInFlag(const bool& flag) { this->cutInFlag = flag; }
     void DrawDebugGUI();
 private:
+    Mode mode = Mode::FreeCamera;
     DirectX::XMFLOAT3 target = { 0,0,0 };       //ターゲットの位置
     DirectX::XMFLOAT3 angle = { 0,0,0 };        //カメラの角度
     float range = 10.0f;                        //一定距離

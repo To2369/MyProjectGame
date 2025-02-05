@@ -13,7 +13,7 @@
 enum AnimationNum
 {
 	AnimTpose,
-	AnimIdle,
+	AnimIdleNormal,
 	AnimConbatIdle,
 	AnimConbo01_1,
 	AnimConbo01_2,
@@ -36,10 +36,10 @@ enum AnimationNum
 	AnimDead,
 	AnimDownEnd,
 	AnimDownStart,
-	AnimAvoidBack,
-	AnimAvoidFront,
-	AnimAvoidLeft,
-	AnimAvoidRight,
+	//AnimAvoidBack,
+	//AnimAvoidFront,
+	//AnimAvoidLeft,
+	//AnimAvoidRight,
 	AnimHitBack,
 	AnimHitFront,
 	AnimHitLeft,
@@ -50,8 +50,7 @@ enum AnimationNum
 	AnimRun,
 	AnimWalk,
 	AnimRise,
-	AnimConbo01,
-	AnimConbo02,
+	AnimUnequip,
 };
 
 

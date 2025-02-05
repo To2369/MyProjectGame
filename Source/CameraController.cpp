@@ -11,8 +11,12 @@
 //更新処理
 void CameraController::Update(float elapsedTime)
 {
-    //FreeCamera(elapsedTime);
-    LockOnMode(elapsedTime);
+    switch (mode)
+    {
+    case	Mode::FreeCamera:	FreeCamera(elapsedTime);	break;
+    case	Mode::LockonCamera:	LockonCamera(elapsedTime);	break;
+    }
+    //LockOnMode(elapsedTime);
     //カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(cameraAngle.x, cameraAngle.y, cameraAngle.z);
 
@@ -33,6 +37,9 @@ void CameraController::Update(float elapsedTime)
 
 void CameraController::DrawDebugGUI()
 {
+
+#ifdef USE_IMGUI
+
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_None))
@@ -42,6 +49,7 @@ void CameraController::DrawDebugGUI()
         ImGui::SliderFloat("targetY", &targetY, 0, 10);// カメラをキャラの中心ではなく自由に設定できるように
     }
     ImGui::End();
+#endif // USE_IMGUI
 }
 
 void CameraController::FreeCamera(float elapsedTime)
@@ -123,7 +131,7 @@ void CameraController::FreeCamera(float elapsedTime)
         sensi = 0.005f;
     }
 }
-void CameraController::LockOnMode(float elapsedTime)
+void CameraController::LockonCamera(float elapsedTime)
 {
     //	後方斜に移動させる
     DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, 0.5f, targetWork[0].z, 0);

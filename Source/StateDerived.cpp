@@ -299,7 +299,7 @@ void  WeakAttackState02::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.25f && animationTime <= 0.3f)
 	{
-
+		owner->CollisionNodeVsEnemies("ball_r", 0.3f);
 	}
 	if (owner->InputAttack())
 	{
@@ -328,7 +328,7 @@ void  WeakAttackState03::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.38f && animationTime <= 0.45f)
 	{
-
+		owner->CollisionNodeVsEnemies("ball_r", 0.3f);
 	}
 	if (owner->InputAttack())
 	{
@@ -439,7 +439,7 @@ void DashToEnemyState::Exit()
 
 void SkillSelectState::Enter()
 {
-	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimTpose), true);
+	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimUnequip), true);
 }
 
 void  SkillSelectState::Execute(float elapsedTime)

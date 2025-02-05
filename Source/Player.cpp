@@ -445,25 +445,6 @@ void Player::DrawDebugPrimitive()
     {
 
     }
-    if (attackCollisionFlag)
-    {
-        Skeleton::Bone* bone = model->FindNode("ball_l");
-        if (bone && !model->keyframe.nodes.empty())
-        {
-            //  外套のボーンのノードの市政情報を取得
-            auto& node = model->keyframe.nodes[bone->nodeIndex];
-            auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
-            DirectX::XMFLOAT4X4 worldTransform;
-            DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
-            debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
-                worldTransform._41,
-                worldTransform._42,
-                worldTransform._43),
-                0.3f,
-                DirectX::XMFLOAT4(0, 1, 0, 1)
-            );
-        }
-    }
 }
 
 //入力値から移動ベクトルを取得
@@ -565,8 +546,7 @@ bool Player::InputArts(float elapsedTime)
         artUltSkillReady = true;
         if (gamePad->GetButtonDown()& GamePad::BTN_B) // Qキー
         {
-            ArtsSpiritExplosion* artsSpiritExplosion = new ArtsSpiritExplosion(&artsMgr);
-            if (spiritEnergy >= artsSpiritExplosion->GetUseSpiritEnergy())
+            if (spiritEnergy >= 300)
             {
                 DirectX::XMFLOAT3 f;
                 DirectX::XMStoreFloat3(&f, front);
@@ -584,7 +564,9 @@ bool Player::InputArts(float elapsedTime)
                 pos.z = position.z;
 
                 // 発射
+                ArtsSpiritExplosion* artsSpiritExplosion = new ArtsSpiritExplosion(&artsMgr);
                 artsSpiritExplosion->Launch(dir, pos);
+
                 spiritEnergy -= artsSpiritExplosion->GetUseSpiritEnergy();
                 return true;
             }
@@ -923,7 +905,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 //吹き飛ばす移動方向の速度ベクトル
                 DirectX::XMFLOAT3 impulse;
                 //吹き飛ばす力
-                const float power = 1.0f;
+                const float power = 5.0f;
 
                 //敵の位置
                 DirectX::XMVECTOR enemyVec = DirectX::XMLoadFloat3(&enemys->GetPosition());
@@ -944,13 +926,39 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 enemys->AddImpulse(impulse);
             }
             //ヒットエフェクト再生
-            if (enemys->ApplyDamage(1, 1))
+            if (enemys->ApplyDamage(0.1f, 1))
             {
                 DirectX::XMFLOAT3 e = enemys->GetPosition();
                 e.y += enemys->GetHeight() * 0.5f;
                 //hitEffect->Play(e);
             }
         }
+    }
+
+    {
+#ifdef USE_IMGUI
+
+        DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
+        if (attackCollisionFlag)
+        {
+            Skeleton::Bone* bone = model->FindNode(nodeName);
+            if (bone && !model->keyframe.nodes.empty())
+            {
+                //  外套のボーンのノードの市政情報を取得
+                auto& node = model->keyframe.nodes[bone->nodeIndex];
+                auto WorldTransform = DirectX::XMLoadFloat4x4(&node.globalTransform) * DirectX::XMLoadFloat4x4(&transform);
+                DirectX::XMFLOAT4X4 worldTransform;
+                DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
+                debugPrimitive->DrawSphere(DirectX::XMFLOAT3(
+                    worldTransform._41,
+                    worldTransform._42,
+                    worldTransform._43),
+                    nodeRadius,
+                    DirectX::XMFLOAT4(0, 1, 0, 1)
+                );
+            }
+        }
+#endif //  DEBUG
     }
 }
 

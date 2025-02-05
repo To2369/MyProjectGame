@@ -44,13 +44,7 @@ void Character::UpdateStatus(float elapsedTime)
         if (energyRecoveryTimer <= 0)
         {
             spiritEnergy += spiritHealSpeed;
-            spritOneGauge += spiritHealSpeed;
             energyRecoveryTimer = 0.1f;
-            if (spritOneGauge >= 100)
-            {
-                spritOneGauge = 0;
-                spiritGaugeCount++;
-            }
         }
     }
     else

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c8682e2a2d630ba4da4ec05f07476045
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262994
+  packageName: MuayThai AnimSet
+  packageVersion: 1.01
+  assetPath: Assets/MuayThai_AnimSet/AnimatorContrl/idle02_normal.controller
+  uploadId: 712304

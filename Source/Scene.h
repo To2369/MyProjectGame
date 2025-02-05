@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_IMGUI
 
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_internal.h"
@@ -7,7 +6,7 @@
 #include "../Imgui/imgui_impl_win32.h"
 //extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //extern ImWchar glyphRangesJapanese[];
-#endif
+
 #include<wrl.h>
 #include<DirectXMath.h>
 #include"Graphics/Graphics.h"

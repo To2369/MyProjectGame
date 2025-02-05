@@ -132,7 +132,7 @@ protected:
 	float height = 2.0f;	// 高さ
 	int health = 5; // ライフ
 	int maxHealth = 5;	// 最大ライフ
-	int spiritEnergy = 500;	//気力
+	int spiritEnergy = 300;	//気力
 	int maxSpritEnergy = 500;//最大気力
 	int skillEnergy = 200;	//技力
 	int maxSkillEnergy = 700;	//最大技力

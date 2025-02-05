@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5376b79d916e85d45840b73722f34e05
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 262994
+  packageName: MuayThai AnimSet
+  packageVersion: 1.01
+  assetPath: Assets/MuayThai_AnimSet/AnimatorContrl/combo01_1.controller
+  uploadId: 712304

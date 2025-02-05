@@ -13,6 +13,8 @@ EnemySlime::EnemySlime()
 
     maxHealth = 1000;
     health = maxHealth;
+
+    position.y = 5.0f;
 }
 
 void EnemySlime::Update(float elapsedTime)

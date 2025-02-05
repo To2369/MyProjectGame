@@ -33,6 +33,7 @@ void Character::UpdateTransform()
     right = { transform._11,transform._12,transform._13 };
     up = { transform._21,transform._22,transform._23 };
     front = { transform._31,transform._32,transform._33 };
+
 }
 
 void Character::UpdateStatus(float elapsedTime)

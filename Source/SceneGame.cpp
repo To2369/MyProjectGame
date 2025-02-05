@@ -6,6 +6,9 @@
 #include "StageManager.h"
 #include "Graphics\Shader.h"
 #include "Input/InputManager.h"
+#include "SceneLoading.h"
+#include "SceneManager.h"
+#include "SceneTitle.h"
 //#include "Effect/EffectManager.h"
 //‰Šú‰»
 void SceneGame::Initialize()
@@ -65,18 +68,31 @@ void SceneGame::Initialize()
         mask_texture.GetAddressOf(),&mask_texture2dDesc);
 
     mask = std::make_unique<Mask>(graphics->GetDevice());
+
+    reset = false;
 }
 
 //I—¹‰»
 void SceneGame::Finalize()
 {
     EnemyManager::Instance().Clear();
+    //StageManager::Instance().Clear();
 }
 
 //XVˆ—
 void SceneGame::Update(float elapsedTime)
 {
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    Mouse* mouse = InputManager::Instance()->getMouse();
+
+    if (mouse->GetButton() & Mouse::BTN_LEFT&& mouse->GetButtonDown() & Mouse::BTN_RIGHT)
+    {
+    
+        {
+            play = true;
+            SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+        }
+
+    }
 
     player->Update(elapsedTime);
 

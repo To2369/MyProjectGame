@@ -105,9 +105,6 @@
     <ClInclude Include="Source\Camera.h">
       <Filter>Sources\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CameraController.h">
-      <Filter>Sources\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Source\SceneTest.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
@@ -216,7 +213,18 @@
     <ClInclude Include="Source\Graphics\Mask.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\MessageData.h" />
+    <ClInclude Include="Source\CameraController.h">
+      <Filter>Sources\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MessageData.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Messenger.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneLoading.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -383,6 +391,12 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\Mask.cpp">
       <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Messenger.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneLoading.cpp">
+      <Filter>Sources\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

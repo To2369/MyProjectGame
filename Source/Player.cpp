@@ -3,13 +3,14 @@
 #include "Input/GamePad.h"
 #include "Input/InputManager.h"
 #include "Camera.h"
-#include "EnemyManager.h"
 #include "Collision.h"
 #include "ArtsSpiritExplosion.h"
 #include "ArtsSkillStraightBallet.h"
 #include "StateDerived.h"
 #include "NormalBallet.h"
 #include "MessageData.h"
+#include "Messenger.h"
+#include "EnemyManager.h"
 Player::Player()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
@@ -47,6 +48,12 @@ Player::Player()
 
     //待機ステートへ遷移
     stateMachine->SetState(static_cast<int>(State::Movement));
+    position.y = 5.0f;
+    // カメラモード設定
+    {
+        MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+        Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+    }
 }
 
 Player::~Player()
@@ -493,11 +500,14 @@ bool Player::InputMove(float elapsedTime)
     Camera& camera = Camera::Instance();
     DirectX::XMFLOAT3 cameraRight = camera.GetRight();
     DirectX::XMFLOAT3 cameraFront = camera.GetFront();
-    cameraFront = lockDirection;
-    DirectX::XMVECTOR	z = DirectX::XMLoadFloat3(&lockDirection);
-    DirectX::XMVECTOR	y = DirectX::XMVectorSet(0, 1, 0, 0);
-    DirectX::XMVECTOR	x = DirectX::XMVector3Cross(y, z);
-    DirectX::XMStoreFloat3(&cameraRight, x);
+    if (lockonState != LockonState::NotLocked)
+    {
+        cameraFront = lockDirection;
+        DirectX::XMVECTOR	z = DirectX::XMLoadFloat3(&lockDirection);
+        DirectX::XMVECTOR	y = DirectX::XMVectorSet(0, 1, 0, 0);
+        DirectX::XMVECTOR	x = DirectX::XMVector3Cross(y, z);
+        DirectX::XMStoreFloat3(&cameraRight, x);
+    }
 
     //進行ベクトルを取得
     DirectX::XMFLOAT3 moveVec = GetMoveVec(cameraRight, cameraFront);
@@ -506,7 +516,15 @@ bool Player::InputMove(float elapsedTime)
 
     //旋回処理
     //Turn(elapsedTime, moveVec.x, moveVec.z, this->turnSpeed);
-    Turn(elapsedTime, cameraFront.x, cameraFront.z, this->turnSpeed);
+    if (lockonState != LockonState::NotLocked)
+    {
+        //	ロックオン処理中はロックオン対象に向ける
+        Turn(elapsedTime, cameraFront.x, cameraFront.z, turnSpeed);
+    }
+    else
+    {
+        Turn(elapsedTime, moveVec.x, moveVec.z, turnSpeed);
+    }
 
     //進行ベクトルがゼロベクトルでない場合は入力された
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
@@ -1195,9 +1213,14 @@ bool Player::InputAttack()
 
 void Player::Lock()
 {
-    DirectX::XMVECTOR p, t, v;
+    LockonState oldLockonState = lockonState;
+    Enemy* oldLockonenemy = lockonEnemy;
+    lockonState = LockonState::NotLocked;
+    lockonEnemy = nullptr;
+    EnemyManager& enemyMgr = EnemyManager::Instance();
+    int enemyCount = enemyMgr.GetEnemyCount();
     Mouse* mouse = InputManager::Instance()->getMouse();
-    if (mouse->GetButtonDown()&Mouse::BTN_MIDDLE)
+    if (mouse->GetButtonDown() & Mouse::BTN_MIDDLE)
     {
         if (lockon)
         {
@@ -1208,26 +1231,77 @@ void Player::Lock()
             lockon = true;
         }
     }
+
     if (lockon)
     {
-        EnemyManager& enemyMgr = EnemyManager::Instance();
-        int enemyCount = enemyMgr.GetEnemyCount();
+        DirectX::XMVECTOR p, t, v;
+        switch (oldLockonState)
         {
-            Enemy* enemy = enemyMgr.GetEnemy(0);
+        case Player::LockonState::NotLocked:
+            float	length1, length2;
 
+
+            for (int i = 0; i < enemyCount; ++i)
             {
-                p = DirectX::XMLoadFloat3(&position);
-                t = DirectX::XMLoadFloat3(&enemy->GetPosition());
-                v = DirectX::XMVectorSubtract(t, p);
+                Enemy* enemy = enemyMgr.GetEnemy(i);
 
-                DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
-                MessageData::CAMERACHANGELOCKONMODEDATA p = { position,enemy->GetPosition() };
+                if (lockonState != LockonState::NotLocked)
+                {
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&lockonEnemy->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+                    if (length1 < length2)
+                    {
+                        lockonEnemy = enemy;
+                        DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                    }
+                }
+                else
+                {
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
 
+                    lockonEnemy = enemy;
+                    DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                    lockonState = LockonState::Locked;
+                }
             }
+            break;
+        case Player::LockonState::Locked:
+            for (int i = 0; i < enemyCount; ++i)
+            {
+                Enemy* enemy = enemyMgr.GetEnemy(i);
+                if (enemy == oldLockonenemy)
+                {
+                    lockonEnemy = enemy;
+                    lockonState = LockonState::Locked;
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+
+                    lockonEnemy = enemy;
+                    DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                }
+            }
+            break;
         }
+        if (lockonState == LockonState::Locked)
+        {
+            MessageData::CAMERACHANGELOCKONMODEDATA	p = { position, lockonEnemy->GetPosition() };
+            Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
+        }
+
     }
     else
     {
-
+        MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+        Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
     }
 }

@@ -1,6 +1,10 @@
 #include"SceneTitle.h"
 #include"Graphics/RenderContext.h"
 #include"Graphics/RenderState.h"
+#include "Input/InputManager.h"
+#include "SceneLoading.h"
+#include "SceneManager.h"
+#include "SceneGame.h"
 //初期化
 void SceneTitle::Initialize()
 {
@@ -25,7 +29,8 @@ void SceneTitle::Initialize()
         DirectX::XMFLOAT3(0, 1, 0)			//カメラの上方向
     );
     cameraCtrl = std::make_unique<CameraController>();
-    sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\screenshot.jpg");
+    sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\Title.png");
+    push = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Fonts\\font4.png");
 }
 
 //終了化
@@ -45,7 +50,19 @@ void SceneTitle::Update(float elapsedTime)
     ImGui::NewFrame();
 #endif
 
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
 
+    // なにかボタンを押したらローディングシーンへ切り替え
+    const GamePadButton anyButton =
+        GamePad::BTN_A
+        | GamePad::BTN_B
+        | GamePad::BTN_X
+        | GamePad::BTN_Y
+        ;
+    if (gamePad->GetButtonDown() & anyButton)
+    {
+        SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+    }
 #ifdef USE_IMGUI
     ImGui::Begin("ImGUI");
   
@@ -96,6 +113,10 @@ void SceneTitle::Render()
             dc,
             0, 0,
             1920, 1080, 1, 1, 1, 1, 0);
+        dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ALPHABLENDING), nullptr, 0xFFFFFFFF);
+        dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+        push->Textout(dc, "pushbutton", 600, 900, 64, 64, 1, 1, 1, 1);
     }
     // 2DデバッグGUI描画
     {

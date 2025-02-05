@@ -6,6 +6,7 @@
 #include "Graphics/GeometricPrimitive.h"
 #include "StateMachine.h"
 #include"StateDerived.h"
+#include "Enemy.h"
 //#include "Effect/Effect.h"
 
 
@@ -208,4 +209,5 @@ private:
 	bool lockon = false;
 
 	LockonState lockonState = LockonState::NotLocked;
+	Enemy* lockonEnemy = nullptr;
 };

@@ -22,6 +22,15 @@ public:
     // ステージの取得
     Stage* GetStage(int index) { return stages.at(index); }
 
+    // ステージ全削除
+    void Clear()
+    {
+        for (Stage* stage : stages)
+        {
+            delete stage;
+        }
+        stages.clear();
+    }
 private:
     std::vector<Stage*> stages;
 };

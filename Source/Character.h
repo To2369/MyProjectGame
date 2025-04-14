@@ -73,6 +73,9 @@ public:
 	int GetMaxSkillEnergy() const { return maxSkillEnergy; }
 
 	bool IsUseSpiritEnergy()const { return useSpiritEnergyFlag; }
+
+	const DirectX::XMVECTOR& GetRight() const{ return right; }
+	const DirectX::XMVECTOR& GetFront() const { return front; }
 private:
 	// êÇíºë¨ìxçXêVèàóù
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -148,7 +151,7 @@ protected:
 	bool useSpiritEnergyFlag = false;
 	float energyRecoveryTimer = 0.0f;
 	float energyNoRecoveryTimer = 1.0f;
-	int spiritHealSpeed = 1;
+	int spiritHealSpeed = 5;
 	int spritOneGauge = 0;
 	int oneGaugeMax = 100;
 	int spiritGaugeCount = 1;

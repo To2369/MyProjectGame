@@ -2,7 +2,6 @@
 #include"Graphics.h"
 #include "Buffer.h"
 
-#include "ColorGrading.h"
 #include "MaskShader.h"
 // ‰Šú‰»ˆ—
 void Graphics::Initialize(HWND hwnd)
@@ -140,7 +139,6 @@ void Graphics::Initialize(HWND hwnd)
 
 	{
 		spriteShaders[static_cast<int>(SpriteShaderId::Mask)] = std::make_unique<MaskShader>(device.Get());
-		spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] = std::make_unique<ColorGraging>(device.Get());
 	}
 	// ƒŒƒ“ƒ_ƒ‰
 	{

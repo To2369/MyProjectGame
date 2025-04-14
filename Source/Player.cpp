@@ -78,8 +78,13 @@ void Player::Update(float elapsedTime)
     artsMgr.Update(elapsedTime);
 
     Lock();
+
+    InputDash(elapsedTime);
+
+    Mouse* mouse = InputManager::Instance()->getMouse();
+    if (mouse->GetButton() & Mouse::BTN_RIGHT)
     {
-        
+        TeleportBehindEnemy();
     }
 
     UpdateStatus(elapsedTime);
@@ -90,6 +95,7 @@ void Player::Update(float elapsedTime)
 	// ワールド行列更新
 	UpdateTransform();
 }
+
 void Player::UpdateAnimation(float elapsedTime)
 {
     //再生中でないなら処理しない
@@ -154,7 +160,7 @@ void Player::UpdateAnimation(float elapsedTime)
         // ブレンド補間
         model->BlendAnimations(begin_keyframes, blendRate, beginPose);
         model->BlendAnimations(old_keyframes, blendRate, oldPose);
-        model->BlendAnimations(current_keyframes, blendRate, newPose);
+        model->BlendAnimations(current_keyframes, blendRate, model->keyframe);
         model->BlendAnimations(end_keyframes, blendRate, endPose);
     }
     else
@@ -216,10 +222,8 @@ void Player::UpdateAnimation(float elapsedTime)
                 DirectX::XMVECTOR beginPos =
                     DirectX::XMLoadFloat3(&beginPose.nodes[rootMotionIndex].translation);
 
-                DirectX::XMVECTOR endToOldPos = DirectX::XMVectorSubtract(oldPos, EndPos);
-                DirectX::XMVECTOR beginToNowPos = DirectX::XMVectorSubtract(beginPos, newPos);
-                DirectX::XMStoreFloat3(&localTranslation,
-                    DirectX::XMVectorAdd(endToOldPos, beginToNowPos));
+                DirectX::XMVECTOR lerpedTranslation = DirectX::XMVectorLerp(oldPos, newPos, blendRate);
+                DirectX::XMStoreFloat3(&localTranslation, lerpedTranslation);
             }
             else
             {
@@ -445,13 +449,10 @@ void Player::DrawDebugGUI()
 }
 
 void Player::DrawDebugPrimitive()
-{;
+{
 
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
-    {
-
-    }
 }
 
 //入力値から移動ベクトルを取得
@@ -515,7 +516,6 @@ bool Player::InputMove(float elapsedTime)
     Move(moveVec.x, moveVec.z, this->moveSpeed);
 
     //旋回処理
-    //Turn(elapsedTime, moveVec.x, moveVec.z, this->turnSpeed);
     if (lockonState != LockonState::NotLocked)
     {
         //	ロックオン処理中はロックオン対象に向ける
@@ -1020,9 +1020,8 @@ void Player::TeleportBehindEnemy()
 
             // 敵の前方方向を計算 (敵の向いている方向を仮定)
             DirectX::XMFLOAT3 enemyForward = {};
-           /* enemyForward.x = sinf(closestEnemy->GetAngle().y);
+            DirectX::XMStoreFloat3(&enemyForward,closestEnemy->GetFront());
             enemyForward.y = 0.0f;
-            enemyForward.z = cosf(closestEnemy->GetAngle().y);*/
 
             // 敵の後ろの位置 = 敵の位置 - 前方方向 * 2.0f (距離を調整)
             const float distanceBehindEnemy = 2.0f; // プレイヤーが敵から後ろに飛ぶ距離
@@ -1043,10 +1042,11 @@ void Player::TeleportBehindEnemy()
             toEnemy = DirectX::XMVector3Normalize(toEnemy);
 
             // 方向ベクトルから回転行列を計算
-            DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixLookToLH(playerPosVec, toEnemy, up);
+            DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixLookAtLH(playerPosVec, toEnemy, up);
 
             // 回転行列からクォータニオンを計算
-            DirectX::XMVECTOR rotationQuat = DirectX::XMQuaternionRotationMatrix(rotationMatrix);
+            DirectX::XMVECTOR rotationQuat = DirectX::XMQuaternionRotationMatrix(-rotationMatrix);
+            
 
             // プレイヤーの回転にクォータニオンを適用
             DirectX::XMStoreFloat4(&quaternion, rotationQuat);

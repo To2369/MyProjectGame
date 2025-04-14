@@ -186,9 +186,6 @@
     <ClInclude Include="Source\PostprocessingRenderer.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\ColorGrading.h">
-      <Filter>Sources\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\StateBase.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -224,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="Source\SceneLoading.h">
       <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\SkyMap.h">
+      <Filter>Sources\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -362,9 +362,6 @@
     <ClCompile Include="Source\PostprocessingRenderer.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\ColorGrading.cpp">
-      <Filter>Sources\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\StateMachine.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -397,6 +394,9 @@
     </ClCompile>
     <ClCompile Include="Source\SceneLoading.cpp">
       <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\SkyMap.cpp">
+      <Filter>Sources\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,6 +446,9 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\UVScroll.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\SkyMap.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -532,6 +535,15 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\MaskVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\SkyMapPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\SkyMapVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\SkyBoxPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

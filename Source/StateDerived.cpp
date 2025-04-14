@@ -265,7 +265,7 @@ void  WeakAttackState01::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.4f && animationTime <= 0.45f)
 	{
-		owner->CollisionNodeVsEnemies("ball_l", 0.3f);
+		owner->CollisionNodeVsEnemies("ball_l", 0.7f);
 	}
 	else
 	{
@@ -278,7 +278,7 @@ void  WeakAttackState01::Execute(float elapsedTime)
 			owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack02));
 		}
 	}
-	if (!owner->GetModel()->IsPlayAnimation())
+	else if (!owner->GetModel()->IsPlayAnimation())
 	{
 		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
 	}
@@ -299,7 +299,7 @@ void  WeakAttackState02::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.25f && animationTime <= 0.3f)
 	{
-		owner->CollisionNodeVsEnemies("ball_r", 0.3f);
+		owner->CollisionNodeVsEnemies("ball_r", 0.7f);
 	}
 	if (owner->InputAttack())
 	{
@@ -328,7 +328,7 @@ void  WeakAttackState03::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.38f && animationTime <= 0.45f)
 	{
-		owner->CollisionNodeVsEnemies("ball_r", 0.3f);
+		owner->CollisionNodeVsEnemies("hand_l", 0.7f);
 	}
 	if (owner->InputAttack())
 	{
@@ -355,7 +355,7 @@ void  WeakAttackState04::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.2f && animationTime <= 0.4f)
 	{
-
+		owner->CollisionNodeVsEnemies("calf_r", 0.7f);
 	}
 	if (owner->InputAttack())
 	{
@@ -382,7 +382,11 @@ void  WeakAttackState05::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.27f && animationTime <= 0.31f)
 	{
-
+		owner->CollisionNodeVsEnemies("calf_r", 0.7f);
+	}
+	if (animationTime >= 0.55f && animationTime <= 0.73f)
+	{
+		owner->CollisionNodeVsEnemies("hand_l", 0.7f);
 	}
 	if (owner->InputAttack())
 	{
@@ -409,7 +413,7 @@ void  WeakAttackState06::Execute(float elapsedTime)
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
 	if (animationTime >= 0.4f && animationTime <= 0.5f)
 	{
-
+		owner->CollisionNodeVsEnemies("ball_r", 0.7f);
 	}
 	if (!owner->GetModel()->IsPlayAnimation())
 	{

@@ -226,6 +226,78 @@ bool Collision::IntersectSphereVsCylinder(
 }
 
 
+bool Collision::RayIntersectsTriangle(
+    const DirectX::XMFLOAT3& rayStart,
+    const DirectX::XMFLOAT3& rayEnd,
+    const DirectX::XMFLOAT3& a,
+    const DirectX::XMFLOAT3& b,
+    const DirectX::XMFLOAT3& c,
+    HitResult& result)
+{
+    using namespace DirectX;
+
+    // レイの始点と終点をDirectX::XMVECTOR型に変換
+    XMVECTOR rayOrigin = XMLoadFloat3(&rayStart);
+    XMVECTOR rayDir = XMLoadFloat3(&rayEnd) - rayOrigin; // レイの方向ベクトル
+
+    // 三角形の頂点をDirectX::XMVECTOR型に変換
+    XMVECTOR vertexA = XMLoadFloat3(&a);
+    XMVECTOR vertexB = XMLoadFloat3(&b);
+    XMVECTOR vertexC = XMLoadFloat3(&c);
+
+    // 三角形の辺ベクトルを計算
+    XMVECTOR edgeAB = vertexB - vertexA;
+    XMVECTOR edgeAC = vertexC - vertexA;
+
+    // レイと三角形の法線の計算
+    XMVECTOR h = XMVector3Cross(rayDir, edgeAC);
+    float aVal = XMVectorGetX(XMVector3Dot(edgeAB, h));
+
+    // レイと三角形が平行な場合、交差しない
+    if (aVal > -FLT_EPSILON && aVal < FLT_EPSILON)
+        return false;
+
+    // 逆数を計算
+    float f = 1.0f / aVal;
+
+    // レイの始点と三角形の頂点Aの差ベクトルを計算
+    XMVECTOR s = rayOrigin - vertexA;
+
+    // u座標の計算
+    float u = f * XMVectorGetX(XMVector3Dot(s, h));
+    if (u < 0.0f || u > 1.0f)
+        return false;
+
+    // v座標の計算
+    XMVECTOR q = XMVector3Cross(s, edgeAB);
+    float v = f * XMVectorGetX(XMVector3Dot(rayDir, q));
+    if (v < 0.0f || u + v > 1.0f)
+        return false;
+
+    // t（交差点までの距離）の計算
+    float t = f * XMVectorGetX(XMVector3Dot(edgeAC, q));
+
+    // tが正であれば交差している
+    if (t > FLT_EPSILON)
+    {
+        // 交点の座標を計算
+        XMVECTOR hitPos = rayOrigin + rayDir * t;
+        XMStoreFloat3(&result.position, hitPos);
+
+        // 三角形の法線を計算
+        XMVECTOR normal = XMVector3Normalize(XMVector3Cross(edgeAB, edgeAC));
+        XMStoreFloat3(&result.normal, normal);
+
+        // 距離を保存
+        result.distance = t;
+
+        return true; // 交差した
+    }
+
+    return false; // 交差しない
+}
+
+
 // レイとモデルの交差判定
 bool Collision::IntersectRayVsModel(
     const DirectX::XMFLOAT3& start,
@@ -233,6 +305,7 @@ bool Collision::IntersectRayVsModel(
     const Model* model,
     HitResult& result)
 {
+#if 0
     // ワールド空間上でのレイの始点
     DirectX::XMVECTOR worldRayStartVec = DirectX::XMLoadFloat3(&start);
     // ワールド空間上でのレイの終点
@@ -398,6 +471,176 @@ bool Collision::IntersectRayVsModel(
                 DirectX::XMStoreFloat3(&result.normal, DirectX::XMVector3Normalize(worldNormal));
                 hit = true;
 
+            }
+        }
+    }
+    return hit;
+#endif
+    // ワールド空間上でのレイの始点
+    DirectX::XMVECTOR worldRayStartVec = DirectX::XMLoadFloat3(&start);
+    // ワールド空間上でのレイの終点
+    DirectX::XMVECTOR worldRayEndVec = DirectX::XMLoadFloat3(&end);
+    // ワールド空間上でのレイの始点から終点までのベクトル
+    DirectX::XMVECTOR worldRayVec = DirectX::XMVectorSubtract(worldRayEndVec, worldRayStartVec);
+    // ワールド空間上でのレイの長さ
+    DirectX::XMVECTOR worldRayLength = DirectX::XMVector3Length(worldRayVec);
+    DirectX::XMStoreFloat(&result.distance, worldRayLength);
+
+    // true...衝突した
+    bool hit = false;
+
+    // メッシュごとに処理を行う
+    for (const Model::Mesh& mesh_ : model->meshes)
+    {
+        // AABBの最小・最大点を取得
+        DirectX::XMFLOAT3 meshMin = mesh_.boundingBox[0];
+        DirectX::XMFLOAT3 meshMax = mesh_.boundingBox[1];
+
+        // AABBの交差判定
+        float tMin = 0.0f, tMax = 1.0f;
+        AABB meshAABB = { meshMin, meshMax };
+        if (!meshAABB.IntersectsRay(start, end, tMin, tMax))
+        {
+            continue;  // AABBとレイが交差しない場合、このメッシュをスキップ
+        }
+
+        // AABBと交差する場合に三角形との交差判定を行う
+        DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
+        DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
+
+        // ローカル空間でのレイの始点と終点を計算
+        DirectX::XMVECTOR localRayStartVec = DirectX::XMVector3TransformCoord(worldRayStartVec, inverseWorldTransformMat);
+        DirectX::XMVECTOR localRayEndVec = DirectX::XMVector3TransformCoord(worldRayEndVec, inverseWorldTransformMat);
+        DirectX::XMVECTOR localRayVec = DirectX::XMVectorSubtract(localRayEndVec, localRayStartVec);
+        DirectX::XMVECTOR localRayDirectVec = DirectX::XMVector3Normalize(localRayVec);
+        DirectX::XMVECTOR localRayLengthVec = DirectX::XMVector3Length(localRayVec);
+        float localRayLength;
+        DirectX::XMStoreFloat(&localRayLength, localRayLengthVec);
+
+        // 頂点データを取得
+        const std::vector<Model::vertex>& vertices = mesh_.vertices;
+        const std::vector<UINT>& indices = mesh_.indices;
+
+        // 候補となる情報
+        int materialIndex = -1;
+        DirectX::XMVECTOR hitPosition;
+        DirectX::XMVECTOR hitNormal;
+
+        for (const Model::Mesh::Subset& subset : mesh_.subsets)
+        {
+            for (UINT i = 0; i < subset.indexCount; i += 3)
+            {
+                UINT index = subset.startIndexLocation + i;
+
+                // 三角形の頂点の抽出
+                const Model::vertex& a = vertices.at(indices.at(index));
+                const Model::vertex& b = vertices.at(indices.at(index + 1));
+                const Model::vertex& c = vertices.at(indices.at(index + 2));
+
+                DirectX::XMVECTOR aVec = DirectX::XMLoadFloat3(&a.position);
+                DirectX::XMVECTOR bVec = DirectX::XMLoadFloat3(&b.position);
+                DirectX::XMVECTOR cVec = DirectX::XMLoadFloat3(&c.position);
+
+                DirectX::XMVECTOR abVec = DirectX::XMVectorSubtract(bVec, aVec);
+                DirectX::XMVECTOR bcVec = DirectX::XMVectorSubtract(cVec, bVec);
+                DirectX::XMVECTOR caVec = DirectX::XMVectorSubtract(aVec, cVec);
+
+                // 三角形の法線を計算
+                DirectX::XMVECTOR normalVec = DirectX::XMVector3Cross(abVec, bcVec);
+
+                // レイの方向と面の方向をチェック（平面の表裏判定）
+                DirectX::XMVECTOR dotVec = DirectX::XMVector3Dot(localRayDirectVec, normalVec);
+                float dot;
+                DirectX::XMStoreFloat(&dot, dotVec);
+                if (dot >= 0)
+                {
+                    continue;
+                }
+
+                // レイの始点から交点までの長さを計算
+                DirectX::XMVECTOR tmp = DirectX::XMVectorSubtract(aVec, localRayStartVec);
+                float length = DirectX::XMVectorGetX(DirectX::XMVector3Dot(tmp, normalVec)) / dot;
+
+                // 長さが 0 以下なら以降の処理は飛ばす
+                if (length < 0.0f)
+                {
+                    continue;
+                }
+
+                // 交点までの距離が今までに計算した最近距離より大きい時はスキップ
+                if (length > localRayLength)
+                {
+                    continue;
+                }
+
+                // レイと平面の交点を計算
+                DirectX::XMVECTOR hitPosVec = DirectX::XMVectorAdd(localRayStartVec, DirectX::XMVectorScale(localRayDirectVec, length));
+
+                // 交点が三角形の内側にあるかどうか判定
+                DirectX::XMVECTOR paVec = DirectX::XMVectorSubtract(aVec, hitPosVec);
+                DirectX::XMVECTOR crossVec1 = DirectX::XMVector3Cross(paVec, abVec);
+                DirectX::XMVECTOR dotVec1 = DirectX::XMVector3Dot(crossVec1, normalVec);
+                float dot1;
+                DirectX::XMStoreFloat(&dot1, dotVec1);
+                if (dot1 < 0.0f)
+                {
+                    continue;
+                }
+
+                DirectX::XMVECTOR pbVec = DirectX::XMVectorSubtract(bVec, hitPosVec);
+                DirectX::XMVECTOR crossVec2 = DirectX::XMVector3Cross(pbVec, bcVec);
+                DirectX::XMVECTOR dotVec2 = DirectX::XMVector3Dot(crossVec2, normalVec);
+                float dot2;
+                DirectX::XMStoreFloat(&dot2, dotVec2);
+                if (dot2 < 0.0f)
+                {
+                    continue;
+                }
+
+                DirectX::XMVECTOR pcVec = DirectX::XMVectorSubtract(cVec, hitPosVec);
+                DirectX::XMVECTOR crossVec3 = DirectX::XMVector3Cross(pcVec, caVec);
+                DirectX::XMVECTOR dotVec3 = DirectX::XMVector3Dot(crossVec3, normalVec);
+                float dot3;
+                DirectX::XMStoreFloat(&dot3, dotVec3);
+                if (dot3 < 0.0f)
+                {
+                    continue;
+                }
+
+                // 最近距離を更新
+                localRayLength = length;
+
+                // マテリアル番号を更新
+                materialIndex = subset.materialUniqueID;
+
+                // 交点と法線を更新
+                hitPosition = hitPosVec;
+                hitNormal = normalVec;
+            }
+        }
+
+        if (materialIndex >= 0)
+        {
+            // 交点座標をローカル空間からワールド空間へ変換
+            DirectX::XMVECTOR worldPositionVec = DirectX::XMVector3TransformCoord(hitPosition, worldTransformMat);
+            // ワールド空間上でのレイの始点から交点までのベクトル
+            DirectX::XMVECTOR worldVec = DirectX::XMVectorSubtract(worldPositionVec, worldRayStartVec);
+            // ワールド空間上でのレイの視点から交点までの長さ
+            DirectX::XMVECTOR worldLengthVec = DirectX::XMVector3Length(worldVec);
+            float distance;
+            DirectX::XMStoreFloat(&distance, worldLengthVec);
+
+            // ヒット結果情報保存
+            if (result.distance > distance)
+            {
+                // ヒット時の面の法線をローカル空間からワールド空間へ変換
+                DirectX::XMVECTOR worldNormal = DirectX::XMVector3TransformNormal(hitNormal, worldTransformMat);
+
+                result.distance = distance;
+                result.materialIndex = materialIndex;
+                DirectX::XMStoreFloat3(&result.position, worldPositionVec);
+                DirectX::XMStoreFloat3(&result.normal, DirectX::XMVector3Normalize(worldNormal));
+                hit = true;
             }
         }
     }

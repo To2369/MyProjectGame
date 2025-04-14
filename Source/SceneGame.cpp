@@ -17,8 +17,6 @@ void SceneGame::Initialize()
 
     //定数バッファの作成
     CreateBuffer<SceneGame::Scene_constants>(graphics->GetDevice(), buffer.GetAddressOf());
-    CreateBuffer<SceneGame::light_constants>(graphics->GetDevice(), light_constant_buffer.GetAddressOf());
-    CreateBuffer<SceneGame::gaussian_filter_constants>(graphics->GetDevice(), gaussian_filter_constant_buffer.GetAddressOf());
    
     camera = &Camera::Instance();
     float x, y;
@@ -37,12 +35,15 @@ void SceneGame::Initialize()
         farZ
     );
     cameraCtrl = std::make_unique<CameraController>();
-    std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
-    slime->SetPosition({ 0,0,5 });
+    for (int i = 0; i < 5; i++)
+    {
+        std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
+        slime->SetPosition({ 0,0,5 });
 
-    //敵管理クラス取付
-    EnemyManager& eneMgr = EnemyManager::Instance();
-    eneMgr.Regist(std::move(slime));
+        //敵管理クラス取付
+        EnemyManager& eneMgr = EnemyManager::Instance();
+        eneMgr.Regist(std::move(slime));
+    }
 
     // エフェクト管理の初期化
     //EffectManager::Instance().Initialize();
@@ -57,16 +58,15 @@ void SceneGame::Initialize()
     spritEnergyGauge = std::make_unique<Sprite>(graphics->GetDevice(),nullptr);
     //shadowMapCaster = std::make_unique<ShadowMapCaster>(graphics->GetDevice());
     //colorGrading = std::make_unique<ColorGraging>(graphics->GetDevice());
-    framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280, 720);
-    framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1280 / 2, 720 / 2);
+    framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1920, 1080);
+    framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1920 / 2, 1080 / 2);
+
+    skyMap = std::make_unique<sky_map>(graphics->GetDevice(), L".\\Data\\sor_lake1.dds");
+    // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
+    bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
+
     sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Sprite\\screenshot.jpg");
     skillArtsSellect = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\Fonts\\font4.png");
-    ShaderManager::Instance()->CreatePsFromCso(graphics->GetDevice(), ".\\Data\\Shader\\SpritePS.cso",
-        gaussian_filter_pixel_shader.GetAddressOf());
-    dummy_sprite = std::make_unique<Sprite>(graphics->GetDevice(), L".\\Data\\resources\\chip_win.png");
-    ShaderManager::Instance()->LoadTextureFromFile(graphics->GetDevice(), L".\\Data\\resources\\mask\\dissolve_animation.png",
-        mask_texture.GetAddressOf(),&mask_texture2dDesc);
-
     mask = std::make_unique<Mask>(graphics->GetDevice());
 
     reset = false;
@@ -153,45 +153,6 @@ void SceneGame::Update(float elapsedTime)
     player->DrawDebugGUI();
     EnemyManager::Instance().DrawDebugGUI();
     cameraCtrl->DrawDebugGUI();
-    ImGui::SliderFloat4("light_direction", &graphics->GetLight()->directionalLightDirection.x, -1.0f, +1.0f);
-    if (ImGui::TreeNode("points"))
-    {
-        for (int i = 0; i < 8; ++i)
-        {
-            std::string p = std::string("position") + std::to_string(i);
-            ImGui::SliderFloat3(p.c_str(), &point_light[i].position.x, -10.0f, +10.0f);
-            std::string c = std::string("color") + std::to_string(i);
-            ImGui::ColorEdit3(c.c_str(), &point_light[i].color.x);
-            std::string r = std::string("range") + std::to_string(i);
-            ImGui::SliderFloat(r.c_str(), &point_light[i].range, 0.0f, +100.0f);
-        }
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("spots"))
-    {
-        for (int i = 0; i < 8; ++i)
-        {
-            std::string p = std::string("position") + std::to_string(i);
-            ImGui::SliderFloat3(p.c_str(), &spot_light[i].position.x, -10.0f, +10.0f);
-            std::string d = std::string("direction") + std::to_string(i);
-            ImGui::SliderFloat3(d.c_str(), &spot_light[i].direction.x, 0.0f, +1.0f);
-            std::string c = std::string("color") + std::to_string(i);
-            ImGui::ColorEdit3(c.c_str(), &spot_light[i].color.x);
-            std::string r = std::string("range") + std::to_string(i);
-            ImGui::SliderFloat(r.c_str(), &spot_light[i].range, 0.0f, +1000.0f);
-            std::string ic = std::string("inner") + std::to_string(i);
-            ImGui::SliderFloat(ic.c_str(), &spot_light[i].innerCorn, -1.0f, +1.0f);
-            std::string oc = std::string("outer") + std::to_string(i);
-            ImGui::SliderFloat(oc.c_str(), &spot_light[i].outerCorn, -1.0f, +1.0f);
-        }
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("gaussian_filter"))
-    {
-        ImGui::SliderInt("kernel", &gaussian_filter_data.kernelSize, 1, KERNEL_MAX);
-        ImGui::SliderFloat("sigma", &gaussian_filter_data.sigma, 1.0f, 10.0f);
-        ImGui::TreePop();
-    }
     ImGui::Separator();
     if (ImGui::TreeNode("Mask"))
     {
@@ -233,6 +194,12 @@ void SceneGame::Render()
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, View * Projection);
     scene_data.lightDirection = graphics->GetLight()->directionalLightDirection;
+
+   /* framebuffers[0]->Clear(dc, 0, 0, 1, 0);
+    framebuffers[0]->Activate(dc);*/
+
+   
+
     // 3D 描画設定
     ID3D11SamplerState* samplers[] =
     {
@@ -242,35 +209,31 @@ void SceneGame::Render()
     };
     dc->PSSetSamplers(0, ARRAYSIZE(samplers), samplers);
     dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
     dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
 
-    framebuffers[0]->Clear(dc, 0,0,1,0);
-    framebuffers[0]->Activate(dc);
 
+    if (skyMap)
+    {
+        skyMap->blit(graphics->GetDeviceContext(), scene_data.viewProjection);
+    }
+
+    dc->PSSetSamplers(0, ARRAYSIZE(samplers), samplers);
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::ON_ON), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
     // 3D 描画
     {
         //定数バッファの登録
         BindBuffer(dc, 1, buffer.GetAddressOf(), &scene_data);
+
+       
 
         stage->Render(dc);
         //shadowMapCaster->Render(dc);
         player->Render(dc);
 
         EnemyManager::Instance().Render(dc);
-
-        // 定数バッファの更新
-        {
-          /*  light_constants lights{};
-            lights.ambient_color = ambient_color;
-            lights.directional_light_direction = directional_light_direction;
-            lights.directional_light_color = directional_light_color;
-            memcpy_s(lights.point_light, sizeof(lights.point_light), point_light, sizeof(point_light));
-            memcpy_s(lights.spot_light, sizeof(lights.spot_light), spot_light, sizeof(spot_light));
-            dc->UpdateSubresource(light_constant_buffer.Get(), 0, 0, &lights, 0, 0);
-            dc->VSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
-            dc->PSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());*/
-        }
     }
 
     // 3D エフェクト描画
@@ -289,51 +252,22 @@ void SceneGame::Render()
         EnemyManager::Instance().DrawDebugPrimitive();
 
         graphics->GetLineRenderer()->Render(dc, rc.view, rc.projection);
-    }
 
-    // フレームバッファ
-    {
-        framebuffers[0]->Deactivate(dc);
-    }
-    
-    // ポストエフェクト
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::ADD), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    {
-        SpriteShader* shader = graphics->GetShader(SpriteShaderId::ColorGrading);
-        shader->Begin(rc);
-        
-        //rc.colorGradingData = colorGradingData;
-        sprite->SetShaderResourceView(framebuffers[0]->shaderResourceViews[0], 1920, 1080);
-        shader->Draw(rc, sprite.get());
-        //sprite->Render(dc, 256, 128, 1280-256*2, 720-128*2, 1, 1, 1, 1, 0);
-        //	ガウスフィルター
-        {
-          /*  gaussian_filter_data.textureSize = { 1280, 720 };
-            calc_gaussian_filter_constant(gaussian_filter_constant, gaussian_filter_data);
-            dc->UpdateSubresource(gaussian_filter_constant_buffer.Get(), 0, 0, &gaussian_filter_constant, 0, 0);
-            dc->VSSetConstantBuffers(1, 1, gaussian_filter_constant_buffer.GetAddressOf());
-            dc->PSSetConstantBuffers(1, 1, gaussian_filter_constant_buffer.GetAddressOf());
-            dc->PSSetShader(gaussian_filter_pixel_shader.Get(), nullptr, 0);
-            sprite->Render(dc, 0, 0, 1280, 720, 1, 1, 1, 1, 0);*/
-        }
-        {
-        }
-        shader->End(rc);
-    }
-
-    // 2D 描画設定
-    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::NONE), nullptr, 0xFFFFFFFF);
-    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
-    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
-    // 2D 描画
-    {
 #ifdef USE_IMGUI
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
-        DrawGauge(dc,&rc);
+
+    }
+
+    // 2D 描画設定
+    dc->OMSetBlendState(renderState->GetBlendStates(BLEND_STATE::SUB), nullptr, 0xFFFFFFFF);
+    dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+    dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+    // 2D 描画
+    {
+
+        DrawGauge(dc, &rc);
         if (player->artSkillReady)
         {
             DrawSkillArtsSelect(dc, &rc);
@@ -343,6 +277,14 @@ void SceneGame::Render()
             DrawUltArtsSelect(dc, &rc);
 
         }
+    }
+
+    // フレームバッファ
+    {
+       /* framebuffers[0]->Deactivate(dc);
+        dc->OMSetDepthStencilState(renderState->GetDepthStencilStates(DEPTH_STENCIL_STATE::OFF_OFF), 0);
+        dc->RSSetState(renderState->GetRasterizerStates(RASTERIZER_STATE::SOLID_CULLNONE));
+        bit_block_transfer->Blit(dc, framebuffers[0]->shaderResourceViews[static_cast<int>(SHADER_RESOURCE_VIEW::RenderTargetView)].GetAddressOf(), 0, 1);*/
     }
     // 2DデバッグGUI描画
     {
@@ -421,37 +363,6 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
         static_cast<float>(spritEnergyGauge->GetTextureWidth()),
         static_cast<float>(spritEnergyGauge->GetTextureHeight())
     );
-}
-
-void SceneGame::calc_gaussian_filter_constant(gaussian_filter_constants& constant, const gaussian_filter_datas& data)
-{
-    //	偶数の場合は奇数に直す
-    int kernelSize = data.kernelSize;
-    if (kernelSize % 2 == 0)
-        kernelSize++;
-    constant.kernelSize = kernelSize;
-    constant.texcel.x = 1.0f / data.textureSize.x;
-    constant.texcel.y = 1.0f / data.textureSize.y;
-    //	重みを算出
-    float sum = 0.0f;
-    int id = 0;
-    for (int y = -kernelSize / 2; y <= kernelSize / 2; y++)
-    {
-        for (int x = -kernelSize / 2; x <= kernelSize / 2; x++)
-        {
-            constant.weights[id].x = (float)x;
-            constant.weights[id].y = (float)y;
-            constant.weights[id].z = (float)exp(-(x * x + y * y) / (2.0f * data.sigma * data.sigma)) / (2.0f * DirectX::XM_PI * data.sigma);
-            sum += constant.weights[id].z;
-            id++;
-        }
-    }
-    //	平均化
-    for (int i = 0; i < kernelSize * kernelSize; i++)
-    {
-        constant.weights[i].z /= sum;
-    }
-
 }
 
 void SceneGame::DrawSkillArtsSelect(ID3D11DeviceContext* dc,RenderContext*rc)

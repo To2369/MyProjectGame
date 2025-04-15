@@ -2,6 +2,16 @@
 #include "Player.h"
 #include "Mathf.h"
 
+namespace AttackDatas
+{
+	constexpr AttackData weakAttack01 = { 0.4f, 0.45f, 0.1f, 0.9f, 0.9f, 0.7f, "ball_l" };
+	constexpr AttackData weakAttack02 = { 0.25f, 0.3f, 0.1f, 0.9f, 0.5f, 0.7f, "ball_r" };
+	constexpr AttackData weakAttack03 = { 0.4f, 0.45f, 0.1f, 0.9f, 0.9f, 0.7f, "ball_l" };
+	constexpr AttackData weakAttack04 = { 0.25f, 0.3f, 0.1f, 0.9f, 0.5f, 0.7f, "ball_r" };
+	constexpr AttackData weakAttack05 = { 0.4f, 0.45f, 0.1f, 0.9f, 0.9f, 0.7f, "ball_l" };
+	constexpr AttackData weakAttack06 = { 0.25f, 0.3f, 0.1f, 0.9f, 0.5f, 0.7f, "ball_r",0.1f,0.1f,"ball_l"};
+}
+
 MovementState::~MovementState()
 {
 	for (State* state : subStatePool)
@@ -258,27 +268,46 @@ void  LandState::Exit()
 void WeakAttackState01::Enter()
 {
 	owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_1), false);
+	owner->SetAttackNextFlag(false); // 入力初期化
 }
 
 void  WeakAttackState01::Execute(float elapsedTime)
 {
 	float animationTime = owner->GetModel()->currentAnimationSeconds;
-	if (animationTime >= 0.4f && animationTime <= 0.45f)
+	float animProgress = owner->GetModel()->GetAnimationProgress();	// アニメーション進行度
+
+	if (animationTime >= AttackDatas::weakAttack01.hitStartTime
+		&& animationTime <= AttackDatas::weakAttack01.hitEndTime)
 	{
-		owner->CollisionNodeVsEnemies("ball_l", 0.7f);
+		owner->CollisionNodeVsEnemies(
+			AttackDatas::weakAttack01.hitBoneName,
+			AttackDatas::weakAttack01.hitRadius);
 	}
 	else
 	{
-		owner->attackCollisionFlag = false;
+		owner->SetAttackCollisionFlag(false);
 	}
-	if (animationTime >= 0.1f && animationTime <= 0.9f)
+
+
+	//　次の攻撃に移るための入力受付時間
+	if (animationTime >= AttackDatas::weakAttack01.inputAcceptStartTime
+		&& animationTime <= AttackDatas::weakAttack01.inputAcceptEndTime)
 	{
 		if (owner->InputAttack())
+		{
+			owner->SetAttackNextFlag(true);
+		}
+	}
+
+	// 現在のアニメーションが指定の割合すすんだら
+	if (animProgress>=AttackDatas::weakAttack01.progressLimit)
+	{
+		if (owner->IsAttackNextFlag())
 		{
 			owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack02));
 		}
 	}
-	else if (!owner->GetModel()->IsPlayAnimation())
+	if (!owner->GetModel()->IsPlayAnimation())
 	{
 		owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
 	}
@@ -286,7 +315,7 @@ void  WeakAttackState01::Execute(float elapsedTime)
 
 void WeakAttackState01::Exit()
 {
-
+	owner->SetAttackNextFlag(false);
 }
 
 void WeakAttackState02::Enter()

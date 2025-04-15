@@ -9,15 +9,20 @@
 //extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //extern ImWchar glyphRangesJapanese[];
 #endif
+
+#include "Graphics/Model.h"
+
 // キャラクター
 class Character
 {
 public:
-	Character(){}
+	Character() {}
 	virtual ~Character() {}
 
 	//行列更新
 	void UpdateTransform();
+
+	void UpdateAnimation(float elapsedTime);
 
 	// ダメージ処理
 	bool ApplyDamage(float invincibleTime, int damage);
@@ -25,6 +30,8 @@ public:
 	// 衝撃を与える
 	void AddImpulse(const DirectX::XMFLOAT3& impulse);
 public:
+	Model* GetModel() { return model.get(); }
+
 	//位置取得
 	const DirectX::XMFLOAT3& GetPosition()const { return position; }
 
@@ -74,8 +81,14 @@ public:
 
 	bool IsUseSpiritEnergy()const { return useSpiritEnergyFlag; }
 
-	const DirectX::XMVECTOR& GetRight() const{ return right; }
+	const DirectX::XMVECTOR& GetRight() const { return right; }
 	const DirectX::XMVECTOR& GetFront() const { return front; }
+
+	const bool IsAttackNextFlag()const { return attackNextFlag; }
+	const bool IsAttackCollisionFlag() const { return attackCollisionFlag; }
+
+	void SetAttackNextFlag(const bool& flag) { this->attackNextFlag = flag; }
+	void SetAttackCollisionFlag(const bool& flag) { this->attackCollisionFlag = flag; }
 private:
 	// 垂直速度更新処理
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -114,6 +127,7 @@ protected:
 	// 死亡したときに呼ばれる
 	virtual void OnDead() {}
 protected:
+	std::unique_ptr<Model> model;
 	DirectX::XMFLOAT3 position = { 0,0,0 };
 	DirectX::XMFLOAT4 quaternion = { 0,0,0,1 };
 	DirectX::XMFLOAT4 quaternion_additional = { 0,0,0,1 };
@@ -161,4 +175,7 @@ protected:
 	float skillEnergyTimer = 0.0f;	// 技力を使って何秒たったか
 
 	bool dashFlag = false;
+
+	bool attackCollisionFlag = false;
+	bool attackNextFlag = false;
 };

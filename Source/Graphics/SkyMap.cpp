@@ -3,19 +3,19 @@
 
 #include"../misc.h"
 
-sky_map::sky_map(ID3D11Device* device, const wchar_t* filename, bool generate_mips)
+SkyMap::SkyMap(ID3D11Device* device, const wchar_t* filename, bool generateMips)
 {
 	D3D11_TEXTURE2D_DESC texture2d_desc;
-	ShaderManager::Instance()->LoadTextureFromFile(device, filename, shader_resource_view.GetAddressOf(), &texture2d_desc);
+	ShaderManager::Instance()->LoadTextureFromFile(device, filename, shaderResourceView.GetAddressOf(), &texture2d_desc);
 
 	if (texture2d_desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
 	{
-		is_texturecube = true;
+		isTextureCube = true;
 	}
 
-	ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\SkyMapVS.cso", sky_map_vs.GetAddressOf(), NULL, NULL, 0);
-	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", sky_map_ps.GetAddressOf());
-	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", sky_box_ps.GetAddressOf());
+	ShaderManager::Instance()->CreateVsFromCso(device, ".\\Data\\Shader\\SkyMapVS.cso", skyMapVS.GetAddressOf(), NULL, NULL, 0);
+	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", skyMapPS.GetAddressOf());
+	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", skyBoxPS.GetAddressOf());
 
 	D3D11_BUFFER_DESC buffer_desc{};
 	buffer_desc.ByteWidth = sizeof(constants);
@@ -24,29 +24,29 @@ sky_map::sky_map(ID3D11Device* device, const wchar_t* filename, bool generate_mi
 	buffer_desc.CPUAccessFlags = 0;
 	buffer_desc.MiscFlags = 0;
 	buffer_desc.StructureByteStride = 0;
-	HRESULT hr = device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
+	HRESULT hr = device->CreateBuffer(&buffer_desc, nullptr, constantBuffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 
-void sky_map::blit(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& view_projection)
+void SkyMap::Blit(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& viewProjection)
 {
-	immediate_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
-	immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	immediate_context->IASetInputLayout(NULL);
+	dc->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	dc->IASetInputLayout(NULL);
 
-	immediate_context->VSSetShader(sky_map_vs.Get(), 0, 0);
-	immediate_context->PSSetShader(is_texturecube ? sky_box_ps.Get() : sky_map_ps.Get(), 0, 0);
+	dc->VSSetShader(skyMapVS.Get(), 0, 0);
+	dc->PSSetShader(isTextureCube ? skyBoxPS.Get() : skyMapPS.Get(), 0, 0);
 
-	immediate_context->PSSetShaderResources(0, 1, shader_resource_view.GetAddressOf());
+	dc->PSSetShaderResources(0, 1, shaderResourceView.GetAddressOf());
 
 	constants data;
-	DirectX::XMStoreFloat4x4(&data.inverse_view_projection, DirectX::XMMatrixInverse(NULL, DirectX::XMLoadFloat4x4(&view_projection)));
+	DirectX::XMStoreFloat4x4(&data.inverseViewProjection, DirectX::XMMatrixInverse(NULL, DirectX::XMLoadFloat4x4(&viewProjection)));
 
-	immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
-	immediate_context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+	dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &data, 0, 0);
+	dc->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
-	immediate_context->Draw(4, 0);
+	dc->Draw(4, 0);
 
-	immediate_context->VSSetShader(NULL, 0, 0);
-	immediate_context->PSSetShader(NULL, 0, 0);
+	dc->VSSetShader(NULL, 0, 0);
+	dc->PSSetShader(NULL, 0, 0);
 }

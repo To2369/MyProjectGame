@@ -1,5 +1,30 @@
 #pragma once
 #include "Player.h"
+#include <optional>
+struct AttackData
+{
+	float hitStartTime;
+	float hitEndTime;
+	float inputAcceptStartTime;
+	float inputAcceptEndTime;
+	float progressLimit;
+	float hitRadius;
+	const char* hitBoneName;
+
+	/*アニメーションに二つ以上攻撃判定があるときの情報*/
+	float secondHitStartTime = 0.0f;
+	float secondHitEndTime = 0.0f;
+	const char* secondHitBoneName = nullptr;
+};
+namespace AttackDatas
+{
+	extern const AttackData weakAttack01;
+	extern const AttackData weakAttack02;
+	extern const AttackData weakAttack03;
+	extern const AttackData weakAttack04;
+	extern const AttackData weakAttack05;
+	extern const AttackData weakAttack06;
+}
 
 /*メインステート*/
 class MovementState :public HierarchicalState

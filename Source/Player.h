@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Graphics/Model.h"
 #include "Character.h"
 #include "ArtsManager.h"
 #include "Graphics/GeometricPrimitive.h"
@@ -71,7 +70,6 @@ public:
 
 	// デバッグプリミティブ表示
 	void DrawDebugPrimitive();
-	Model* GetModel() { return model.get(); }
 	//ステートマシン取得
 	StateMachine* GetStateMachine() { return stateMachine.get(); }
 public:
@@ -144,15 +142,11 @@ public:
 
 	void TeleportBehindEnemy();
 
-	void UpdateAnimation(float elapsedTime);
-
-	bool attackCollisionFlag = false;
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
 private:
 	std::unique_ptr<StateMachine> stateMachine;
-	std::unique_ptr<Model> model;
 	std::unique_ptr<GeometricPrimitive> geo;
 
 	enum class LockonState
@@ -199,8 +193,6 @@ private:
 		0,0,0,1
 	};
 
-
-	float totalAnimationTime = 0;
 
 	int hit = 0;
 

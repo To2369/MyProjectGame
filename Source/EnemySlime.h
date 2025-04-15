@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/Model.h"
 #include "Enemy.h"
 
 // ƒXƒ‰ƒCƒ€
@@ -18,5 +17,4 @@ public:
 	// Ž€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
 	void OnDead() override;
 private:
-	std::unique_ptr<Model> model;
 };

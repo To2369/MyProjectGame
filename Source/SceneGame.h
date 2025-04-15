@@ -63,7 +63,7 @@ private:
 
     std::unique_ptr<Sprite> skillArtsSellect;
     std::unique_ptr<Mask> mask;
-    std::unique_ptr<sky_map> skyMap = nullptr;
+    std::unique_ptr<SkyMap> skyMap = nullptr;
 
 private:
     //ƒ‰ƒCƒg‚Ì•ûŒü

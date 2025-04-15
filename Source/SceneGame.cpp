@@ -61,7 +61,7 @@ void SceneGame::Initialize()
     framebuffers[0] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1920, 1080);
     framebuffers[1] = std::make_unique<FrameBuffer>(graphics->GetDevice(), 1920 / 2, 1080 / 2);
 
-    skyMap = std::make_unique<sky_map>(graphics->GetDevice(), L".\\Data\\sor_lake1.dds");
+    skyMap = std::make_unique<SkyMap>(graphics->GetDevice(), L".\\Data\\sor_lake1.dds");
     // オフスクリーン描画用のシェーダーリソースビュー描画用のスプライトの作成
     bit_block_transfer = std::make_unique<FullScreenQuad>(graphics->GetDevice());
 
@@ -215,7 +215,7 @@ void SceneGame::Render()
 
     if (skyMap)
     {
-        skyMap->blit(graphics->GetDeviceContext(), scene_data.viewProjection);
+        skyMap->Blit(graphics->GetDeviceContext(), scene_data.viewProjection);
     }
 
     dc->PSSetSamplers(0, ARRAYSIZE(samplers), samplers);

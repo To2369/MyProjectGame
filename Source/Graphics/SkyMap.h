@@ -3,31 +3,31 @@
 #include <wrl.h>
 #include <directxmath.h>
 
-class sky_map
+class SkyMap
 {
 public:
-	sky_map(ID3D11Device* device, const wchar_t* filename, bool generate_mips = false);
-	virtual ~sky_map() = default;
-	sky_map(const sky_map&) = delete;
-	sky_map& operator =(const sky_map&) = delete;
-	sky_map(sky_map&&) noexcept = delete;
-	sky_map& operator =(sky_map&&) noexcept = delete;
+	SkyMap(ID3D11Device* device, const wchar_t* filename, bool generate_mips = false);
+	virtual ~SkyMap() = default;
+	SkyMap(const SkyMap&) = delete;
+	SkyMap& operator =(const SkyMap&) = delete;
+	SkyMap(SkyMap&&) noexcept = delete;
+	SkyMap& operator =(SkyMap&&) noexcept = delete;
 
-	void blit(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& view_projection);
+	void Blit(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& viewProjection);
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_view;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> sky_map_vs;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> sky_map_ps;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> sky_box_ps;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> skyMapVS;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> skyMapPS;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> skyBoxPS;
 
 	struct constants
 	{
-		DirectX::XMFLOAT4X4 inverse_view_projection;
+		DirectX::XMFLOAT4X4 inverseViewProjection;
 	};
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
 
-	bool is_texturecube = false;
+	bool isTextureCube = false;
 
 };

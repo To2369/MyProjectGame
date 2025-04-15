@@ -311,9 +311,6 @@ public:
 	// 描画処理
 	void Render(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& world,const DirectX::XMFLOAT4& materialColor);
 
-	//	アニメーション更新
-	void UpdateAnimation(float elapsedTime);
-
 	// アニメーションの追加
 	bool AppendAnimations(const char* animationFilename, float samplingRate);
 
@@ -343,6 +340,17 @@ public:
 	//アニメーション再生中かどうか
 	bool IsPlayAnimation() const;
 
+	const float GetTotalAnimationTime() const
+	{
+		return totalAnimationTime;
+	}
+
+	const float GetAnimationProgress()
+	{
+		animProgress = currentAnimationSeconds / totalAnimationTime;
+		return animProgress;
+	}
+
 	Skeleton::Bone* FindNode(const char* node);
 
 	Mesh* FindMesh(const char* name);
@@ -361,6 +369,8 @@ public:
 	bool animationEndFlag = false;
 	float animationBlendTime;
 	float animationBlendSeconds;
+	float totalAnimationTime = 0;
+	float animProgress = 0;
 	Animation::Keyframe keyframe;
 	FbxScene* fbxScene{};
 protected:

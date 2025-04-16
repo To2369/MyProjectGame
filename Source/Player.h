@@ -4,8 +4,8 @@
 #include "ArtsManager.h"
 #include "Graphics/GeometricPrimitive.h"
 #include "StateMachine.h"
-#include"StateDerived.h"
 #include "Enemy.h"
+
 //#include "Effect/Effect.h"
 
 
@@ -36,10 +36,6 @@ enum AnimationNum
 	AnimDead,
 	AnimDownEnd,
 	AnimDownStart,
-	//AnimAvoidBack,
-	//AnimAvoidFront,
-	//AnimAvoidLeft,
-	//AnimAvoidRight,
 	AnimHitBack,
 	AnimHitFront,
 	AnimHitLeft,
@@ -70,8 +66,9 @@ public:
 
 	// デバッグプリミティブ表示
 	void DrawDebugPrimitive();
+
 	//ステートマシン取得
-	StateMachine* GetStateMachine() { return stateMachine.get(); }
+	StateMachine<Player>* GetStateMachine() { return stateMachine.get(); }
 public:
 	static Player* Instance()
 	{
@@ -141,12 +138,11 @@ public:
 	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
 
 	void TeleportBehindEnemy();
-
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
 private:
-	std::unique_ptr<StateMachine> stateMachine;
+	std::unique_ptr<StateMachine<Player>> stateMachine;
 	std::unique_ptr<GeometricPrimitive> geo;
 
 	enum class LockonState

@@ -225,6 +225,12 @@
     <ClInclude Include="Source\Graphics\SkyMap.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\AttackData.h">
+      <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlayerStateDerived.h">
+      <Filter>Sources\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -362,20 +368,8 @@
     <ClCompile Include="Source\PostprocessingRenderer.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\StateMachine.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StateBase.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StateDerived.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BehaviorTree.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PlayerStateDerived.cpp">
-      <Filter>Sources\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\NormalBallet.cpp">
       <Filter>Sources\Skill</Filter>

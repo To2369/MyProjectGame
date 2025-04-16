@@ -6,24 +6,24 @@
 #include "Collision.h"
 #include "ArtsSpiritExplosion.h"
 #include "ArtsSkillStraightBallet.h"
-#include "StateDerived.h"
 #include "NormalBallet.h"
 #include "MessageData.h"
 #include "Messenger.h"
 #include "EnemyManager.h"
+#include "PlayerStateDerived.h"
 Player::Player()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
-    geo= std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
-	const float scale_factor = 0.01f;
-	scale = { scale_factor,scale_factor,scale_factor };
-    height=1.5f;
-    stateMachine = std::make_unique<StateMachine>();
+    model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
+    geo = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
+    const float scale_factor = 0.01f;
+    scale = { scale_factor,scale_factor,scale_factor };
+    height = 1.5f;
+    stateMachine = std::make_unique<StateMachine<Player>>();
 
     stateMachine->RegisterState(new MovementState(this));
-    stateMachine->RegisterState(new WeakAttackState(this));
-    stateMachine->RegisterState(new UseSkillState(this));
-    stateMachine->RegisterState(new HitDamegeState(this));
+    stateMachine->RegisterState(new WeakAttackState<Player>(this));
+    stateMachine->RegisterState(new UseSkillState<Player>(this));
+    stateMachine->RegisterState(new HitDamegeState<Player>(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new IdleState(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new MoveState(this));
@@ -37,7 +37,7 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState04(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState05(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState06(this));
-    //stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::UseSkill), new SkillSelectState(this));
 
@@ -60,6 +60,7 @@ Player::~Player()
 {
    
 }
+
 
 void Player::Update(float elapsedTime)
 {

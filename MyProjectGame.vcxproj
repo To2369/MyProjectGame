@@ -176,6 +176,7 @@
     <ClInclude Include="Imgui\imstb_textedit.h" />
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="Source\ArtsSkillStraightBallet.h" />
+    <ClInclude Include="Source\AttackData.h" />
     <ClInclude Include="Source\BehaviorTree.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraController.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\NormalBallet.h" />
     <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\PlayerStateDerived.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneGame.h" />
@@ -274,7 +276,6 @@
     <ClCompile Include="Source\Misc.cpp" />
     <ClCompile Include="Source\NormalBallet.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\PlayerStateDerived.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneLoading.cpp" />
@@ -286,9 +287,6 @@
     <ClCompile Include="Source\ArtsSkillStraightBallet.cpp" />
     <ClCompile Include="Source\Stage.cpp" />
     <ClCompile Include="Source\StageManager.cpp" />
-    <ClCompile Include="Source\StateBase.cpp" />
-    <ClCompile Include="Source\StateDerived.cpp" />
-    <ClCompile Include="Source\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\ColorFilter.hlsli" />

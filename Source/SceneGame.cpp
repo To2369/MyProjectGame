@@ -35,7 +35,7 @@ void SceneGame::Initialize()
         farZ
     );
     cameraCtrl = std::make_unique<CameraController>();
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 1; i++)
     {
         std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
         slime->SetPosition({ 0,0,5 });

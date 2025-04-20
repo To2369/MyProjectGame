@@ -682,37 +682,42 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
         Enemy* enemys = enemy.GetEnemy(i);
 
         //衝突処理
-        DirectX::XMFLOAT3 outPosition;
+        DirectX::XMFLOAT3 outPos;
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
             nodeRadius,
             enemys->GetPosition(),
             enemys->GetRadius(),
             enemys->GetHeight(),
-            outPosition
+            outPos
         ))
         {
             {
-                //吹き飛ばす移動方向の速度ベクトル
-                DirectX::XMFLOAT3 impulse;
-                //吹き飛ばす力
-                const float power = 5.0f;
+                // ノックバック方向 = 敵位置 - プレイヤー位置
+                DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
 
-                //敵の位置
-                DirectX::XMVECTOR enemyVec = DirectX::XMLoadFloat3(&enemys->GetPosition());
-                //弾の位置
-                DirectX::XMVECTOR projectileVec = DirectX::XMLoadFloat3(&nodePosition);
-                //弾から敵への方向ベクトルを計算(敵-弾
-                auto Vec = DirectX::XMVectorSubtract(enemyVec, projectileVec);
-                //方向ベクトルを正規化
-                Vec = DirectX::XMVector3Normalize(Vec);
-                DirectX::XMFLOAT3 v;
-                DirectX::XMStoreFloat3(&v, Vec);
+                DirectX::XMFLOAT3 dir;
+                dir.x = enemyPos.x - position.x;
+                dir.y = 0.0f;
+                dir.z = enemyPos.z - position.z;
+                
+               
+                float length = sqrt(dir.x * dir.x + dir.z * dir.z);
+                if (length > 0.0001f)
+                {
+                    dir.x /= length;
+                    dir.z /= length;
+                }
 
-                //吹き飛ばす移動方向の速度ベクトルに設定
-                impulse.x = power * v.x;
-                impulse.y = power * 0.5f;
-                impulse.z = power * v.z;
+                float power = 1.0f;
+                DirectX::XMFLOAT3 impulse = {
+                    dir.x * power,
+                    0.0f,
+                    dir.z * power
+                };
+
+                // プレイヤーもその反対方向に少しだけ前進
+                this->AddImpulse(impulse);
 
                 enemys->AddImpulse(impulse);
             }

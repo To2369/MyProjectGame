@@ -22,6 +22,7 @@ Player::Player()
 
     stateMachine->RegisterState(new MovementState(this));
     stateMachine->RegisterState(new WeakAttackState<Player>(this));
+    stateMachine->RegisterState(new StrongAttackState<Player>(this));
     stateMachine->RegisterState(new UseSkillState<Player>(this));
     stateMachine->RegisterState(new HitDamegeState<Player>(this));
 
@@ -93,11 +94,11 @@ void Player::Update(float elapsedTime)
 
     InputDash(elapsedTime);
 
-    Mouse* mouse = InputManager::Instance()->getMouse();
+   /* Mouse* mouse = InputManager::Instance()->getMouse();
     if (mouse->GetButton() & Mouse::BTN_RIGHT)
     {
         TeleportBehindEnemy();
-    }
+    }*/
 
     UpdateStatus(elapsedTime);
 
@@ -672,7 +673,7 @@ void Player::CollisionPlayerAndArts()
     }
 }
 
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float Timer, int damage)
 {
     attackCollisionFlag = true;
     //ノード取得
@@ -692,7 +693,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     {
         Enemy* enemys = enemy.GetEnemy(i);
 
-        //衝突処理
+        // 衝突処理
         DirectX::XMFLOAT3 outPos;
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
@@ -703,7 +704,8 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             outPos
         ))
         {
-            {
+            if (enemys->ApplyDamage(Timer, damage))
+            {  //hitEffect->Play(e);
                 // ノックバック方向 = 敵位置 - プレイヤー位置
                 DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
 
@@ -720,7 +722,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                     dir.z /= length;
                 }
 
-                float power = 1.0f;
+                float power = 10.0f;
                 DirectX::XMFLOAT3 impulse = {
                     dir.x * power,
                     0.0f,
@@ -731,13 +733,6 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 this->AddImpulse(impulse);
 
                 enemys->AddImpulse(impulse);
-            }
-            //ヒットエフェクト再生
-            if (enemys->ApplyDamage(0.1f, 1))
-            {
-                DirectX::XMFLOAT3 e = enemys->GetPosition();
-                e.y += enemys->GetHeight() * 0.5f;
-                //hitEffect->Play(e);
             }
         }
     }

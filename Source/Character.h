@@ -89,6 +89,8 @@ public:
 
 	void SetAttackNextFlag(const bool& flag) { this->attackNextFlag = flag; }
 	void SetAttackCollisionFlag(const bool& flag) { this->attackCollisionFlag = flag; }
+
+	float GetInvincibleTimer() const { return invincibleTimer; }
 private:
 	// ‚’¼‘¬“xXVˆ—
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -155,7 +157,7 @@ protected:
 	int skillEnergy = 200;	//‹Z—Í
 	int maxSkillEnergy = 700;	//Å‘å‹Z—Í
 
-	float invincibleTimer = 0.5f;   // –³“GŠÔ
+	float invincibleTimer = 0.2f;   // –³“GŠÔ
 	float friction = 0.5f; // –€C
 	float acceleration = 1.0f;  // ‰Á‘¬“x
 	float maxMoveSpeed = 5.0f;  // Å‘åˆÚ“®‘¬“x

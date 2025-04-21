@@ -32,6 +32,21 @@ void WeakAttackState<Player>::Exit()
 
 }
 
+void StrongAttackState<Player>::Enter()
+{
+    SetSubState(static_cast<int>(Player::StrongAttack::StrongAttack01));
+}
+
+void StrongAttackState<Player>::Execute(float elapsedTime)
+{
+    subState->Execute(elapsedTime);
+}
+
+void StrongAttackState<Player>::Exit()
+{
+
+}
+
 void UseSkillState<Player>::Enter()
 {
     SetSubState(static_cast<int>(Player::WeakAttack::WeakAttack01));
@@ -215,7 +230,9 @@ void  WeakAttackState01<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack01.hitBoneName,
-            AttackDatas::weakAttack01.hitRadius);
+            AttackDatas::weakAttack01.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack01.damage);
     }
     else
     {
@@ -265,7 +282,9 @@ void  WeakAttackState02<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack02.hitBoneName,
-            AttackDatas::weakAttack02.hitRadius);
+            AttackDatas::weakAttack02.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack02.damage);
     }
     else
     {
@@ -317,7 +336,9 @@ void  WeakAttackState03<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack03.hitBoneName,
-            AttackDatas::weakAttack03.hitRadius);
+            AttackDatas::weakAttack03.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack03.damage);
     }
     else
     {
@@ -367,7 +388,9 @@ void  WeakAttackState04<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack04.hitBoneName,
-            AttackDatas::weakAttack04.hitRadius);
+            AttackDatas::weakAttack04.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack04.damage);
     }
     else
     {
@@ -417,7 +440,9 @@ void  WeakAttackState05<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack05.hitBoneName,
-            AttackDatas::weakAttack05.hitRadius);
+            AttackDatas::weakAttack05.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack05.damage);
     }
     else
     {
@@ -428,8 +453,10 @@ void  WeakAttackState05<Player>::Execute(float elapsedTime)
         && owner->GetModel()->currentAnimationSeconds <= AttackDatas::weakAttack05.secondHitEndTime)
     {
         owner->CollisionNodeVsEnemies(
-            AttackDatas::weakAttack05.secondHitBoneName,
-            AttackDatas::weakAttack05.hitRadius);
+            AttackDatas::weakAttack05.hitBoneName,
+            AttackDatas::weakAttack05.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack05.damage);
     }
     else
     {
@@ -479,7 +506,9 @@ void  WeakAttackState06<Player>::Execute(float elapsedTime)
     {
         owner->CollisionNodeVsEnemies(
             AttackDatas::weakAttack06.hitBoneName,
-            AttackDatas::weakAttack06.hitRadius);
+            AttackDatas::weakAttack06.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack06.damage);
     }
     else
     {
@@ -506,8 +535,24 @@ void StrongAttackState01<Player>::Enter()
 
 void  StrongAttackState01<Player>::Execute(float elapsedTime)
 {
+    if (owner->GetModel()->currentAnimationSeconds >= AttackDatas::weakAttack06.hitStartTime
+        && owner->GetModel()->currentAnimationSeconds <= AttackDatas::weakAttack06.hitEndTime)
+    {
+        owner->CollisionNodeVsEnemies(
+            AttackDatas::weakAttack06.hitBoneName,
+            AttackDatas::weakAttack06.hitRadius,
+            owner->GetInvincibleTimer(),
+            AttackDatas::weakAttack06.damage);
+    }
+    else
+    {
+        owner->SetAttackCollisionFlag(false);
+    }
 
-   
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 }
 
 void  StrongAttackState01<Player>::Exit()

@@ -497,6 +497,143 @@ void WeakAttackState06<Player>::Exit()
     owner->SetAttackNextFlag(false);
 }
 
+
+void StrongAttackState01<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack01), false);
+    owner->SetAttackNextFlag(false); // ì¸óÕèâä˙âª
+}
+
+void  StrongAttackState01<Player>::Execute(float elapsedTime)
+{
+
+   
+}
+
+void  StrongAttackState01<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState02<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack02), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState02<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState02<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState03<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack03), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState03<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState03<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState04<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack04), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState04<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState04<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState05<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack05), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState05<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState05<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState06<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack06), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState06<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState06<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState07<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack07), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState07<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState07<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
+void StrongAttackState08<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack08), false);
+    owner->SetAttackNextFlag(false);
+}
+
+void  StrongAttackState08<Player>::Execute(float elapsedTime)
+{
+
+
+}
+
+void  StrongAttackState08<Player>::Exit()
+{
+    owner->SetAttackNextFlag(false);
+}
+
 void DashToEnemyState<Player>::Enter()
 {
     owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);

@@ -47,6 +47,28 @@ public:
 };
 
 template<typename TypeCharacter>
+class StrongAttackState :public HierarchicalState<TypeCharacter>
+{
+public:
+	//コンストラクタ
+	StrongAttackState(TypeCharacter* character) :HierarchicalState<TypeCharacter>(character) {}
+	~StrongAttackState()
+	{
+		for (State<TypeCharacter>* state : this->subStatePool)
+		{
+			delete state;
+		}
+		this->subStatePool.clear();
+	};
+	//ステートに入った時のメソッド
+	virtual void Enter() override {}
+	//ステートで実行するメソッド
+	virtual void Execute(float elapsedTime) override {}
+	//ステートからでていくときのメソッド
+	virtual void Exit() override {}
+};
+
+template<typename TypeCharacter>
 class UseSkillState :public HierarchicalState<TypeCharacter>
 {
 public:
@@ -259,6 +281,134 @@ public:
 	WeakAttackState06(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
 	~WeakAttackState06() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState01 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState01(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState01() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState02 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState02(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState02() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState03 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState03(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState03() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState04 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState04(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState04() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState05 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState05(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState05() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState06 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState06(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState06() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState07 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState07(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState07() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class StrongAttackState08 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	StrongAttackState08(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~StrongAttackState08() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド

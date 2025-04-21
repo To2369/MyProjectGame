@@ -79,6 +79,7 @@ public:
 	{
 		Movement,
 		WeakAttack,
+		StrongAttack,
 		UseSkill,
 		HitDamege,
 	};
@@ -90,6 +91,17 @@ public:
 		Jump,
 		Land,
 	};
+	enum class StrongAttack
+	{
+		StrongAttack01,
+		StrongAttack02,
+		StrongAttack03,
+		StrongAttack04,
+		StrongAttack05,
+		StrongAttack06,
+		StrongAttack07,
+		StrongAttack08,
+	};
 	enum class WeakAttack
 	{
 		WeakAttack01,
@@ -99,6 +111,7 @@ public:
 		WeakAttack05,
 		WeakAttack06,
 	};
+
 	enum class UseSkill
 	{
 		SkillSelect,

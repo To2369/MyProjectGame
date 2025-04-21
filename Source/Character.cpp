@@ -564,15 +564,6 @@ void Character::UpdateVerticalMove(float elapsedTime)
     //記録
     DirectX::XMStoreFloat4(&quaternion, Quaternion);
     DirectX::XMStoreFloat4(&quaternion_additional, NQ);
-#else
-    //// 姿勢制御用法線ベクトルから x と z の角度を計算
-    //// y 軸が姿勢制御用法線ベクトル方向に向くように角度を計算
-    float angleX = atan2f(normal.z, normal.y);
-    float angleZ = -atan2f(normal.x, normal.y);
-
-    //// 線形補間で滑らかに回転
-    //angle.x = Mathf::Lerp(quaternion.x, angleX, 0.1f);
-    //angle.z = Mathf::Lerp(quaternion.z, angleZ, 0.1f);
 #endif
 }
 

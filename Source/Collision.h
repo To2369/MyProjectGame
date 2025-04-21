@@ -2,16 +2,15 @@
 #include <DirectXMath.h>
 #include "Graphics/Model.h"
 #include <DirectXCollision.h>
-#include <algorithm>  // std::min を使うために必要
 #include <iostream>
 
 // ヒット結果（レイキャスト後に取得したい情報）
 struct HitResult
 {
 	DirectX::XMFLOAT3 position = { 0,0,0 };	// レイとポリゴンの交点
-	DirectX::XMFLOAT3 normal = { 0,0,0 }; // 衝突したポリゴンの法線ベクトル
-	float distance = 0.0f; // レイの視点から交点までの距離
-	int materialIndex = -1; // 衝突したポリゴンのマテリアル番号
+	DirectX::XMFLOAT3 normal = { 0,0,0 };	// 衝突したポリゴンの法線ベクトル
+	float distance = 0.0f;					// レイの視点から交点までの距離
+	int materialIndex = -1;					// 衝突したポリゴンのマテリアル番号
 };
 
 // オブジェクトの交差結果の構造体
@@ -127,32 +126,4 @@ public:
 		const DirectX::XMFLOAT3& end,
 		const Model* model,
 		HitResult& result);
-
-
-	static bool RayIntersectsTriangle(
-		const DirectX::XMFLOAT3& rayStart,
-		const DirectX::XMFLOAT3& rayEnd,
-		const DirectX::XMFLOAT3& a,
-		const DirectX::XMFLOAT3& b,
-		const DirectX::XMFLOAT3& c,
-		HitResult& result);
-private:
-	struct CollisionMesh
-	{
-		struct Triangle
-		{
-			DirectX::XMFLOAT3	positions[3];
-			DirectX::XMFLOAT3	normal;
-		};
-		struct Area
-		{
-			DirectX::BoundingBox	boundingBox;
-			std::vector<int>		triangleIndices;
-		};
-
-		std::vector<Triangle>	triangles;
-		std::vector<Area>		areas;
-	};
-private:
-	static CollisionMesh collisionMesh;
 };

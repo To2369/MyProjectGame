@@ -5,10 +5,10 @@
 
 SkyMap::SkyMap(ID3D11Device* device, const wchar_t* filename, bool generateMips)
 {
-	D3D11_TEXTURE2D_DESC texture2d_desc;
-	ShaderManager::Instance()->LoadTextureFromFile(device, filename, shaderResourceView.GetAddressOf(), &texture2d_desc);
+	D3D11_TEXTURE2D_DESC texture2dDesc;
+	ShaderManager::Instance()->LoadTextureFromFile(device, filename, shaderResourceView.GetAddressOf(), &texture2dDesc);
 
-	if (texture2d_desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+	if (texture2dDesc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
 	{
 		isTextureCube = true;
 	}
@@ -17,14 +17,14 @@ SkyMap::SkyMap(ID3D11Device* device, const wchar_t* filename, bool generateMips)
 	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", skyMapPS.GetAddressOf());
 	ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\SkyMapPS.cso", skyBoxPS.GetAddressOf());
 
-	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(constants);
-	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	buffer_desc.CPUAccessFlags = 0;
-	buffer_desc.MiscFlags = 0;
-	buffer_desc.StructureByteStride = 0;
-	HRESULT hr = device->CreateBuffer(&buffer_desc, nullptr, constantBuffer.GetAddressOf());
+	D3D11_BUFFER_DESC bufferDesc{};
+	bufferDesc.ByteWidth = sizeof(constants);
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+	HRESULT hr = device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HrTrace(hr));
 }
 

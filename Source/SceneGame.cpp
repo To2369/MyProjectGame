@@ -326,8 +326,7 @@ void SceneGame::DrawGauge(ID3D11DeviceContext* dc, RenderContext* rc)
     // Œ»İ‚Ì‹Z—ÍƒQ[ƒW
     skillEnergyGauge->Render(
         dc,
-        25,
-        100,
+        25,100,
         694*skillEnergyRate,
         16,
         1.0f, 1.0f, 1.0f, 1.0f,

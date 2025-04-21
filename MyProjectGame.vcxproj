@@ -232,6 +232,7 @@
     <ClInclude Include="Source\StateDerived.h" />
     <ClInclude Include="Source\StateMachine.h" />
     <ClInclude Include="Source\ArtsSpiritExplosion.h" />
+    <ClInclude Include="Source\UIData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp" />

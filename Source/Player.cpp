@@ -37,7 +37,18 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState04(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState05(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState06(this));
+
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState01(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState02(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState03(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState04(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState05(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState06(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState07(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState08(this));
+
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
+
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::UseSkill), new SkillSelectState(this));
 
@@ -99,7 +110,7 @@ void Player::Update(float elapsedTime)
 
 void Player::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, transform,{ 1.0f,1.0f,1.0f,1.0f });
+	model->Render(dc, transform,{ color });
     artsMgr.Render(dc);
 }
 float c = 0;

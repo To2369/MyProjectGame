@@ -135,6 +135,7 @@ protected:
 	DirectX::XMVECTOR right = { 1,0,0 };
 	DirectX::XMVECTOR up = { 0,1,0 };
 	DirectX::XMVECTOR front = { 0,0,1 };
+	DirectX::XMFLOAT4 color = { 1,1,1,1 };
 	float radius = 0.5f;
 	float gravity = -1.0f;	// 重力（フレーム単位の値）
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };	// 速度

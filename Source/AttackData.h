@@ -1,21 +1,24 @@
 #pragma once
 struct AttackData
 {
-	float hitStartTime;
-	float hitEndTime;
-	float inputAcceptStartTime;
-	float inputAcceptEndTime;
-	float progressLimit;
-	float hitRadius;
-	const char* hitBoneName;
+	float hitStartTime;							// 当たり判定が始まる時間
+	float hitEndTime;							// 当たり判定が終わる時間
+	float inputAcceptStartTime;					// 次の攻撃に遷移するための入力受付開始
+	float inputAcceptEndTime;					// 次の攻撃に遷移するための入力受付終了
+	float progressLimit;						// 次の攻撃に移る際のアニメーション進行度リミット
+	float hitRadius;							// 当たり判定の大きさ
+	const char* hitBoneName;					// 当たり判定を付けるボーンの名前
 
 	/*アニメーションに二つ以上攻撃判定があるときの情報*/
-	float secondHitStartTime = 0.0f;
-	float secondHitEndTime = 0.0f;
-	const char* secondHitBoneName = nullptr;
+	float secondHitStartTime = 0.0f;			// 二回目の当たり判定が始まる時間
+	float secondHitEndTime = 0.0f;				// 二回目の当たり判定が終わる時間
+	const char* secondHitBoneName = nullptr;	// 二回目の当たり判定をつけるボーンの名前
 };
+
+// 攻撃に使用しているデータ
 namespace AttackDatas
 {
+	// 弱攻撃
 	static constexpr AttackData weakAttack01 =
 	{
 		0.4f, 0.45f,

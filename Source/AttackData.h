@@ -77,7 +77,7 @@ namespace AttackDatas
 		0.4f, 0.9f,
 		0.1f, 1.4f,
 		0.5f,
-		0.7f, "ball_r",
+		0.7f, "lowerarm_l",
 		1
 	};
 	static constexpr AttackData strongAttack02 =
@@ -109,7 +109,7 @@ namespace AttackDatas
 		0.45f, 0.6f,
 		0.1f, 1.0f,
 		0.5f,
-		0.7f, "ball_r",
+		0.7f, "ball_l",
 		1
 	};
 	static constexpr AttackData strongAttack06 =
@@ -117,7 +117,7 @@ namespace AttackDatas
 		0.4f, 0.5f,
 		0.1f, 0.9f,
 		0.5f,
-		0.7f, "ball_r",
+		0.7f, "ball_l",
 		1
 	};
 	static constexpr AttackData strongAttack07 =
@@ -125,17 +125,16 @@ namespace AttackDatas
 		0.25f, 0.3f,
 		0.1f, 1.0f,
 		0.5f,
-		0.7f, "ball_r",
+		0.7f, "hand_r",
 		1,
 		0.5f, 0.75f,
-		"hand_l"
+		"ball_r"
 	};
 	static constexpr AttackData strongAttack08 =
 	{
 		0.35f, 0.5f,
 		0.1f, 0.8f,
 		0.5f,
-		0.7f, "ball_r",
 		1
 	};
 }

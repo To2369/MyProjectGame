@@ -1089,3 +1089,15 @@ void Player::Lock()
         Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
     }
 }
+
+void Player::InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTime, float inputAcceptEndTime)
+{
+    if (currentAnimaSeconds >= inputAcceptStartTime
+        && currentAnimaSeconds <= inputAcceptEndTime)
+    {
+        if (InputAttack())
+        {
+            SetAttackNextFlag(true);
+        }
+    }
+}

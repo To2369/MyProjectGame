@@ -241,14 +241,8 @@ void  WeakAttackState01<Player>::Execute(float elapsedTime)
 
 
     //　次の攻撃に移るための入力受付時間
-    if (owner->GetModel()->currentAnimationSeconds >= AttackDatas::weakAttack01.inputAcceptStartTime
-        && owner->GetModel()->currentAnimationSeconds <= AttackDatas::weakAttack01.inputAcceptEndTime)
-    {
-        if (owner->InputAttack())
-        {
-            owner->SetAttackNextFlag(true);
-        }
-    }
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, AttackDatas::weakAttack01.inputAcceptStartTime, AttackDatas::weakAttack01.inputAcceptEndTime);
+  
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= AttackDatas::weakAttack01.progressLimit)

@@ -149,6 +149,8 @@ public:
 	void CollisionArtsAndEnemies();
 	void CollisionPlayerAndArts();
 	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invicibleTimer, int damage);
+
+	void InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTime, float inputAcceptEndTime);
 	void TeleportBehindEnemy();
 protected:
 	// ’…’n‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é

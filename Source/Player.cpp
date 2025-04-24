@@ -1101,3 +1101,20 @@ void Player::InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTi
         }
     }
 }
+
+void Player::ActiveAttackCollider(float currentAnimSeconds, float hitStartTime, float hitEndTime, const char* boneName, float hitRadius, float invTimer, float damage)
+{
+    if (currentAnimSeconds >= hitStartTime
+        && currentAnimSeconds <= hitEndTime)
+    {
+        CollisionNodeVsEnemies(
+            boneName,
+            hitRadius,
+            invTimer,
+            damage);
+    }
+    else
+    {
+        attackCollisionFlag = false;
+    }
+}

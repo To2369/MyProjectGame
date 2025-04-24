@@ -228,11 +228,11 @@
     <ClInclude Include="Source\AttackData.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PlayerStateDerived.h">
-      <Filter>Sources\Character</Filter>
-    </ClInclude>
     <ClInclude Include="Source\UIData.h">
       <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlayerStateDerived.h">
+      <Filter>Sources\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@
 #include "Graphics/GeometricPrimitive.h"
 #include "StateMachine.h"
 #include "Enemy.h"
-
+#include "AttackData.h"
 //#include "Effect/Effect.h"
 
 
@@ -151,7 +151,8 @@ public:
 	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invicibleTimer, int damage);
 
 	void InputAttackNext(float currentAnimSeconds, float inputAcceptStartTime, float inputAcceptEndTime);
-	void ActiveAttackCollider(float currentAnimSeconds, float hitStartTime, float hitEndTime, const char* boneName, float hitRadius, float invTimer, float damage);
+	void ActiveAttackCollider(AttackData attackData);
+	void ActiveSecondAttackCollider(AttackData attackData);
 	void TeleportBehindEnemy();
 protected:
 	// ’…’n‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é

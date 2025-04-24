@@ -32,15 +32,15 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new JumpState(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new LandState(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState01(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState02(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState03(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState04(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState05(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAttackState06(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState01(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState02(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState03(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState04(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState05(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState06(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState01(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState02(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState01(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState02(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState03(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState04(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState05(this));
@@ -675,7 +675,7 @@ void Player::CollisionPlayerAndArts()
 
 void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float Timer, int damage)
 {
-    attackCollisionFlag = true;
+    atkCollisionFlag = true;
     //ƒm[ƒhŽæ“¾
     Skeleton::Bone* bone = model->FindNode(nodeName);
     auto& node = model->keyframe.nodes[bone->nodeIndex];
@@ -741,7 +741,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
 #ifdef USE_IMGUI
 
         DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-        if (attackCollisionFlag)
+        if (atkCollisionFlag)
         {
             Skeleton::Bone* bone = model->FindNode(nodeName);
             if (bone && !model->keyframe.nodes.empty())
@@ -1097,24 +1097,58 @@ void Player::InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTi
     {
         if (InputAttack())
         {
-            SetAttackNextFlag(true);
+            SetWeekAtkNextFlag(true);
         }
     }
 }
 
-void Player::ActiveAttackCollider(float currentAnimSeconds, float hitStartTime, float hitEndTime, const char* boneName, float hitRadius, float invTimer, float damage)
+void Player::ActiveAttackCollider(AttackData attackData)
 {
-    if (currentAnimSeconds >= hitStartTime
-        && currentAnimSeconds <= hitEndTime)
+    if (model->currentAnimationSeconds >= attackData.hitStartTime
+        && model->currentAnimationSeconds <= attackData.hitEndTime)
     {
         CollisionNodeVsEnemies(
-            boneName,
-            hitRadius,
-            invTimer,
-            damage);
+            attackData.hitBoneName,
+            attackData.hitRadius,
+            invincibleTimer,
+            attackData.damage);
     }
     else
     {
-        attackCollisionFlag = false;
+        atkCollisionFlag = false;
+    }
+
+    if (attackData.secondHitBoneName != nullptr)
+    {
+        if (model->currentAnimationSeconds >= attackData.secondHitStartTime
+            && model->currentAnimationSeconds <= attackData.secondHitEndTime)
+        {
+            CollisionNodeVsEnemies(
+                attackData.secondHitBoneName,
+                attackData.hitRadius,
+                invincibleTimer,
+                attackData.damage);
+        }
+        else
+        {
+            atkCollisionFlag = false;
+        }
+    }
+}
+
+void Player::ActiveSecondAttackCollider(AttackData attackData)
+{
+    if (model->currentAnimationSeconds >= attackData.secondHitStartTime
+        && model->currentAnimationSeconds <= attackData.secondHitEndTime)
+    {
+        CollisionNodeVsEnemies(
+            attackData.secondHitBoneName,
+            attackData.hitRadius,
+            invincibleTimer,
+            attackData.damage);
+    }
+    else
+    {
+        atkCollisionFlag = false;
     }
 }

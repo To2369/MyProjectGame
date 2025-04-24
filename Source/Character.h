@@ -84,11 +84,11 @@ public:
 	const DirectX::XMVECTOR& GetRight() const { return right; }
 	const DirectX::XMVECTOR& GetFront() const { return front; }
 
-	const bool IsAttackNextFlag()const { return attackNextFlag; }
-	const bool IsAttackCollisionFlag() const { return attackCollisionFlag; }
+	const bool IsAttackNextFlag()const { return weekAtkNextFlag; }
+	const bool IsAttackCollisionFlag() const { return atkCollisionFlag; }
 
-	void SetAttackNextFlag(const bool& flag) { this->attackNextFlag = flag; }
-	void SetAttackCollisionFlag(const bool& flag) { this->attackCollisionFlag = flag; }
+	void SetWeekAtkNextFlag(const bool& flag) { this->weekAtkNextFlag = flag; }
+	void SetAtkCollisionFlag(const bool& flag) { this->atkCollisionFlag = flag; }
 
 	float GetInvincibleTimer() const { return invincibleTimer; }
 private:
@@ -179,6 +179,6 @@ protected:
 
 	bool dashFlag = false;
 
-	bool attackCollisionFlag = false;
-	bool attackNextFlag = false;
+	bool atkCollisionFlag = false;
+	bool weekAtkNextFlag = false;
 };

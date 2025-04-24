@@ -194,13 +194,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState01 : public State<TypeCharacter>
+class WeakAtkState01 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState01(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState01(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState01() {}
+	~WeakAtkState01() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -210,13 +210,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState02 : public State<TypeCharacter>
+class WeakAtkState02 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState02(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState02(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState02() {}
+	~WeakAtkState02() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -226,13 +226,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState03 : public State<TypeCharacter>
+class WeakAtkState03 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState03(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState03(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState03() {}
+	~WeakAtkState03() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -242,13 +242,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState04 : public State<TypeCharacter>
+class WeakAtkState04 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState04(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState04(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState04() {}
+	~WeakAtkState04() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -258,13 +258,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState05 : public State<TypeCharacter>
+class WeakAtkState05 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState05(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState05(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState05() {}
+	~WeakAtkState05() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -274,13 +274,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class WeakAttackState06 : public State<TypeCharacter>
+class WeakAtkState06 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	WeakAttackState06(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	WeakAtkState06(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~WeakAttackState06() {}
+	~WeakAtkState06() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -290,13 +290,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class StrongAttackState01 : public State<TypeCharacter>
+class StrongAtkState01 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	StrongAttackState01(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	StrongAtkState01(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~StrongAttackState01() {}
+	~StrongAtkState01() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド
@@ -306,13 +306,13 @@ public:
 };
 
 template<typename TypeCharacter>
-class StrongAttackState02 : public State<TypeCharacter>
+class StrongAtkState02 : public State<TypeCharacter>
 {
 public:
 	// コンストラクタ
-	StrongAttackState02(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	StrongAtkState02(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
-	~StrongAttackState02() {}
+	~StrongAtkState02() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド

@@ -90,7 +90,7 @@ void Player::Update(float elapsedTime)
     //CollisionPlayerAndArts();
     artsMgr.Update(elapsedTime);
 
-    Lock();
+    Lockon();
 
     InputDash(elapsedTime);
 
@@ -985,7 +985,7 @@ bool Player::InputDash(float elapsedTime)
     }
 }
 
-bool Player::InputAttack()
+bool Player::InputWeekAttack()
 {
     Mouse* mouse = InputManager::Instance()->getMouse();
     if (mouse->GetButtonDown() & Mouse::BTN_LEFT&&!artSkillReady)
@@ -995,7 +995,17 @@ bool Player::InputAttack()
     return false;
 }
 
-void Player::Lock()
+bool Player::InputStrongAttack()
+{
+    Mouse* mouse = InputManager::Instance()->getMouse();
+    if (mouse->GetButtonDown() & Mouse::BTN_RIGHT && !artSkillReady)
+    {
+        return true;
+    }
+    return false;
+}
+
+void Player::Lockon()
 {
     LockonState oldLockonState = lockonState;
     Enemy* oldLockonenemy = lockonEnemy;
@@ -1095,7 +1105,7 @@ void Player::InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTi
     if (currentAnimaSeconds >= inputAcceptStartTime
         && currentAnimaSeconds <= inputAcceptEndTime)
     {
-        if (InputAttack())
+        if (InputWeekAttack())
         {
             SetWeekAtkNextFlag(true);
         }

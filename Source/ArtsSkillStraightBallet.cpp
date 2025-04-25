@@ -6,7 +6,6 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     geoPrimitive =
         std::make_unique<CapsuleOneWay>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
     geoPrimitive->SetGrowthRate(15.0f);
-    position = { 3,0,3 };
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,0,0 };

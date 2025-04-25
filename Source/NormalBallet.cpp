@@ -2,7 +2,6 @@
 #include "Graphics/Graphics.h"
 NormalBallet::NormalBallet(ArtsManager* manager) : Arts(manager)
 {
-    position = { 1,5,1 };
     damage = 1;
     useSkillEnergy = 2;
     radius = 0.5f;

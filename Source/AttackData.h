@@ -17,7 +17,7 @@ struct AttackData
 };
 
 // 攻撃に使用しているデータ
-namespace AttackDatas
+namespace PlAttackDatas
 {
 	// 弱攻撃
 	static constexpr AttackData weakAttack01 =

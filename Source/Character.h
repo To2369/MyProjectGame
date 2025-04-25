@@ -84,7 +84,8 @@ public:
 	const DirectX::XMVECTOR& GetRight() const { return right; }
 	const DirectX::XMVECTOR& GetFront() const { return front; }
 
-	const bool IsAttackNextFlag()const { return weekAtkNextFlag; }
+	const bool IsWeekAtkNextFlag()const { return weekAtkNextFlag; }
+	const bool IsStrongAtkNextFlag()const { return weekAtkNextFlag; }
 	const bool IsAttackCollisionFlag() const { return atkCollisionFlag; }
 
 	void SetWeekAtkNextFlag(const bool& flag) { this->weekAtkNextFlag = flag; }

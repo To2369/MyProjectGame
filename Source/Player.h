@@ -133,14 +133,15 @@ public:
 	bool InputDashTowardsEnemy(float elapsedTime);
 
 	bool InputDash(float elapsedTime);
-	bool InputAttack();
+	bool InputWeekAttack();
+	bool InputStrongAttack();
 
 	bool artSkillReady = false;
 	bool artUltSkillReady = false;
 	void InputFlying(float elapsedTime);
 	DirectX::XMFLOAT3 GetMoveVec(const DirectX::XMFLOAT3& cameraRight, const DirectX::XMFLOAT3& cameraFront) const;
 
-	void Lock();
+	void Lockon();
 
 	// ƒvƒŒƒCƒ„[‚Æ“G‚Æ‚ÌÕ“Ëˆ—
 	void CollisionPlayerAndEnemies();

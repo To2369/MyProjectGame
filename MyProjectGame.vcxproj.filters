@@ -34,6 +34,9 @@
     <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Data">
+      <UniqueIdentifier>{f251f991-20bd-4369-847e-673362389607}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Imgui\imconfig.h">
@@ -225,14 +228,20 @@
     <ClInclude Include="Source\Graphics\SkyMap.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AttackData.h">
-      <Filter>Sources\Character</Filter>
-    </ClInclude>
     <ClInclude Include="Source\UIData.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\PlayerStateDerived.h">
       <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AttackData.h">
+      <Filter>Sources\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ParameterData.h">
+      <Filter>Sources\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ArtsData.h">
+      <Filter>Sources\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

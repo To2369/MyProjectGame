@@ -1,8 +1,8 @@
-#include "Graphics/Graphics.h"
+#include "../Graphics/Graphics.h"
 #include "EffectManager.h"
 
 // 初期化処理
-void EffectManager::initialize()
+void EffectManager::Initialize()
 {
     Graphics* graphics = Graphics::Instance();
 
@@ -29,14 +29,14 @@ void EffectManager::initialize()
 }
 
 // 更新処理
-void EffectManager::update(float elapsedTime)
+void EffectManager::Update(float elapsedTime)
 {
     // エフェクト更新処理（フレーム単位）
     effekseerMgr->Update(elapsedTime * 60.0f);
 }
 
 // 描画処理
-void EffectManager::render(const DirectX::XMFLOAT4X4* view, const DirectX::XMFLOAT4X4* projection)
+void EffectManager::Render(const DirectX::XMFLOAT4X4* view, const DirectX::XMFLOAT4X4* projection)
 {
     // ビュー＆プロジェクション行列を Effekseer レンダラに設定
     effekseerRenderer->SetCameraMatrix(*reinterpret_cast<const Effekseer::Matrix44*>(view));

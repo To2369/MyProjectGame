@@ -22,7 +22,7 @@ public:
     void Initialize();
 
     // I—¹ˆ—
-    void Finalize();
+    void Finalize() {};
 
     // XVˆ—
     void Update(float elapsedTime);
@@ -31,7 +31,7 @@ public:
     void Render(const DirectX::XMFLOAT4X4* view, const DirectX::XMFLOAT4X4* projection);
 
     // Effekseer ŠÇ—‚Ìæ“¾
-    Effekseer::ManagerRef GetEffekseer() { return effekseerMgr; }
+    Effekseer::ManagerRef GetEffekseerManager() { return effekseerMgr; }
 
 private:
     // Effekseer ŠÇ—

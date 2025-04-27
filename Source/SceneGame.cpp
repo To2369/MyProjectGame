@@ -9,6 +9,7 @@
 #include "SceneLoading.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
+#include "Effect/EffectManager.h"
 //#include "Effect/EffectManager.h"
 //初期化
 void SceneGame::Initialize()
@@ -97,9 +98,6 @@ void SceneGame::Update(float elapsedTime)
     player->Update(elapsedTime);
 
     EnemyManager::Instance().Update(elapsedTime);
-
-    // エフェクト更新処理
-    //EffectManager::Instance().Update(elapsedTime);
     DirectX::XMFLOAT3 target = player->GetPosition();
     target.y += 0.5f;
     cameraCtrl->SetTarget(target);
@@ -165,6 +163,9 @@ void SceneGame::Update(float elapsedTime)
 
     ImGui::End();
 #endif
+
+    // エフェクト更新処理
+    EffectManager::Instance().Update(elapsedTime);
 }
 
 //描画
@@ -238,7 +239,7 @@ void SceneGame::Render()
 
     // 3D エフェクト描画
     {
-        //EffectManager::Instance().Render(&rc.view, &rc.projection);
+        EffectManager::Instance().Render(&rc.view, &rc.projection);
     }
 
     // 3Dデバッグ描画

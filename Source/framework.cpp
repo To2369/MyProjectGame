@@ -3,7 +3,7 @@
 #include "SceneTest.h"
 #include "SceneGame.h"
 #include "SceneManager.h"
-
+#include "Effect/EffectManager.h"
 Framework::Framework(HWND hwnd) : hWnd(hwnd)
 {
 	hDC = GetDC(hwnd);
@@ -14,6 +14,8 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 
 	input_mgr = InputManager::Instance()->initialize(hwnd);
 
+	EffectManager::Instance().Initialize();
+
 	//シーン初期化
 	SceneManager::Instance().ChangeScene(new SceneTitle);
 }
@@ -22,6 +24,8 @@ Framework::~Framework()
 {
 	//シーン終了化
 	SceneManager::Instance().Clear();
+
+	EffectManager::Instance().Finalize();
 
 	ReleaseDC(hWnd, hDC);
 }
@@ -36,6 +40,9 @@ void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 
 void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
+
+	std::lock_guard<std::mutex> lock(Graphics::Instance()->GetMutex());
+
 	ID3D11DeviceContext* dc = graphics->GetDeviceContext();
 
 	graphics->Clear(0, 0, 1, 1);

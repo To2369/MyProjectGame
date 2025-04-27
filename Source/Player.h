@@ -6,7 +6,7 @@
 #include "StateMachine.h"
 #include "Enemy.h"
 #include "AttackData.h"
-//#include "Effect/Effect.h"
+#include "Effect/Effect.h"
 
 
 //アニメーション
@@ -215,4 +215,5 @@ private:
 
 	LockonState lockonState = LockonState::NotLocked;
 	Enemy* lockonEnemy = nullptr;
+	std::unique_ptr<Effect> hitEffect;
 };

@@ -56,7 +56,7 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::HitDamege), new DamegeState(this));
 
     // ヒットエフェクト読み込み
-    //hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
+    hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
 
     //待機ステートへ遷移
     stateMachine->SetState(static_cast<int>(State::Movement));
@@ -733,6 +733,10 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
                 this->AddImpulse(impulse);
 
                 enemys->AddImpulse(impulse);
+                {
+                    DirectX::XMFLOAT3 e = enemys->GetPosition();
+                    hitEffect->Play(&e);
+                }
             }
         }
     }

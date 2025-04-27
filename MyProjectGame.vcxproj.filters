@@ -243,6 +243,12 @@
     <ClInclude Include="Source\ArtsData.h">
       <Filter>Sources\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Effect\Effect.h">
+      <Filter>Sources\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Effect\EffectManager.h">
+      <Filter>Sources\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imgui\imgui.cpp">
@@ -403,6 +409,12 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\SkyMap.cpp">
       <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect\Effect.cpp">
+      <Filter>Sources\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect\EffectManager.cpp">
+      <Filter>Sources\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

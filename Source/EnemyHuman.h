@@ -1,12 +1,11 @@
 #pragma once
 #include "Enemy.h"
 
-// ƒXƒ‰ƒCƒ€
-class EnemySlime :public Enemy
+class EnemyHuman :public Enemy
 {
 public:
-	EnemySlime();
-	~EnemySlime() {};
+	EnemyHuman();
+	~EnemyHuman() {};
 
 	void Update(float elapsedTime) override;
 

@@ -1,9 +1,9 @@
-#include "EnemySlime.h"
+#include "EnemyHuman.h"
 #include "Graphics/Graphics.h"
 
-EnemySlime::EnemySlime()
+EnemyHuman::EnemyHuman()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".//Data//Model//Slime//Slime.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
 
 	const float scaleFactor = 0.01f;
 	scale = { scaleFactor,scaleFactor,scaleFactor };
@@ -17,7 +17,7 @@ EnemySlime::EnemySlime()
     position.y = 5.0f;
 }
 
-void EnemySlime::Update(float elapsedTime)
+void EnemyHuman::Update(float elapsedTime)
 {
 	// ‘¬“xˆ—XV
 	UpdateVelocity(elapsedTime);
@@ -30,12 +30,12 @@ void EnemySlime::Update(float elapsedTime)
 	UpdateTransform();
 }
 
-void EnemySlime::Render(ID3D11DeviceContext* dc)
+void EnemyHuman::Render(ID3D11DeviceContext* dc)
 {
 	model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
 }
 
-void EnemySlime::DrawDebugGUI()
+void EnemyHuman::DrawDebugGUI()
 {
 #ifdef USE_IMGUI
     ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
@@ -62,7 +62,7 @@ void EnemySlime::DrawDebugGUI()
 }
 
 // Ž€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
-void EnemySlime::OnDead()
+void EnemyHuman::OnDead()
 {
 	Destroy();
 }

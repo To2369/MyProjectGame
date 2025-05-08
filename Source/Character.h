@@ -85,10 +85,11 @@ public:
 	const DirectX::XMVECTOR& GetFront() const { return front; }
 
 	const bool IsWeekAtkNextFlag()const { return weekAtkNextFlag; }
-	const bool IsStrongAtkNextFlag()const { return weekAtkNextFlag; }
+	const bool IsStrongAtkNextFlag()const { return strongAtkNextFlag; }
 	const bool IsAttackCollisionFlag() const { return atkCollisionFlag; }
 
 	void SetWeekAtkNextFlag(const bool& flag) { this->weekAtkNextFlag = flag; }
+	void SetStrongAtkNextFlag(const bool& flag) { this->strongAtkNextFlag = flag; }
 	void SetAtkCollisionFlag(const bool& flag) { this->atkCollisionFlag = flag; }
 
 	float GetInvincibleTimer() const { return invincibleTimer; }
@@ -182,4 +183,5 @@ protected:
 
 	bool atkCollisionFlag = false;
 	bool weekAtkNextFlag = false;
+	bool strongAtkNextFlag = false;
 };

@@ -66,6 +66,39 @@ struct AABB
 
 		return true;
 	}
+
+	bool IntersectRaySphere(
+		const DirectX::XMFLOAT3& rayStart,
+		const DirectX::XMFLOAT3& rayEnd,
+		const DirectX::XMFLOAT3& sphereCenter,
+		float sphereRadius)
+	{
+		using namespace DirectX;
+
+		XMVECTOR s = XMLoadFloat3(&rayStart);
+		XMVECTOR e = XMLoadFloat3(&rayEnd);
+		XMVECTOR c = XMLoadFloat3(&sphereCenter);
+
+		XMVECTOR d = XMVectorSubtract(e, s);        // レイの方向ベクトル
+		XMVECTOR m = XMVectorSubtract(s, c);        // 球中心へのベクトル
+
+		float a = XMVectorGetX(XMVector3Dot(d, d));
+		float b = 2.0f * XMVectorGetX(XMVector3Dot(m, d));
+		float c_val = XMVectorGetX(XMVector3Dot(m, m)) - sphereRadius * sphereRadius;
+
+		float discriminant = b * b - 4.0f * a * c_val;
+
+		if (discriminant < 0.0f)
+			return false; // 交差なし
+
+		discriminant = std::sqrt(discriminant);
+
+		float t1 = (-b - discriminant) / (2.0f * a);
+		float t2 = (-b + discriminant) / (2.0f * a);
+
+		// レイの範囲 [0,1] 内に交差があるか
+		return (t1 >= 0.0f && t1 <= 1.0f) || (t2 >= 0.0f && t2 <= 1.0f);
+	}
 };
 
 class Collision
@@ -126,4 +159,5 @@ public:
 		const DirectX::XMFLOAT3& end,
 		const Model* model,
 		HitResult& result);
+
 };

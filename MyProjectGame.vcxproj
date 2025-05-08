@@ -188,7 +188,7 @@
     <ClInclude Include="Source\Effect\EffectManager.h" />
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\EnemyManager.h" />
-    <ClInclude Include="Source\EnemySlime.h" />
+    <ClInclude Include="Source\EnemyHuman.h" />
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\Graphics\Buffer.h" />
     <ClInclude Include="Source\Graphics\CapsuleOneWay.h" />
@@ -257,7 +257,7 @@
     <ClCompile Include="Source\Effect\EffectManager.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\EnemyManager.cpp" />
-    <ClCompile Include="Source\EnemySlime.cpp" />
+    <ClCompile Include="Source\EnemyHuman.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\Graphics\CapsuleOneWay.cpp" />
     <ClCompile Include="Source\Graphics\DebugPrimitive.cpp" />

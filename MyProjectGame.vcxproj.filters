@@ -34,7 +34,7 @@
     <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Data">
+    <Filter Include="Sources\Character\Data">
       <UniqueIdentifier>{f251f991-20bd-4369-847e-673362389607}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -153,7 +153,7 @@
     <ClInclude Include="Source\Enemy.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemySlime.h">
+    <ClInclude Include="Source\EnemyHuman.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\EnemyManager.h">
@@ -235,13 +235,13 @@
       <Filter>Sources\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\AttackData.h">
-      <Filter>Sources\Data</Filter>
+      <Filter>Sources\Character\Data</Filter>
     </ClInclude>
     <ClInclude Include="Source\ParameterData.h">
-      <Filter>Sources\Data</Filter>
+      <Filter>Sources\Character\Data</Filter>
     </ClInclude>
     <ClInclude Include="Source\ArtsData.h">
-      <Filter>Sources\Data</Filter>
+      <Filter>Sources\Character\Data</Filter>
     </ClInclude>
     <ClInclude Include="Source\Effect\Effect.h">
       <Filter>Sources\Effect</Filter>
@@ -350,7 +350,7 @@
     <ClCompile Include="Source\Enemy.cpp">
       <Filter>Sources\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EnemySlime.cpp">
+    <ClCompile Include="Source\EnemyHuman.cpp">
       <Filter>Sources\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\EnemyManager.cpp">

@@ -3,6 +3,7 @@
 #include "Input/InputManager.h"
 #include "Messenger.h"
 #include "MessageData.h"
+#include "StageManager.h"
 #ifdef USE_IMGUI
 #include "../Imgui/imgui.h"
 #include "../Imgui/imgui_internal.h"
@@ -150,6 +151,16 @@ void CameraController::FreeCamera(float elapsedTime)
     newPosition.x = target.x - front.x * range;
     newPosition.y = target.y - front.y * range;
     newPosition.z = target.z - front.z * range;
+
+    // ínå`Ç∆ÇÃìñÇΩÇËîªíËÇçsÇ§
+    HitResult hitResult;
+    if (StageManager::Instance().RayCast(newTarget, newPosition, hitResult))
+    {
+        DirectX::XMVECTOR	p = DirectX::XMLoadFloat3(&hitResult.position);
+        DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
+        p = DirectX::XMVectorMultiplyAdd(DirectX::XMVectorReplicate(4), cuv, p);
+        DirectX::XMStoreFloat3(&newPosition, p);
+    }
 }
 void CameraController::LockonCamera(float elapsedTime)
 {

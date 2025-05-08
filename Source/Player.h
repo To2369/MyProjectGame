@@ -99,8 +99,6 @@ public:
 		StrongAttack04,
 		StrongAttack05,
 		StrongAttack06,
-		StrongAttack07,
-		StrongAttack08,
 	};
 	enum class WeakAttack
 	{
@@ -110,6 +108,8 @@ public:
 		WeakAttack04,
 		WeakAttack05,
 		WeakAttack06,
+		WeakAttack07,
+		WeakAttack08,
 	};
 
 	enum class UseSkill
@@ -151,7 +151,7 @@ public:
 	void CollisionPlayerAndArts();
 	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invicibleTimer, int damage);
 
-	void InputAttackNext(float currentAnimSeconds, float inputAcceptStartTime, float inputAcceptEndTime);
+	void InputAttackNext(float currentAnimSeconds, AttackData attackData);
 	void ActiveAttackCollider(AttackData attackData);
 	void ActiveSecondAttackCollider(AttackData attackData);
 	void TeleportBehindEnemy();
@@ -193,19 +193,7 @@ private:
 	Skill skill = Skill::SkillMax;
 	bool dashTowardEnemyFlag = false;
 	// ヒットエフェクト
-	//std::unique_ptr<Effect> hitEffect;
 	float PIDIV180 = 0.017452f;
-
-
-	DirectX::XMFLOAT3 p = {0,0,0};
-	DirectX::XMFLOAT3 s = { 1,1,1 };
-	DirectX::XMFLOAT4X4 t = {
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1
-	};
-
 
 	int hit = 0;
 

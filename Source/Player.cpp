@@ -38,6 +38,8 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState04(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState05(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState06(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState07(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState08(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState01(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState02(this));
@@ -45,8 +47,6 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState04(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState05(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState06(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState07(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState08(this));
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
 
@@ -70,7 +70,7 @@ Player::Player()
 
 Player::~Player()
 {
-   
+
 }
 
 
@@ -94,24 +94,24 @@ void Player::Update(float elapsedTime)
 
     InputDash(elapsedTime);
 
-   /* Mouse* mouse = InputManager::Instance()->getMouse();
-    if (mouse->GetButton() & Mouse::BTN_RIGHT)
-    {
-        TeleportBehindEnemy();
-    }*/
+    /* Mouse* mouse = InputManager::Instance()->getMouse();
+     if (mouse->GetButton() & Mouse::BTN_RIGHT)
+     {
+         TeleportBehindEnemy();
+     }*/
 
     UpdateStatus(elapsedTime);
 
 
     UpdateAnimation(elapsedTime);
 
-	// ワールド行列更新
-	UpdateTransform();
+    // ワールド行列更新
+    UpdateTransform();
 }
 
 void Player::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, transform,{ color });
+    model->Render(dc, transform, { color });
     artsMgr.Render(dc);
 }
 float c = 0;
@@ -202,21 +202,21 @@ void Player::DrawDebugGUI()
         {
             //位置
             ImGui::InputFloat3("Position", &position.x);
-            ImGui::SliderFloat("Position", &position.y,-10,10);
+            ImGui::SliderFloat("Position", &position.y, -10, 10);
             //回転
             DirectX::XMVECTOR p = DirectX::XMQuaternionRotationAxis(right, c);
-            DirectX::XMVECTOR orientationVec= DirectX::XMLoadFloat4(&quaternion);
+            DirectX::XMVECTOR orientationVec = DirectX::XMLoadFloat4(&quaternion);
             orientationVec = DirectX::XMQuaternionMultiply(orientationVec, p);
             // 結果を保存
             DirectX::XMStoreFloat4(&quaternion, orientationVec);
             //DirectX::XMFLOAT4 pquater;
             ImGui::InputFloat("movespeed", &moveSpeed);
-      /*      quaternion.x = DirectX::XMConvertToRadians(pquater.x);
-            quaternion.y = DirectX::XMConvertToRadians(pquater.y);
-            quaternion.z = DirectX::XMConvertToRadians(pquater.z);
-            quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
+            /*      quaternion.x = DirectX::XMConvertToRadians(pquater.x);
+                  quaternion.y = DirectX::XMConvertToRadians(pquater.y);
+                  quaternion.z = DirectX::XMConvertToRadians(pquater.z);
+                  quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
             ImGui::InputFloat4("quaternion", &quaternion.x);
-            ImGui::SliderFloat("quaternion", &c,-1,1);
+            ImGui::SliderFloat("quaternion", &c, -1, 1);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);
@@ -319,7 +319,7 @@ bool Player::InputMove(float elapsedTime)
 bool Player::InputJump()
 {
     GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (gamePad->GetButtonDown() & GamePad::BTN_A&&!artSkillReady)
+    if (gamePad->GetButtonDown() & GamePad::BTN_A && !artSkillReady)
     {
         // ジャンプ回数制限
         if (jumpCount < jumpLimit)
@@ -347,21 +347,21 @@ bool Player::InputArts(float elapsedTime)
     if (gamePad->GetButton() & GamePad::BTN_LEFT_TRIGGER)// Rキー
     {
         artUltSkillReady = true;
-        if (gamePad->GetButtonDown()& GamePad::BTN_B) // Qキー
+        if (gamePad->GetButtonDown() & GamePad::BTN_B) // Qキー
         {
             if (spiritEnergy >= 300)
             {
                 DirectX::XMFLOAT3 f;
                 DirectX::XMStoreFloat3(&f, front);
                 // 前方向
-                    DirectX::XMFLOAT3 dir;
-                    dir.x = f.x;
-                    dir.y = 0.0f;
-                    dir.z = f.z;
+                DirectX::XMFLOAT3 dir;
+                dir.x = f.x;
+                dir.y = 0.0f;
+                dir.z = f.z;
 
 
-                    // 発射位置（プレイヤーの腰あたり
-                    DirectX::XMFLOAT3 pos;
+                // 発射位置（プレイヤーの腰あたり
+                DirectX::XMFLOAT3 pos;
                 pos.x = position.x;
                 pos.y = position.y + height * 0.5f;
                 pos.z = position.z;
@@ -379,10 +379,10 @@ bool Player::InputArts(float elapsedTime)
     else if (gamePad->GetButton() & GamePad::BTN_RIGHT_TRIGGER) // Fキー
     {
         artSkillReady = true;
-        if (mouse->GetButtonDown()&Mouse::BTN_LEFT)
+        if (mouse->GetButtonDown() & Mouse::BTN_LEFT)
         {
             ArtsSkillStraightBallet* artsSkillStraightBallet = new  ArtsSkillStraightBallet(&artsMgr);
-            if(skillEnergy>=artsSkillStraightBallet->GetUseSkillEnergy())
+            if (skillEnergy >= artsSkillStraightBallet->GetUseSkillEnergy())
             {
                 DirectX::XMFLOAT3 f;
                 DirectX::XMStoreFloat3(&f, front);
@@ -599,7 +599,7 @@ void Player::CollisionArtsAndEnemies()
                     arts->GetCurrentCapsuleHeight(),
                     arts->GetRadius(),
                     DirectX::XMLoadFloat3(&enemy->GetPosition()),
-                    {0,1,0},
+                    { 0,1,0 },
                     enemy->GetHeight(),
                     enemy->GetRadius(),
                     result))
@@ -645,8 +645,6 @@ void Player::CollisionPlayerAndArts()
             DirectX::XMFLOAT3 outVec;
             DirectX::XMFLOAT3 dir = { 0,1,0 };
             DirectX::XMFLOAT3 plPos = position;
-            //plPos.y += height / 2;
-            //float h = height / 2;
             if (Collision::IntersectCapsuleVsCapsule(
                 DirectX::XMLoadFloat3(&plPos),
                 DirectX::XMLoadFloat3(&dir),
@@ -713,8 +711,8 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
                 dir.x = enemyPos.x - position.x;
                 dir.y = 0.0f;
                 dir.z = enemyPos.z - position.z;
-                
-               
+
+
                 float length = sqrt(dir.x * dir.x + dir.z * dir.z);
                 if (length > 0.0001f)
                 {
@@ -808,7 +806,7 @@ void Player::TeleportBehindEnemy()
 
             // 敵の前方方向を計算 (敵の向いている方向を仮定)
             DirectX::XMFLOAT3 enemyForward = {};
-            DirectX::XMStoreFloat3(&enemyForward,closestEnemy->GetFront());
+            DirectX::XMStoreFloat3(&enemyForward, closestEnemy->GetFront());
             enemyForward.y = 0.0f;
 
             // 敵の後ろの位置 = 敵の位置 - 前方方向 * 2.0f (距離を調整)
@@ -834,7 +832,7 @@ void Player::TeleportBehindEnemy()
 
             // 回転行列からクォータニオンを計算
             DirectX::XMVECTOR rotationQuat = DirectX::XMQuaternionRotationMatrix(-rotationMatrix);
-            
+
 
             // プレイヤーの回転にクォータニオンを適用
             DirectX::XMStoreFloat4(&quaternion, rotationQuat);
@@ -992,7 +990,7 @@ bool Player::InputDash(float elapsedTime)
 bool Player::InputWeekAttack()
 {
     Mouse* mouse = InputManager::Instance()->getMouse();
-    if (mouse->GetButtonDown() & Mouse::BTN_LEFT&&!artSkillReady)
+    if (mouse->GetButtonDown() & Mouse::BTN_LEFT && !artSkillReady)
     {
         return true;
     }
@@ -1104,14 +1102,18 @@ void Player::Lockon()
     }
 }
 
-void Player::InputAttackNext(float currentAnimaSeconds, float inputAcceptStartTime, float inputAcceptEndTime)
+void Player::InputAttackNext(float currentAnimaSeconds, AttackData attackData)
 {
-    if (currentAnimaSeconds >= inputAcceptStartTime
-        && currentAnimaSeconds <= inputAcceptEndTime)
+    if (currentAnimaSeconds >= attackData.inputAcceptStartTime
+        && currentAnimaSeconds <= attackData.inputAcceptEndTime)
     {
         if (InputWeekAttack())
         {
-            SetWeekAtkNextFlag(true);
+            weekAtkNextFlag = true;
+        }
+        else if (InputStrongAttack())
+        {
+            strongAtkNextFlag = true;
         }
     }
 }

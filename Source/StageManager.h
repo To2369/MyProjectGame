@@ -31,6 +31,8 @@ public:
         }
         stages.clear();
     }
+    // レイキャスト
+    bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit);
 private:
     std::vector<Stage*> stages;
 };

@@ -1,7 +1,7 @@
 #include"SceneGame.h"
 #include"Graphics/RenderContext.h"
 #include"Graphics/RenderState.h"
-#include "EnemySlime.h"
+#include "EnemyHuman.h"
 #include "EnemyManager.h"
 #include "StageManager.h"
 #include "Graphics\Shader.h"
@@ -38,7 +38,7 @@ void SceneGame::Initialize()
     cameraCtrl = std::make_unique<CameraController>();
     for (int i = 0; i < 1; i++)
     {
-        std::unique_ptr<EnemySlime> slime = std::make_unique<EnemySlime>();
+        std::unique_ptr<EnemyHuman> slime = std::make_unique<EnemyHuman>();
         slime->SetPosition({ 0,0,5 });
 
         //“GŠÇ—ƒNƒ‰ƒXæ•t

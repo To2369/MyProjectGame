@@ -94,6 +94,10 @@ void IdleState<Player>::Execute(float elapsedTime)
     {
         owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
     }
+    else if (owner->InputStrongAttack())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::StrongAttack));
+    }
 
     if (owner->InputJump())
     {
@@ -127,6 +131,10 @@ void MoveState<Player>::Execute(float elapsedTime)
     {
         owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
     }
+    else if (owner->InputStrongAttack())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::StrongAttack));
+    }
 
     if (owner->InputJump())
     {
@@ -157,10 +165,14 @@ void DashState<Player>::Execute(float elapsedTime)
         owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Idle));
     }
 
-    if (owner->InputWeekAttack())
+ /*   if (owner->InputWeekAttack())
     {
         owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::WeakAttack));
     }
+    else if (owner->InputStrongAttack())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::StrongAttack));
+    }*/
 
     /*owner->InputDashTowardsEnemy(elapsedTime);
     if (!owner->InputDashTowardsEnemy(elapsedTime))
@@ -218,7 +230,7 @@ void  LandState<Player>::Exit()
 
 void WeakAtkState01<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_1), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack01), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
@@ -229,8 +241,8 @@ void  WeakAtkState01<Player>::Execute(float elapsedTime)
 
 
     //　次の攻撃に移るための入力受付時間
-    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01.inputAcceptStartTime, PlAttackDatas::weakAttack01.inputAcceptEndTime);
-  
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01);
+
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack01.progressLimit)
@@ -238,6 +250,10 @@ void  WeakAtkState01<Player>::Execute(float elapsedTime)
         if (owner->IsWeekAtkNextFlag())
         {
             owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack02));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
         }
     }
     if (!owner->GetModel()->IsPlayAnimation())
@@ -253,7 +269,7 @@ void WeakAtkState01<Player>::Exit()
 
 void WeakAtkState02<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_2), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack02), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
@@ -263,7 +279,7 @@ void  WeakAtkState02<Player>::Execute(float elapsedTime)
 
 
     //　次の攻撃に移るための入力受付時間
-    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01.inputAcceptStartTime, PlAttackDatas::weakAttack01.inputAcceptEndTime);
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack02);
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack02.progressLimit)
@@ -271,6 +287,10 @@ void  WeakAtkState02<Player>::Execute(float elapsedTime)
         if (owner->IsWeekAtkNextFlag())
         {
             owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack03));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
         }
     }
     if (!owner->GetModel()->IsPlayAnimation())
@@ -287,7 +307,7 @@ void WeakAtkState02<Player>::Exit()
 void WeakAtkState03<Player>::Enter()
 {
 
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_3), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack03), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
@@ -298,7 +318,7 @@ void  WeakAtkState03<Player>::Execute(float elapsedTime)
 
 
     //　次の攻撃に移るための入力受付時間
-    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01.inputAcceptStartTime, PlAttackDatas::weakAttack01.inputAcceptEndTime);
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack03);
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack03.progressLimit)
@@ -306,6 +326,10 @@ void  WeakAtkState03<Player>::Execute(float elapsedTime)
         if (owner->IsWeekAtkNextFlag())
         {
             owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack04));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
         }
     }
     if (!owner->GetModel()->IsPlayAnimation())
@@ -321,7 +345,7 @@ void WeakAtkState03<Player>::Exit()
 
 void WeakAtkState04<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_4), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack04), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
@@ -331,7 +355,7 @@ void  WeakAtkState04<Player>::Execute(float elapsedTime)
 
 
     //　次の攻撃に移るための入力受付時間
-    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01.inputAcceptStartTime, PlAttackDatas::weakAttack01.inputAcceptEndTime);
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack04);
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack04.progressLimit)
@@ -339,6 +363,10 @@ void  WeakAtkState04<Player>::Execute(float elapsedTime)
         if (owner->IsWeekAtkNextFlag())
         {
             owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack05));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
         }
     }
     if (!owner->GetModel()->IsPlayAnimation())
@@ -354,7 +382,7 @@ void WeakAtkState04<Player>::Exit()
 
 void WeakAtkState05<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_5), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack05), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
@@ -363,7 +391,7 @@ void  WeakAtkState05<Player>::Execute(float elapsedTime)
     owner->ActiveAttackCollider(PlAttackDatas::weakAttack05);
 
     //　次の攻撃に移るための入力受付時間
-    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack01.inputAcceptStartTime, PlAttackDatas::weakAttack01.inputAcceptEndTime);
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack05);
 
     // 現在のアニメーションが指定の割合すすんだら
     if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack05.progressLimit)
@@ -371,6 +399,10 @@ void  WeakAtkState05<Player>::Execute(float elapsedTime)
         if (owner->IsWeekAtkNextFlag())
         {
             owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
         }
     }
 
@@ -387,13 +419,29 @@ void WeakAtkState05<Player>::Exit()
 
 void WeakAtkState06<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_6), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack06), false);
     owner->SetWeekAtkNextFlag(false); // 入力初期化
 }
 
 void  WeakAtkState06<Player>::Execute(float elapsedTime)
 {
     owner->ActiveAttackCollider(PlAttackDatas::weakAttack06);
+
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack06);
+
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack06.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack07));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
+        }
+    }
 
     if (!owner->GetModel()->IsPlayAnimation())
     {
@@ -403,30 +451,92 @@ void  WeakAtkState06<Player>::Execute(float elapsedTime)
 
 void WeakAtkState06<Player>::Exit()
 {
-    owner->SetWeekAtkNextFlag(false); // 入力初期化
+    owner->SetWeekAtkNextFlag(false);
+}
+
+void WeakAtkState07<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack07), false);
+    owner->SetWeekAtkNextFlag(false);
+}
+
+void WeakAtkState07<Player>::Execute(float elapsedTime)
+{
+    owner->ActiveAttackCollider(PlAttackDatas::weakAttack07);
+
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::weakAttack07);
+
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::weakAttack07.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack08));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
+        }
+    }
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
+}
+
+void  WeakAtkState07<Player>::Exit()
+{
+    owner->SetWeekAtkNextFlag(false);
+}
+
+void WeakAtkState08<Player>::Enter()
+{
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack08), false);
+    owner->SetWeekAtkNextFlag(false);
+}
+
+void WeakAtkState08<Player>::Execute(float elapsedTime)
+{
+    owner->ActiveAttackCollider(PlAttackDatas::weakAttack08);
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
+}
+
+void  WeakAtkState08<Player>::Exit()
+{
+    owner->SetWeekAtkNextFlag(false);
 }
 
 
 void StrongAtkState01<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack01), false);
-    owner->SetWeekAtkNextFlag(false); // 入力初期化
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_1), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAtkState01<Player>::Execute(float elapsedTime)
 {
-    if (owner->GetModel()->currentAnimationSeconds >= PlAttackDatas::weakAttack06.hitStartTime
-        && owner->GetModel()->currentAnimationSeconds <= PlAttackDatas::weakAttack06.hitEndTime)
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack01);
+
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::strongAttack01);
+
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::strongAttack01.progressLimit)
     {
-        owner->CollisionNodeVsEnemies(
-            PlAttackDatas::weakAttack06.hitBoneName,
-            PlAttackDatas::weakAttack06.hitRadius,
-            owner->GetInvincibleTimer(),
-            PlAttackDatas::weakAttack06.damage);
-    }
-    else
-    {
-        //owner->SetAttackCollisionFlag(false);
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack02));
+        }
     }
 
     if (!owner->GetModel()->IsPlayAnimation())
@@ -437,127 +547,179 @@ void  StrongAtkState01<Player>::Execute(float elapsedTime)
 
 void  StrongAtkState01<Player>::Exit()
 {
-    owner->SetWeekAtkNextFlag(false); // 入力初期化
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void StrongAtkState02<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack02), false);
-    //owner->SetAttackNextFlag(false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_2), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAtkState02<Player>::Execute(float elapsedTime)
 {
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack02);
 
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::strongAttack02);
+
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::strongAttack02.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack03));
+        }
+    }
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 
 }
 
 void  StrongAtkState02<Player>::Exit()
 {
-    //owner->SetAttackNextFlag(false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void StrongAttackState03<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack03), false);
-    //owner->SetAttackNextFlag(false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_3), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAttackState03<Player>::Execute(float elapsedTime)
 {
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack03);
 
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::strongAttack03);
 
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::strongAttack03.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack04));
+        }
+    }
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 }
 
 void  StrongAttackState03<Player>::Exit()
 {
-    //owner->SetAttackNextFlag(false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void StrongAttackState04<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack04), false);
-    //owner->SetAttackNextFlag(false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_4), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAttackState04<Player>::Execute(float elapsedTime)
 {
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack04);
 
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::strongAttack04);
 
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::strongAttack04.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack05));
+        }
+    }
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 }
 
 void  StrongAttackState04<Player>::Exit()
 {
-    //owner->SetAttackNextFlag(false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void StrongAttackState05<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack05), false);
-    //owner->SetAttackNextFlag(false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_5), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAttackState05<Player>::Execute(float elapsedTime)
 {
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack05);
 
+    //　次の攻撃に移るための入力受付時間
+    owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, PlAttackDatas::strongAttack05);
 
+    // 現在のアニメーションが指定の割合すすんだら
+    if (owner->GetModel()->GetAnimationProgress() >= PlAttackDatas::strongAttack05.progressLimit)
+    {
+        if (owner->IsWeekAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::WeakAttack::WeakAttack06));
+        }
+        else if (owner->IsStrongAtkNextFlag())
+        {
+            owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::StrongAttack::StrongAttack06));
+        }
+    }
+
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 }
 
 void  StrongAttackState05<Player>::Exit()
 {
-    //owner->SetAttackNextFlag(false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void StrongAttackState06<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack06), false);
-    //owner->SetAttackNextFlag(false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_6), false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
 void  StrongAttackState06<Player>::Execute(float elapsedTime)
 {
+    owner->ActiveAttackCollider(PlAttackDatas::strongAttack06);
 
-
+    if (!owner->GetModel()->IsPlayAnimation())
+    {
+        owner->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Movement));
+    }
 }
 
 void  StrongAttackState06<Player>::Exit()
 {
-    //owner->SetAttackNextFlag(false);
+    owner->SetStrongAtkNextFlag(false);
 }
 
-void StrongAttackState07<Player>::Enter()
-{
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack07), false);
-    //owner->SetAttackNextFlag(false);
-}
-
-void  StrongAttackState07<Player>::Execute(float elapsedTime)
-{
-
-
-}
-
-void  StrongAttackState07<Player>::Exit()
-{
-    //owner->SetAttackNextFlag(false);
-}
-
-void StrongAttackState08<Player>::Enter()
-{
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack08), false);
-    //owner->SetAttackNextFlag(false);
-}
-
-void  StrongAttackState08<Player>::Execute(float elapsedTime)
-{
-
-
-}
-
-void  StrongAttackState08<Player>::Exit()
-{
-    //owner->SetAttackNextFlag(false);
-}
 
 void DashToEnemyState<Player>::Enter()
 {

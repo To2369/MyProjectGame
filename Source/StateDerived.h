@@ -290,6 +290,38 @@ public:
 };
 
 template<typename TypeCharacter>
+class WeakAtkState07 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	WeakAtkState07(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~WeakAtkState07() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
+class WeakAtkState08 : public State<TypeCharacter>
+{
+public:
+	// コンストラクタ
+	WeakAtkState08(TypeCharacter* character) :State<TypeCharacter>(character) {};
+	// デストラクタ
+	~WeakAtkState08() {}
+	// ステートに入った時のメソッド
+	virtual void Enter()override {}
+	// ステートで実行するメソッド
+	virtual void Execute(float elapsedTime)override {}
+	// ステートから出ていくときのメソッド
+	virtual void Exit()override {}
+};
+
+template<typename TypeCharacter>
 class StrongAtkState01 : public State<TypeCharacter>
 {
 public:
@@ -377,38 +409,6 @@ public:
 	StrongAttackState06(TypeCharacter* character) :State<TypeCharacter>(character) {};
 	// デストラクタ
 	~StrongAttackState06() {}
-	// ステートに入った時のメソッド
-	virtual void Enter()override {}
-	// ステートで実行するメソッド
-	virtual void Execute(float elapsedTime)override {}
-	// ステートから出ていくときのメソッド
-	virtual void Exit()override {}
-};
-
-template<typename TypeCharacter>
-class StrongAttackState07 : public State<TypeCharacter>
-{
-public:
-	// コンストラクタ
-	StrongAttackState07(TypeCharacter* character) :State<TypeCharacter>(character) {};
-	// デストラクタ
-	~StrongAttackState07() {}
-	// ステートに入った時のメソッド
-	virtual void Enter()override {}
-	// ステートで実行するメソッド
-	virtual void Execute(float elapsedTime)override {}
-	// ステートから出ていくときのメソッド
-	virtual void Exit()override {}
-};
-
-template<typename TypeCharacter>
-class StrongAttackState08 : public State<TypeCharacter>
-{
-public:
-	// コンストラクタ
-	StrongAttackState08(TypeCharacter* character) :State<TypeCharacter>(character) {};
-	// デストラクタ
-	~StrongAttackState08() {}
 	// ステートに入った時のメソッド
 	virtual void Enter()override {}
 	// ステートで実行するメソッド

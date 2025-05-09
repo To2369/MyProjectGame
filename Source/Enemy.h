@@ -1,7 +1,7 @@
 #pragma once
 #include<d3d11.h>
 #include "Character.h"
-
+#include "StateMachine.h"
 //“G
 class Enemy :public Character
 {
@@ -19,4 +19,6 @@ public:
 
 	//”jŠü
 	void Destroy();
+private:
+	std::unique_ptr<StateMachine<Enemy>> stateMachine;
 };

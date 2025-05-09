@@ -78,8 +78,7 @@ public:
 	enum class State
 	{
 		Movement,
-		WeakAttack,
-		StrongAttack,
+		Attack,
 		UseSkill,
 		HitDamege,
 	};
@@ -91,25 +90,26 @@ public:
 		Jump,
 		Land,
 	};
-	enum class StrongAttack
+	enum class Attack
 	{
+		WeakAttack01_1,
+		WeakAttack01_2,
+		WeakAttack01_3,
+		WeakAttack01_4,
+		WeakAttack01_5,
+		WeakAttack01_6,
+		WeakAttack01_7,
+		WeakAttack01_8,
+		WeakAttack02_1,
+		WeakAttack02_2,
 		StrongAttack01,
 		StrongAttack02,
 		StrongAttack03,
 		StrongAttack04,
 		StrongAttack05,
 		StrongAttack06,
-	};
-	enum class WeakAttack
-	{
-		WeakAttack01,
-		WeakAttack02,
-		WeakAttack03,
-		WeakAttack04,
-		WeakAttack05,
-		WeakAttack06,
-		WeakAttack07,
-		WeakAttack08,
+		StrongAttack07,
+		StrongAttack08,
 	};
 
 	enum class UseSkill

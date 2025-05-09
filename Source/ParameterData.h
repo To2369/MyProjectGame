@@ -1,12 +1,7 @@
 #pragma once
-struct ParameterData
+struct PlayerParameter
 {
-	float maxLife;
+	float maxLife = 10;
 	float SpeedWalk;
 	float SpeedRun;
 };
-
-namespace PlParameterDatas
-{
-
-}

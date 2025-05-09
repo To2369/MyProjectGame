@@ -21,8 +21,7 @@ Player::Player()
     stateMachine = std::make_unique<StateMachine<Player>>();
 
     stateMachine->RegisterState(new MovementState(this));
-    stateMachine->RegisterState(new WeakAttackState<Player>(this));
-    stateMachine->RegisterState(new StrongAttackState<Player>(this));
+    stateMachine->RegisterState(new AttackState<Player>(this));
     stateMachine->RegisterState(new UseSkillState<Player>(this));
     stateMachine->RegisterState(new HitDamegeState<Player>(this));
 
@@ -32,23 +31,27 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new JumpState(this));
     stateMachine->RegisterSubState(static_cast<int>(Player::State::Movement), new LandState(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState01(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState02(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState03(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState04(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState05(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState06(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState07(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new WeakAtkState08(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_1(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_2(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_3(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_4(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_5(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_6(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_7(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState01_8(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState02_1(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new WeakAtkState02_2(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState01(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAtkState02(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState03(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState04(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState05(this));
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::StrongAttack), new StrongAttackState06(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAtkState01(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAtkState02(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState03(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState04(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState05(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState06(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState07(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new StrongAttackState08(this));
 
-    stateMachine->RegisterSubState(static_cast<int>(Player::State::WeakAttack), new DashToEnemyState(this));
+    stateMachine->RegisterSubState(static_cast<int>(Player::State::Attack), new DashToEnemyState(this));
 
 
     stateMachine->RegisterSubState(static_cast<int>(Player::State::UseSkill), new SkillSelectState(this));
@@ -148,29 +151,29 @@ void Player::DrawDebugGUI()
             subStr = "Land";
         }
         break;
-    case State::WeakAttack:
+    case State::Attack:
         str = "WeakAttack";
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack01))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_1))
         {
             subStr = "WeakAttack01";
         }
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack02))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_2))
         {
             subStr = "WeakAttack02";
         }
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack03))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_3))
         {
             subStr = "WeakAttack03";
         }
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack04))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_4))
         {
             subStr = "WeakAttack04";
         }
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack05))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_5))
         {
             subStr = "WeakAttack05";
         }
-        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::WeakAttack::WeakAttack06))
+        if (stateMachine->GetState()->GetSubStateIndex() == static_cast<int>(Player::Attack::WeakAttack01_6))
         {
             subStr = "WeakAttack06";
         }
@@ -337,6 +340,7 @@ void Player::InputFlying(float elapsedTime)
 
 }
 
+// voidŒ^‚ÉC³‚·‚é•K—v‚ ‚è
 bool Player::InputArts(float elapsedTime)
 {
     GamePad* gamePad = InputManager::Instance()->getGamePad();

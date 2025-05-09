@@ -32,7 +32,7 @@ void EnemyHuman::Update(float elapsedTime)
 
 void EnemyHuman::Render(ID3D11DeviceContext* dc)
 {
-	model->Render(dc, transform, { 1.0f,1.0f,1.0f,1.0f });
+	model->Render(dc, transform, color);
 }
 
 void EnemyHuman::DrawDebugGUI()

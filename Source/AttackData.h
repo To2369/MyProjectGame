@@ -72,7 +72,7 @@ namespace PlAttackDatas
 	};
 
 	// ã≠çUåÇ
-	static constexpr AttackData weakAttack01 =
+	static constexpr AttackData weakAttack01_1 =
 	{
 		0.4f, 0.9f,
 		0.1f, 1.4f,
@@ -80,7 +80,7 @@ namespace PlAttackDatas
 		0.7f, "lowerarm_l",
 		1
 	};
-	static constexpr AttackData weakAttack02 =
+	static constexpr AttackData weakAttack01_2 =
 	{
 		0.45f, 0.7f,
 		0.1f, 1.0f,
@@ -88,7 +88,7 @@ namespace PlAttackDatas
 		0.7f, "ball_r",
 		1
 	};
-	static constexpr AttackData weakAttack03 =
+	static constexpr AttackData weakAttack01_3 =
 	{
 		0.3f, 0.4f,
 		0.1f, 0.9f,
@@ -98,7 +98,7 @@ namespace PlAttackDatas
 		0.5f, 0.65f,
 		"calf_r"
 	};
-	static constexpr AttackData weakAttack04 =
+	static constexpr AttackData weakAttack01_4 =
 	{
 		0.4f, 0.55f,
 		0.1f, 0.8f,
@@ -106,7 +106,7 @@ namespace PlAttackDatas
 		0.7f, "ball_r",
 		1
 	};
-	static constexpr AttackData weakAttack05 =
+	static constexpr AttackData weakAttack01_5 =
 	{
 		0.45f, 0.6f,
 		0.1f, 1.0f,
@@ -114,7 +114,7 @@ namespace PlAttackDatas
 		0.7f, "ball_l",
 		1
 	};
-	static constexpr AttackData weakAttack06 =
+	static constexpr AttackData weakAttack01_6 =
 	{
 		0.4f, 0.5f,
 		0.1f, 0.9f,
@@ -122,7 +122,7 @@ namespace PlAttackDatas
 		0.7f, "ball_r",
 		1
 	};
-	static constexpr AttackData weakAttack07 =
+	static constexpr AttackData weakAttack01_7 =
 	{
 		0.25f, 0.3f,
 		0.1f, 1.0f,
@@ -132,12 +132,29 @@ namespace PlAttackDatas
 		0.5f, 0.75f,
 		"ball_r"
 	};
-	static constexpr AttackData weakAttack08 =
+	static constexpr AttackData weakAttack01_8 =
 	{
 		0.3f, 0.5f,
 		0.1f, 0.8f,
 		0.5f,
 		0.7f,"calf_r",
+		1
+	};
+
+	static constexpr AttackData weakAttack02_1 =
+	{
+		0.4f, 0.9f,
+		0.1f, 1.4f,
+		0.5f,
+		0.7f, "lowerarm_l",
+		1
+	};
+	static constexpr AttackData weakAttack02_2 =
+	{
+		0.45f, 0.7f,
+		0.1f, 1.0f,
+		0.5f,
+		0.7f, "ball_r",
 		1
 	};
 }

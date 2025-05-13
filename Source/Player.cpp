@@ -610,22 +610,25 @@ void Player::CollisionArtsAndEnemies()
                 {
                     if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
                     {
-                        // ‚«”ò‚Î‚µ
-                      /*  float power = 10.0f;
-                        DirectX::XMFLOAT3 impulse;
-                        impulse.x = result->penetration * power;
-                        impulse.y = power * 0.5f;
-                        impulse.z = result->penetration * power;*/
-
-                        //enemy->AddImpulse(impulse);
 
                         // ƒqƒbƒgƒGƒtƒFƒNƒg‚ÌÄ¶
                         DirectX::XMFLOAT3 enePos = enemy->GetPosition();
                         enePos.y += enemy->GetHeight() * 0.5f;
                         //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
-                        // ’e‚Ì”jŠü
-                        arts->Destroy();
+                        if (arts->GetLifeTimer() <= 0.1f)
+                        {
+                            // ‚«”ò‚Î‚µ
+                       float power = 10.0f;
+                       DirectX::XMFLOAT3 impulse;
+                       impulse.x = power;
+                       impulse.y = power * 0.5f;
+                       impulse.z = power;
+
+                       enemy->AddImpulse(impulse);
+                            // ’e‚Ì”jŠü
+                            arts->Destroy();
+                        }
                     }
                 }
             }

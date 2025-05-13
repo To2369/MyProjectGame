@@ -72,7 +72,7 @@ void HitDamegeState<Player>::Exit()
 
 void IdleState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbatIdle), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbatIdle), true);
 }
 
 void IdleState<Player>::Execute(float elapsedTime)
@@ -109,7 +109,7 @@ void IdleState<Player>::Exit()
 
 void MoveState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimRun), true);
 }
 
 void MoveState<Player>::Execute(float elapsedTime)
@@ -147,7 +147,7 @@ void MoveState<Player>::Exit()
 
 void DashState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimRun), true);
 }
 
 void DashState<Player>::Execute(float elapsedTime)
@@ -180,7 +180,7 @@ void DashState<Player>::Exit()
 
 void JumpState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimJumpStart), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimJumpStart), false);
 }
 
 void JumpState<Player>::Execute(float elapsedTime)
@@ -189,7 +189,7 @@ void JumpState<Player>::Execute(float elapsedTime)
 
     if (!owner->GetModel()->IsPlayAnimation())
     {
-        owner->GetModel()->PlayAnimation(AnimJumpFalling, true);
+        owner->GetModel()->PlayAnimation(Player::AnimJumpFalling, true);
     }
     if (owner->isGrounded())
     {
@@ -204,7 +204,7 @@ void JumpState<Player>::Exit()
 
 void LandState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimJumpLanding), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimJumpLanding), false);
 }
 
 void  LandState<Player>::Execute(float elapsedTime)
@@ -222,7 +222,7 @@ void  LandState<Player>::Exit()
 
 void WeakAtkState01_1<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack01), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack01), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -261,7 +261,7 @@ void WeakAtkState01_1<Player>::Exit()
 
 void WeakAtkState01_2<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack02), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack02), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -299,7 +299,7 @@ void WeakAtkState01_2<Player>::Exit()
 void WeakAtkState01_3<Player>::Enter()
 {
 
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack03), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack03), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -337,7 +337,7 @@ void WeakAtkState01_3<Player>::Exit()
 
 void WeakAtkState01_4<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack04), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack04), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -374,7 +374,7 @@ void WeakAtkState01_4<Player>::Exit()
 
 void WeakAtkState01_5<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack05), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack05), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -411,7 +411,7 @@ void WeakAtkState01_5<Player>::Exit()
 
 void WeakAtkState01_6<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack06), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack06), false);
     owner->SetWeekAtkNextFlag(false); // ì¸óÕèâä˙âª
 }
 
@@ -448,7 +448,7 @@ void WeakAtkState01_6<Player>::Exit()
 
 void WeakAtkState01_7<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack07), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack07), false);
     owner->SetWeekAtkNextFlag(false);
 }
 
@@ -485,7 +485,7 @@ void  WeakAtkState01_7<Player>::Exit()
 
 void WeakAtkState01_8<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimAttack08), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack08), false);
     owner->SetWeekAtkNextFlag(false);
 }
 
@@ -507,7 +507,7 @@ void  WeakAtkState01_8<Player>::Exit()
 
 void WeakAtkState02_1<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo02_1), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo02_1), false);
     owner->SetWeekAtkNextFlag(false);
 }
 
@@ -544,7 +544,7 @@ void  WeakAtkState02_1<Player>::Exit()
 
 void WeakAtkState02_2<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo02_2), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo02_2), false);
     owner->SetWeekAtkNextFlag(false);
 }
 
@@ -582,7 +582,7 @@ void  WeakAtkState02_2<Player>::Exit()
 
 void StrongAtkState01<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_1), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_1), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -619,7 +619,7 @@ void  StrongAtkState01<Player>::Exit()
 
 void StrongAtkState02<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_2), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_2), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -657,7 +657,7 @@ void  StrongAtkState02<Player>::Exit()
 
 void StrongAttackState03<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_3), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_3), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -694,7 +694,7 @@ void  StrongAttackState03<Player>::Exit()
 
 void StrongAttackState04<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_4), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_4), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -731,7 +731,7 @@ void  StrongAttackState04<Player>::Exit()
 
 void StrongAttackState05<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_5), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_5), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -768,7 +768,7 @@ void  StrongAttackState05<Player>::Exit()
 
 void StrongAttackState06<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo01_6), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo01_6), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -789,7 +789,7 @@ void  StrongAttackState06<Player>::Exit()
 
 void StrongAttackState07<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo02_1), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo02_1), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -810,7 +810,7 @@ void  StrongAttackState07<Player>::Exit()
 
 void StrongAttackState08<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimConbo02_2), false);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo02_2), false);
     owner->SetStrongAtkNextFlag(false);
 }
 
@@ -830,7 +830,7 @@ void  StrongAttackState08<Player>::Exit()
 }
 void DashToEnemyState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimRun), true);
 }
 
 void  DashToEnemyState<Player>::Execute(float elapsedTime)
@@ -845,7 +845,7 @@ void DashToEnemyState<Player>::Exit()
 
 void SkillSelectState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimUnequip), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimUnequip), true);
 }
 
 void  SkillSelectState<Player>::Execute(float elapsedTime)
@@ -863,7 +863,7 @@ void SkillSelectState<Player>::Exit()
 
 void DamegeState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimRun), true);
 }
 
 void  DamegeState<Player>::Execute(float elapsedTime)
@@ -878,7 +878,7 @@ void DamegeState<Player>::Exit()
 
 void DeathState<Player>::Enter()
 {
-    owner->GetModel()->PlayAnimation(static_cast<int>(AnimationNum::AnimRun), true);
+    owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimRun), true);
 }
 
 void  DeathState<Player>::Execute(float elapsedTime)

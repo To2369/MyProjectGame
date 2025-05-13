@@ -187,7 +187,7 @@
     <ClInclude Include="Source\Effect\Effect.h" />
     <ClInclude Include="Source\Effect\EffectManager.h" />
     <ClInclude Include="Source\Enemy.h" />
-    <ClInclude Include="Source\EnemyHumanStateDerived.h" />
+    <ClInclude Include="Source\EnemyDrive.h" />
     <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\EnemyHuman.h" />
     <ClInclude Include="Source\Framework.h" />

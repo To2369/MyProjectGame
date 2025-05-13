@@ -17,7 +17,7 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 	EffectManager::Instance().Initialize();
 
 	//ƒV[ƒ“‰Šú‰»
-	SceneManager::Instance().ChangeScene(new SceneTitle);
+	SceneManager::Instance().ChangeScene(new SceneGame);
 }
 
 Framework::~Framework()

@@ -249,7 +249,7 @@
     <ClInclude Include="Source\Effect\EffectManager.h">
       <Filter>Sources\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemyHumanStateDerived.h">
+    <ClInclude Include="Source\EnemyDrive.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
   </ItemGroup>

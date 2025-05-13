@@ -44,6 +44,7 @@ public:
     // ”¼Œaæ“¾
     float GetRadius() const { return radius; }
     float GetHeight() const { return height; }
+    float GetLifeTimer() const { return lifeTimer; }
     int GetUseSpiritEnergy() const { return useSpiritEnergy; }
     int GetUseSkillEnergy() const { return useSkillEnergy; }
     int GetDamage() const { return damage; }
@@ -75,4 +76,5 @@ protected:
     int useSkillEnergy = 0;
     int damage = 0;
     float currentCapsuleHeight = 0;
+    float lifeTimer = 3.0f; // õ–½i‚R•bj
 };

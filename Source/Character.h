@@ -184,4 +184,6 @@ protected:
 	bool atkCollisionFlag = false;
 	bool weekAtkNextFlag = false;
 	bool strongAtkNextFlag = false;
+
+	DirectX::XMFLOAT3	lockDirection;
 };

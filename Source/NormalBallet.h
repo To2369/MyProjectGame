@@ -29,5 +29,4 @@ private:
     DirectX::XMFLOAT3 target = { 0,0,0 };
     float turnSpeed = DirectX::XMConvertToRadians(180);
     float speed = 10.0f;
-    float lifeTimer = 3.0f; // õ–½i‚R•bj
 };

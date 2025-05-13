@@ -21,4 +21,23 @@ public:
 	void Destroy();
 private:
 	std::unique_ptr<StateMachine<Enemy>> stateMachine;
+	enum class State
+	{
+		Movement,
+		Attack,
+	};
+	enum class Movement
+	{
+		Idle,
+		Move,
+	};
+	enum class Attack
+	{
+		WeakAttack01_1,
+	};
+	enum class HitDamege
+	{
+		Damege,
+		Death,
+	};
 };

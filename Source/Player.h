@@ -9,45 +9,7 @@
 #include "Effect/Effect.h"
 
 
-//アニメーション
-enum AnimationNum
-{
-	AnimTpose,
-	AnimIdleNormal,
-	AnimConbatIdle,
-	AnimConbo01_1,
-	AnimConbo01_2,
-	AnimConbo01_3,
-	AnimConbo01_4,
-	AnimConbo01_5,
-	AnimConbo01_6,
-	AnimConbo02_1,
-	AnimConbo02_2,
-	AnimConbo02_3,
-	AnimAttack01,
-	AnimAttack02,
-	AnimAttack03,
-	AnimAttack04,
-	AnimAttack05,
-	AnimAttack06,
-	AnimAttack07,
-	AnimAttack08,
-	AnimDefense,
-	AnimDead,
-	AnimDownEnd,
-	AnimDownStart,
-	AnimHitBack,
-	AnimHitFront,
-	AnimHitLeft,
-	AnimHitRight,
-	AnimJumpFalling,
-	AnimJumpLanding,
-	AnimJumpStart,
-	AnimRun,
-	AnimWalk,
-	AnimRise,
-	AnimUnequip,
-};
+
 
 
 // プレイヤー
@@ -122,6 +84,45 @@ public:
 		Death,
 	};
 
+	//アニメーション
+	enum AnimationNum
+	{
+		AnimTpose,
+		AnimIdleNormal,
+		AnimConbatIdle,
+		AnimConbo01_1,
+		AnimConbo01_2,
+		AnimConbo01_3,
+		AnimConbo01_4,
+		AnimConbo01_5,
+		AnimConbo01_6,
+		AnimConbo02_1,
+		AnimConbo02_2,
+		AnimConbo02_3,
+		AnimAttack01,
+		AnimAttack02,
+		AnimAttack03,
+		AnimAttack04,
+		AnimAttack05,
+		AnimAttack06,
+		AnimAttack07,
+		AnimAttack08,
+		AnimDefense,
+		AnimDead,
+		AnimDownEnd,
+		AnimDownStart,
+		AnimHitBack,
+		AnimHitFront,
+		AnimHitLeft,
+		AnimHitRight,
+		AnimJumpFalling,
+		AnimJumpLanding,
+		AnimJumpStart,
+		AnimRun,
+		AnimWalk,
+		AnimRise,
+		AnimUnequip,
+	};
 	//操作移動
 	bool InputMove(float elapsedTime);
 
@@ -196,8 +197,6 @@ private:
 	float PIDIV180 = 0.017452f;
 
 	int hit = 0;
-
-	DirectX::XMFLOAT3	lockDirection;
 
 	bool lockon = false;
 

@@ -22,5 +22,4 @@ private:
     std::unique_ptr<CapsuleOneWay> geoPrimitive;
     BalletType GetType()override { return BalletType::SkillStraight; }
     float speed = 10.0f;
-    float lifeTimer = 3.0f; // õ–½i‚R•bj
 };

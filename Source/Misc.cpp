@@ -1,6 +1,6 @@
 #include <time.h>
 #include<d3d11.h>
-#include "framework.h"
+#include "Framework.h"
 
 const LONG SCREEN_WIDTH = 1920;
 const LONG SCREEN_HEIGHT = 1080;
@@ -8,7 +8,7 @@ const LONG SCREEN_HEIGHT = 1080;
 LRESULT CALLBACK window_procedure(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	Framework* p{ reinterpret_cast<Framework*>(GetWindowLongPtr(hwnd, GWLP_USERDATA)) };
-	return p ? p->Handle_message(hwnd, msg, wparam, lparam) : DefWindowProc(hwnd, msg, wparam, lparam);
+	return p ? p->HandleMessage(hwnd, msg, wparam, lparam) : DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 int WINAPI WinMain(_In_ HINSTANCE instance, _In_opt_  HINSTANCE prev_instance, _In_ LPSTR cmd_line, _In_ int cmd_show)
@@ -42,5 +42,5 @@ int WINAPI WinMain(_In_ HINSTANCE instance, _In_opt_  HINSTANCE prev_instance, _
 
 	Framework framework(hwnd);
 	SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&framework));
-	return framework.run();
+	return framework.Run();
 }

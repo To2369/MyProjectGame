@@ -1,5 +1,5 @@
 #include"GeometricPrimitive.h"
-#include"..\misc.h"
+#include"..\Misc.h"
 #include<vector>
 #define VertexPoints 24
 #define VertexNumber 36

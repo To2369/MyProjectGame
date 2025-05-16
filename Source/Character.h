@@ -115,7 +115,7 @@ protected:
 	void Turn(float elapsedTime, float vx, float vz, float speed);
 	// ジャンプ処理
 	void Jump(float speed);
-	void Fly(float speed);
+	void Fly(float elapsedTime);
 	// 速度処理更新
 	void UpdateVelocity(float elpasedTime);
 
@@ -190,4 +190,5 @@ protected:
 	bool awayFlag = false;
 
 	DirectX::XMFLOAT3	lockDirection;
+	bool flyingFlag = false; // 空を飛んでいるか
 };

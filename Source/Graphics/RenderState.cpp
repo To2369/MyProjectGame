@@ -1,5 +1,5 @@
 #include"RenderState.h"
-#include"..\misc.h"
+#include"..\Misc.h"
 RenderState::RenderState(ID3D11Device* device)
 {
 	HRESULT hr{ S_OK };

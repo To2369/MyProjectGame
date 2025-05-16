@@ -1,5 +1,5 @@
 #include "Sprite.h"
-#include"../misc.h"
+#include"../Misc.h"
 #include <sstream>
 #include<WICTextureLoader.h>
 Sprite::Sprite(ID3D11Device* device, const wchar_t* filename)

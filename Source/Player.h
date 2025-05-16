@@ -136,7 +136,6 @@ public:
 	bool InputDash(float elapsedTime);
 	bool InputWeekAttack();
 	bool InputStrongAttack();
-
 	bool artSkillReady = false;
 	bool artUltSkillReady = false;
 	void InputFlying(float elapsedTime);

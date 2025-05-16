@@ -96,13 +96,17 @@ void Player::Update(float elapsedTime)
     Lockon();
 
     InputDash(elapsedTime);
-
+    Fly(elapsedTime);
     /* Mouse* mouse = InputManager::Instance()->getMouse();
      if (mouse->GetButton() & Mouse::BTN_RIGHT)
      {
          TeleportBehindEnemy();
      }*/
-
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (flyingFlag)
+    {
+        velocity.y += 2;
+    }
     UpdateStatus(elapsedTime);
 
 
@@ -212,12 +216,7 @@ void Player::DrawDebugGUI()
             orientationVec = DirectX::XMQuaternionMultiply(orientationVec, p);
             // 結果を保存
             DirectX::XMStoreFloat4(&quaternion, orientationVec);
-            //DirectX::XMFLOAT4 pquater;
             ImGui::InputFloat("movespeed", &moveSpeed);
-            /*      quaternion.x = DirectX::XMConvertToRadians(pquater.x);
-                  quaternion.y = DirectX::XMConvertToRadians(pquater.y);
-                  quaternion.z = DirectX::XMConvertToRadians(pquater.z);
-                  quaternion.w = DirectX::XMConvertToRadians(pquater.w);*/
             ImGui::InputFloat4("quaternion", &quaternion.x);
             ImGui::SliderFloat("quaternion", &c, -1, 1);
             //スケール
@@ -324,14 +323,22 @@ bool Player::InputJump()
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     if (gamePad->GetButtonDown() & GamePad::BTN_A && !artSkillReady)
     {
-        // ジャンプ回数制限
-        if (jumpCount < jumpLimit)
+        if (!flyingFlag)
         {
-            // ジャンプ
-            jumpCount++;
-            Jump(jumpSpeed);
-            return true;
+            flyingFlag = true;
         }
+        else
+        {
+            flyingFlag = false;
+        }
+        //// ジャンプ回数制限
+        //if (jumpCount < jumpLimit)
+        //{
+        //    // ジャンプ
+        //    jumpCount++;
+        //    Jump(jumpSpeed);
+        //    return true;
+        //}
     }
     return false;
 }
@@ -678,7 +685,7 @@ void Player::CollisionPlayerAndArts()
     }
 }
 
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float Timer, int damage)
+void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invTimer, int damage)
 {
     atkCollisionFlag = true;
     //ノード取得
@@ -709,7 +716,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
             outPos
         ))
         {
-            if (enemys->ApplyDamage(Timer, damage))
+            if (enemys->ApplyDamage(invTimer, damage))
             {  //hitEffect->Play(e);
                 // ノックバック方向 = 敵位置 - プレイヤー位置
                 DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
@@ -745,6 +752,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
                     DirectX::XMFLOAT3 e = enemys->GetPosition();
                     hitEffect->Play(&e);
                 }
+                skillEnergy += 15;
             }
         }
     }

@@ -1,5 +1,5 @@
 #include "Mask.h"
-#include"..\misc.h"
+#include"..\Misc.h"
 #include "Buffer.h"
 Mask::Mask(ID3D11Device* device)
 {

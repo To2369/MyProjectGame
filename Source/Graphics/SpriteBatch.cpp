@@ -1,5 +1,5 @@
 #include "SpriteBatch.h"
-#include"../misc.h"
+#include"../Misc.h"
 #include <sstream>
 #include<WICTextureLoader.h>
 SpriteBatch::SpriteBatch(ID3D11Device* device, const wchar_t* filename, size_t maxSprites) :maxVertices(maxSprites * 6)

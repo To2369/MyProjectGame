@@ -3,7 +3,6 @@
 #include <d3d11.h>
 #include "Graphics/FrameBuffer.h"
 #include "Graphics/FullScreenQuad.h"
-#include "Graphics/FrameBuffer.h"
 #include <memory>
 
 struct SceneViewData

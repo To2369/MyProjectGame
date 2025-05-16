@@ -1,4 +1,4 @@
-#include "../misc.h"
+#include "../Misc.h"
 #include"Graphics.h"
 #include "Buffer.h"
 
@@ -138,7 +138,7 @@ void Graphics::Initialize(HWND hwnd)
 	}
 
 	{
-		spriteShaders[static_cast<int>(SpriteShaderId::Mask)] = std::make_unique<MaskShader>(device.Get());
+		
 	}
 	// ƒŒƒ“ƒ_ƒ‰
 	{

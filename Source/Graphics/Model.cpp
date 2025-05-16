@@ -1,4 +1,4 @@
-#include"..\misc.h"
+#include"..\Misc.h"
 #include"Model.h"
 #include<sstream>
 #include<functional>

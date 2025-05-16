@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include"../misc.h"
+#include"../Misc.h"
 #include <sstream>
 #include<WICTextureLoader.h>
 #include<wrl.h>

@@ -1,6 +1,6 @@
 #include "StaticMesh.h"
 #include "Shader.h"
-#include "..\misc.h"
+#include "../Misc.h"
 #include <fstream>
 #include<filesystem>
 StaticMesh::StaticMesh(ID3D11Device* device, const wchar_t* objFilename, bool flippingVcoordinates)

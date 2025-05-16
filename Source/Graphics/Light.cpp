@@ -1,4 +1,4 @@
-#include"..\misc.h"
+#include"..\Misc.h"
 #include "Graphics.h"
 #include "Buffer.h"
 #include "Light.h"

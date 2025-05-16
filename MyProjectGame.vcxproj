@@ -211,7 +211,7 @@
     <ClInclude Include="Source\Graphics\Sprite.h" />
     <ClInclude Include="Source\Graphics\SpriteBatch.h" />
     <ClInclude Include="Source\Graphics\StaticMesh.h" />
-    <ClInclude Include="Source\High_resolution_timer.h" />
+    <ClInclude Include="Source\HighResolutionTimer.h" />
     <ClInclude Include="Source\Input\GamePad.h" />
     <ClInclude Include="Source\Input\InputManager.h" />
     <ClInclude Include="Source\Input\Mouse.h" />

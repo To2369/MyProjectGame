@@ -84,9 +84,6 @@
     <ClInclude Include="Source\Framework.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Source\High_resolution_timer.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Misc.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -251,6 +248,9 @@
     </ClInclude>
     <ClInclude Include="Source\EnemyDrive.h">
       <Filter>Sources\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HighResolutionTimer.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

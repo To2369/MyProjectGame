@@ -1,5 +1,5 @@
 #include "GltfModel.h"
-#include "../misc.h"
+#include "../Misc.h"
 #include <stack>
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_EXTERNAL_IMAGE

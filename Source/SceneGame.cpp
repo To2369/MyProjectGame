@@ -1,16 +1,17 @@
-#include"SceneGame.h"
-#include"Graphics/RenderContext.h"
-#include"Graphics/RenderState.h"
-#include "EnemyHuman.h"
-#include "EnemyManager.h"
-#include "StageManager.h"
-#include "Graphics\Shader.h"
+#include "Graphics/RenderContext.h"
+#include "Graphics/RenderState.h"
+#include "Graphics/Shader.h"
 #include "Input/InputManager.h"
+#include "Effect/EffectManager.h"
+
+#include "SceneGame.h"
 #include "SceneLoading.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
-#include "Effect/EffectManager.h"
-//#include "Effect/EffectManager.h"
+
+#include "EnemyHuman.h"
+#include "EnemyManager.h"
+#include "StageManager.h"
 //èâä˙âª
 void SceneGame::Initialize()
 {

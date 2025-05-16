@@ -1,4 +1,4 @@
-#include"..\misc.h"
+#include"..\Misc.h"
 #include "MaskShader.h"
 
 MaskShader::MaskShader(ID3D11Device* device)

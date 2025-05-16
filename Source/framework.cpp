@@ -12,7 +12,7 @@ Framework::Framework(HWND hwnd) : hWnd(hwnd)
 	graphics = Graphics::Instance();
 	graphics->Initialize(hwnd);
 
-	input_mgr = InputManager::Instance()->initialize(hwnd);
+	inputMgr = InputManager::Instance()->initialize(hwnd);
 
 	EffectManager::Instance().Initialize();
 
@@ -32,7 +32,7 @@ Framework::~Framework()
 
 void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 {
-	input_mgr->update();
+	inputMgr->update();
 
 	// シーン更新処理
 	SceneManager::Instance().Update(elapsedTime);
@@ -56,9 +56,9 @@ void Framework::Render(float elapsed_time/*Elapsed seconds from last frame*/)
 }
 
 // フレームレート計算
-void Framework::Calculate_frame_stats()
+void Framework::CalculateFrameStats()
 {
-	if (++frames, (timer.time_stamp() - elapsed_time) >= 1.0f)
+	if (++frames, (timer.TimeStamp() - elapsedTime) >= 1.0f)
 	{
 		float fps = static_cast<float>(frames);
 		std::wostringstream outs;
@@ -67,12 +67,12 @@ void Framework::Calculate_frame_stats()
 		SetWindowTextW(hWnd, outs.str().c_str());
 
 		frames = 0;
-		elapsed_time += 1.0f;
+		elapsedTime += 1.0f;
 	}
 }
 
 // アプリケーションループ
-int Framework::run()
+int Framework::Run()
 {
 	MSG msg{};
 
@@ -96,9 +96,9 @@ int Framework::run()
 		else
 		{
 			timer.Tick();
-			Calculate_frame_stats();
-			Update(timer.time_interval());
-			Render(timer.time_interval());
+			CalculateFrameStats();
+			Update(timer.TimeInterval());
+			Render(timer.TimeInterval());
 		}
 	}
 
@@ -121,7 +121,7 @@ int Framework::run()
 }
 
 // メッセージハンドラ
-LRESULT CALLBACK Framework::Handle_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK Framework::HandleMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	{
 #ifdef USE_IMGUI

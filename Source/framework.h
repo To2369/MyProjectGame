@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "Misc.h"
-#include "High_resolution_timer.h"
+#include "HighResolutionTimer.h"
 
 #include <d3d11.h>
 #include"Graphics/Graphics.h"
@@ -35,25 +35,25 @@ public:
 	Framework(Framework&&) noexcept = delete;
 	Framework& operator=(Framework&&) noexcept = delete;*/
 
-	int run();
+	int Run();
 
-	LRESULT CALLBACK Handle_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	LRESULT CALLBACK HandleMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 private:
 	void Update(float elapsed_Time/*Elapsed seconds from last frame*/);
 	void Render(float elapsed_Time/*Elapsed seconds from last frame*/);
 
-	void Calculate_frame_stats();
+	void CalculateFrameStats();
 
 private:
 	const HWND				hWnd;
 	HDC						hDC;
-	High_resolution_timer timer;
+	HighResolutionTimer timer;
 	uint32_t frames{ 0 };
-	float elapsed_time{ 0.0f };
+	float elapsedTime{ 0.0f };
 	Graphics* graphics;
 	const int	syncInterval = 1;		// êÇíºìØä˙ä‘äuê›íË
 
-	InputManager* input_mgr;
+	InputManager* inputMgr;
 };
 

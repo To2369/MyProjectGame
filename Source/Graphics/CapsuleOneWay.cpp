@@ -1,5 +1,5 @@
 #include "CapsuleOneWay.h"
-#include"..\misc.h"
+#include"..\Misc.h"
 #include<vector>
 CapsuleOneWay::CapsuleOneWay(ID3D11Device* device, float height, float radius, uint32_t slices, uint32_t ellipsoid_stacks, uint32_t stacks):
     currentHeight(height),
@@ -32,6 +32,7 @@ CapsuleOneWay::CapsuleOneWay(ID3D11Device* device, float height, float radius, u
         ShaderManager::Instance()->CreatePsFromCso(device, ".\\Data\\Shader\\GeometricPrimitivePs.cso",
             pixel_shader.GetAddressOf());
     }
+
     // 定数(コンスタント)バッファの作成
     {
         buffer_desc.ByteWidth = sizeof(constants);
@@ -183,6 +184,7 @@ void  CapsuleOneWay::Render(ID3D11DeviceContext* immediate_context,
     index_buffer->GetDesc(&buffer_desc);
     immediate_context->DrawIndexed(buffer_desc.ByteWidth / sizeof(uint32_t), 0, 0);
 }
+
 void CapsuleOneWay::CreateComBuffers(ID3D11Device* device,
     vertex* vertices, size_t vertex_count,
     uint32_t* indices, size_t index_count)

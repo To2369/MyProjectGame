@@ -376,10 +376,13 @@ void Character::Jump(float speed)
     // 上方向の力を設定
     velocity.y = speed;
 }
-void Character::Fly(float speed)
+void Character::Fly(float elapsedTime)
 {
-    // 上方向の力を設定
-    velocity.y = speed;
+    if (flyingFlag)
+    {
+        //velocity.y = 0.0f; // 重力リセット
+        groundedFlag = false;
+    }
 }
 // 速度処理更新
 void Character::UpdateVelocity(float elapsedTime)
@@ -456,7 +459,16 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     // 重力処理（フレーム単位で計算）
-    velocity.y += gravity * elapsedTime * 60.0f;
+    if (!flyingFlag)
+    {
+        velocity.y += gravity * elapsedTime * 60.0f;
+    }
+    // 空を飛んでいる場合
+    else
+    {
+        // 2に飛行速度を入れる
+        velocity.y = 2 * elapsedTime * 60.0f;
+    }
 }
 
 DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)
@@ -488,8 +500,15 @@ DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4 quaternion)
 // 垂直移動更新処理
 void Character::UpdateVerticalMove(float elapsedTime)
 {
-    // 垂直方向の移動量
     float moveY = velocity.y * elapsedTime;
+    // 垂直方向の移動量
+    if (flyingFlag)
+    {
+        // 飛行中は自由に上下移動
+        position.y += moveY;
+        groundedFlag = false;
+        return;
+    }
     slopeRate = 0.0f;
 
     // 姿勢制御用法線ベクトル（デフォルトは上方向）

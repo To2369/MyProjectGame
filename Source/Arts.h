@@ -41,6 +41,7 @@ public:
     // Šg‘åk¬Žæ“¾
     const DirectX::XMFLOAT3& GetScale() const { return scale; }
 
+    void SetGrowSpeed(const float speed) { this->growSpeed = speed; }
     // ”¼ŒaŽæ“¾
     float GetRadius() const { return radius; }
     float GetHeight() const { return height; }
@@ -71,7 +72,7 @@ protected:
     float radius = 1.0f;	// ”¼Œa
 
     float height = 1.0f;
-
+    float growSpeed = 15.0f;
     int useSpiritEnergy = 0;
     int useSkillEnergy = 0;
     int damage = 0;

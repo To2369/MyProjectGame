@@ -93,6 +93,9 @@ public:
 	void SetAtkCollisionFlag(const bool& flag) { this->atkCollisionFlag = flag; }
 
 	float GetInvincibleTimer() const { return invincibleTimer; }
+
+	const bool GetAwayFlag()const { return awayFlag; }
+	void SetAwayFlag(const bool& flag) { this->awayFlag = flag; }
 private:
 	// ‚’¼‘¬“xXVˆ—
 	void UpdateVerticalVelocity(float elapsedTime);
@@ -184,6 +187,7 @@ protected:
 	bool atkCollisionFlag = false;
 	bool weekAtkNextFlag = false;
 	bool strongAtkNextFlag = false;
+	bool awayFlag = false;
 
 	DirectX::XMFLOAT3	lockDirection;
 };

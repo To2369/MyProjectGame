@@ -5,7 +5,6 @@ ArtsSkillStraightBallet::ArtsSkillStraightBallet(ArtsManager* manager) : Arts(ma
     height = 1;
     geoPrimitive =
         std::make_unique<CapsuleOneWay>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
-    geoPrimitive->SetGrowthRate(15.0f);
     damage = 1;
     useSkillEnergy = 100;
     direction = { 0,0,0 };
@@ -25,6 +24,7 @@ void ArtsSkillStraightBallet::Update(float elapsedTime)
         Destroy();
     }
     currentCapsuleHeight = geoPrimitive->GetCurrentHeight();
+    geoPrimitive->SetGrowthRate(growSpeed);
     geoPrimitive->Update(elapsedTime);
     // ワールド行列の更新
     UpdateTransform();

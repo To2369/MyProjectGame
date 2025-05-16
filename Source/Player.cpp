@@ -608,27 +608,27 @@ void Player::CollisionArtsAndEnemies()
                     enemy->GetRadius(),
                     result))
                 {
+                    arts->SetGrowSpeed(0);
                     if (enemy->ApplyDamage(0.5f, arts->GetDamage()))
                     {
-
+                        
                         // ヒットエフェクトの再生
                         DirectX::XMFLOAT3 enePos = enemy->GetPosition();
                         enePos.y += enemy->GetHeight() * 0.5f;
                         //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
-                        if (arts->GetLifeTimer() <= 0.1f)
-                        {
-                            // 吹き飛ばし
-                       float power = 10.0f;
-                       DirectX::XMFLOAT3 impulse;
-                       impulse.x = power;
-                       impulse.y = power * 0.5f;
-                       impulse.z = power;
+                        
+                    }
+                    if (arts->GetLifeTimer() <= 0.1f)
+                    {
+                        // 吹き飛ばし
+                        float power = 10.0f;
+                        DirectX::XMFLOAT3 impulse;
+                        impulse.x = arts->GetDirection().x * power;
+                        impulse.y = 0;
+                        impulse.z = arts->GetDirection().z*power;
 
-                       enemy->AddImpulse(impulse);
-                            // 弾の破棄
-                            arts->Destroy();
-                        }
+                        enemy->AddImpulse(impulse);
                     }
                 }
             }
@@ -735,7 +735,10 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
                 };
 
                 // プレイヤーもその反対方向に少しだけ前進
-                this->AddImpulse(impulse);
+                if (!awayFlag)
+                {
+                    this->AddImpulse(impulse);
+                }
 
                 enemys->AddImpulse(impulse);
                 {

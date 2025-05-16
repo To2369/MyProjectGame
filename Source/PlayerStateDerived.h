@@ -487,6 +487,7 @@ void WeakAtkState01_8<Player>::Enter()
 {
     owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack08), false);
     owner->SetWeekAtkNextFlag(false);
+    owner->SetAwayFlag(true);
 }
 
 void WeakAtkState01_8<Player>::Execute(float elapsedTime)
@@ -502,6 +503,7 @@ void WeakAtkState01_8<Player>::Execute(float elapsedTime)
 void  WeakAtkState01_8<Player>::Exit()
 {
     owner->SetWeekAtkNextFlag(false);
+    owner->SetAwayFlag(false);
 }
 
 
@@ -812,6 +814,7 @@ void StrongAttackState08<Player>::Enter()
 {
     owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimConbo02_2), false);
     owner->SetStrongAtkNextFlag(false);
+    owner->SetAwayFlag(true);
 }
 
 void  StrongAttackState08<Player>::Execute(float elapsedTime)
@@ -827,6 +830,7 @@ void  StrongAttackState08<Player>::Execute(float elapsedTime)
 void  StrongAttackState08<Player>::Exit()
 {
     owner->SetStrongAtkNextFlag(false);
+    owner->SetAwayFlag(false);
 }
 void DashToEnemyState<Player>::Enter()
 {

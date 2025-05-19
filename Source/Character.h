@@ -191,4 +191,5 @@ protected:
 
 	DirectX::XMFLOAT3	lockDirection;
 	bool flyingFlag = false; // ‹ó‚ð”ò‚ñ‚Å‚¢‚é‚©
+	float flySpeed = 0;
 };

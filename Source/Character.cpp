@@ -467,7 +467,7 @@ void Character::UpdateVerticalVelocity(float elapsedTime)
     else
     {
         // 2‚É”òs‘¬“x‚ğ“ü‚ê‚é
-        velocity.y = 2 * elapsedTime * 60.0f;
+        velocity.y = flySpeed * elapsedTime * 60.0f;
     }
 }
 

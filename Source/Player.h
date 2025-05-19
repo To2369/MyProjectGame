@@ -180,7 +180,7 @@ private:
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
 	int jumpCount = 0;	// ジャンプ回数
-	int jumpLimit = 2;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
+	int jumpLimit = 1;	// ジャンプ制限（最大ジャンプ数、ひとまず２段ジャンプ可）
 	ArtsManager artsMgr;
 	float elapsedTime_ = 0;
 
@@ -202,4 +202,5 @@ private:
 	LockonState lockonState = LockonState::NotLocked;
 	Enemy* lockonEnemy = nullptr;
 	std::unique_ptr<Effect> hitEffect;
+	float flyTimer = 1;
 };

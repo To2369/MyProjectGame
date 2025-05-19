@@ -187,6 +187,12 @@ void JumpState<Player>::Execute(float elapsedTime)
 {
     owner->InputMove(elapsedTime);
 
+    if (owner->InputJump())
+    {
+        owner->GetStateMachine()->ChangeSubState(static_cast<int>(Player::Movement::Jump));
+    }
+
+
     if (!owner->GetModel()->IsPlayAnimation())
     {
         owner->GetModel()->PlayAnimation(Player::AnimJumpFalling, true);

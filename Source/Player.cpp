@@ -97,6 +97,7 @@ void Player::Update(float elapsedTime)
 
     InputDash(elapsedTime);
     Fly(elapsedTime);
+    InputFlying(elapsedTime);
     /* Mouse* mouse = InputManager::Instance()->getMouse();
      if (mouse->GetButton() & Mouse::BTN_RIGHT)
      {
@@ -237,7 +238,6 @@ void Player::DrawDebugGUI()
 
 void Player::DrawDebugPrimitive()
 {
-
     DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
     debugPrimitive->DrawCylinder(position, radius, height, { 1,1,1,1 });
 }
@@ -323,28 +323,41 @@ bool Player::InputJump()
     GamePad* gamePad = InputManager::Instance()->getGamePad();
     if (gamePad->GetButtonDown() & GamePad::BTN_A && !artSkillReady)
     {
-        if (!flyingFlag)
+        // ジャンプ回数制限
+        if (jumpCount < jumpLimit)
         {
-            flyingFlag = true;
+            // ジャンプ
+            jumpCount++;
+            Jump(jumpSpeed);
+            return true;
         }
-        else
+        else if(jumpCount>=jumpLimit)
         {
-            flyingFlag = false;
+            if (!flyingFlag)
+            {
+                flyingFlag = true;
+                jumpCount = 0;
+            }
         }
-        //// ジャンプ回数制限
-        //if (jumpCount < jumpLimit)
-        //{
-        //    // ジャンプ
-        //    jumpCount++;
-        //    Jump(jumpSpeed);
-        //    return true;
-        //}
     }
     return false;
 }
 void Player::InputFlying(float elapsedTime)
 {
-
+   
+    GamePad* gamePad = InputManager::Instance()->getGamePad();
+    if (gamePad->GetButton() & GamePad::BTN_A && !artSkillReady && flyingFlag)
+    {
+        flySpeed = 3;
+    }
+    else if (gamePad->GetButton() & GamePad::BTN_B&&flyingFlag)
+    {
+        flySpeed = -3;
+    }
+    else
+    {
+        flySpeed = 0;
+    }
 }
 
 // void型に修正する必要あり

@@ -338,6 +338,10 @@ bool Player::InputJump()
                 flyingFlag = true;
                 jumpCount = 0;
             }
+            else
+            {
+                flyingFlag = false;
+            }
         }
     }
     return false;

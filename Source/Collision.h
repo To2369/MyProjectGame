@@ -101,6 +101,28 @@ struct AABB
 	}
 };
 
+// Œõü‚Ì’è‹`
+struct Ray
+{
+	DirectX::XMFLOAT3	p;	// Œõü‚Ìn“_
+	DirectX::XMFLOAT3	d;	// Œõü‚Ì•ûŒü
+	float				l;	// Œõü‚Ì’·‚³
+};
+
+struct Triangle
+{
+	DirectX::XMFLOAT3	p0;
+	DirectX::XMFLOAT3	p1;
+	DirectX::XMFLOAT3	p2;
+};
+
+struct Sphere
+{
+	DirectX::XMFLOAT3	p;
+	DirectX::XMFLOAT3	d;	// Œõü‚Ì•ûŒü
+	float				l;	// Œõü‚Ì’·‚³
+	float r;
+};
 class Collision
 {
 public:
@@ -160,4 +182,10 @@ public:
 		const Model* model,
 		HitResult& result);
 
+	/*static bool Collision::IntersectSphereRayVsModel(
+		const DirectX::XMFLOAT3& start,
+		const DirectX::XMFLOAT3& end,
+		const float radius,
+		const Model* model,
+		HitResult& result)*/
 };

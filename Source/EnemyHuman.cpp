@@ -26,9 +26,10 @@ void EnemyHuman::Update(float elapsedTime)
 	// –³“GŠÔ‚ÌXV
 	UpdateInvincibleTimer(elapsedTime);
     //Lockon();
-    
+    stateTimer -= elapsedTime;
+    if (stateTimer < 0.0f)
     {
-       
+        Test(elapsedTime);
     }
     
     UpdateAnimation(elapsedTime);
@@ -143,4 +144,18 @@ bool EnemyHuman::SearchPlayer()
         }
     }
     return false;
+}
+
+//“ê’£‚èİ’è
+void EnemyHuman::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
+{
+    territoryOrigin = origin;
+    territoryRange = range;
+}
+
+void EnemyHuman::Test(float elapsedTime)
+{
+    targetPosition = Player::Instance()->GetPosition();
+
+    Moving(elapsedTime,1);
 }

@@ -20,8 +20,12 @@ public:
 	bool SearchPlayer();
 	void Lockon();
 	void SetRandomTargetPosition();
+	//ナワバリ設定
+	void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 	// 死亡したときに呼ばれる
 	void OnDead() override;
+
+	void Test(float elapsedTime);
 private:
 	
 	Player* lockonPlayer = nullptr;
@@ -34,7 +38,7 @@ private:
 	float reset = 3;
 	float dist = 0.0f;
 	float searchRange = 5.0f;
-
+	float stateTimer = 0.0f;
 
 	//アニメーション
 	enum AnimationNum

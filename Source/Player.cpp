@@ -718,62 +718,65 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, floa
     nodePosition.z = worldTransform._43;
     EnemyManager& enemy = EnemyManager::Instance();
     int count = EnemyManager::Instance().GetEnemyCount();
-    for (int i = 0; i < count; i++)
+    if (!isHit)
     {
-        Enemy* enemys = enemy.GetEnemy(i);
-
-        // 衝突処理
-        DirectX::XMFLOAT3 outPos;
-        if (Collision::IntersectSphereVsCylinder(
-            nodePosition,
-            nodeRadius,
-            enemys->GetPosition(),
-            enemys->GetRadius(),
-            enemys->GetHeight(),
-            outPos
-        ))
+        for (int i = 0; i < count; i++)
         {
-            if (enemys->ApplyDamage(invTimer, damage))
-            {  //hitEffect->Play(e);
-                // ノックバック方向 = 敵位置 - プレイヤー位置
-                DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
+            Enemy* enemys = enemy.GetEnemy(i);
 
-                DirectX::XMFLOAT3 dir;
-                dir.x = enemyPos.x - position.x;
-                dir.y = 0.0f;
-                dir.z = enemyPos.z - position.z;
+            // 衝突処理
+            DirectX::XMFLOAT3 outPos;
+            if (Collision::IntersectSphereVsCylinder(
+                nodePosition,
+                nodeRadius,
+                enemys->GetPosition(),
+                enemys->GetRadius(),
+                enemys->GetHeight(),
+                outPos
+            ))
+            {
+                if (enemys->ApplyDamage(invTimer, damage))
+                {  //hitEffect->Play(e);
+                    // ノックバック方向 = 敵位置 - プレイヤー位置
+                    DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
+
+                    DirectX::XMFLOAT3 dir;
+                    dir.x = enemyPos.x - position.x;
+                    dir.y = 0.0f;
+                    dir.z = enemyPos.z - position.z;
 
 
-                float length = sqrt(dir.x * dir.x + dir.z * dir.z);
-                if (length > 0.0001f)
-                {
-                    dir.x /= length;
-                    dir.z /= length;
+                    float length = sqrt(dir.x * dir.x + dir.z * dir.z);
+                    if (length > 0.0001f)
+                    {
+                        dir.x /= length;
+                        dir.z /= length;
+                    }
+
+                    float power = 10.0f;
+                    DirectX::XMFLOAT3 impulse = {
+                        dir.x * power,
+                        0.0f,
+                        dir.z * power
+                    };
+
+                    // プレイヤーもその反対方向に少しだけ前進
+                    if (!awayFlag)
+                    {
+                        this->AddImpulse(impulse);
+                    }
+
+                    enemys->AddImpulse(impulse);
+                    {
+                        DirectX::XMFLOAT3 e = enemys->GetPosition();
+                        hitEffect->Play(&e);
+                    }
+                    skillEnergy += 15;
+                    isHit = true;
                 }
-
-                float power = 10.0f;
-                DirectX::XMFLOAT3 impulse = {
-                    dir.x * power,
-                    0.0f,
-                    dir.z * power
-                };
-
-                // プレイヤーもその反対方向に少しだけ前進
-                if (!awayFlag)
-                {
-                    this->AddImpulse(impulse);
-                }
-
-                enemys->AddImpulse(impulse);
-                {
-                    DirectX::XMFLOAT3 e = enemys->GetPosition();
-                    hitEffect->Play(&e);
-                }
-                skillEnergy += 15;
             }
         }
     }
-
     {
 #ifdef USE_IMGUI
 
@@ -1166,7 +1169,7 @@ void Player::ActiveAttackCollider(AttackData attackData)
     }
     else
     {
-        atkCollisionFlag = false;
+        isHit = false;
     }
 
     if (attackData.secondHitBoneName != nullptr)
@@ -1176,30 +1179,26 @@ void Player::ActiveAttackCollider(AttackData attackData)
         {
             CollisionNodeVsEnemies(
                 attackData.secondHitBoneName,
-                attackData.hitRadius,
+                attackData.secondHitRadius,
                 invincibleTimer,
                 attackData.damage);
         }
         else
         {
-            atkCollisionFlag = false;
+            isHit = false;
         }
     }
 }
 
-void Player::ActiveSecondAttackCollider(AttackData attackData)
+void Player::AttackMove(float elapsedTime)
 {
-    if (model->currentAnimationSeconds >= attackData.secondHitStartTime
-        && model->currentAnimationSeconds <= attackData.secondHitEndTime)
-    {
-        CollisionNodeVsEnemies(
-            attackData.secondHitBoneName,
-            attackData.hitRadius,
-            invincibleTimer,
-            attackData.damage);
-    }
-    else
-    {
-        atkCollisionFlag = false;
-    }
+    // プレイヤーの前方ベクトルを取得（例：正面方向がZ軸）
+    Vector3 forward = GetForwardVector(); // プレイヤーの前方向を取得する関数（あなたの実装に合わせてください）
+
+    // 移動距離（例：攻撃で前に出る速度 * 経過時間）
+    float attackMoveSpeed = 2.0f; // 前に出る速さ（必要に応じて調整）
+    Vector3 movement = forward * attackMoveSpeed * elapsedTime;
+
+    // プレイヤーの位置を更新（あなたの座標系に合わせて調整）
+    position += movement;
 }

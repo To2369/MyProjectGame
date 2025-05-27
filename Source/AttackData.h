@@ -13,6 +13,7 @@ struct AttackData
 	/*アニメーションに二つ以上攻撃判定があるときの情報*/
 	float secondHitStartTime = 0.0f;			// 二回目の当たり判定が始まる時間
 	float secondHitEndTime = 0.0f;				// 二回目の当たり判定が終わる時間
+	float secondHitRadius = 0.0f;
 	const char* secondHitBoneName = nullptr;	// 二回目の当たり判定をつけるボーンの名前
 };
 
@@ -57,10 +58,10 @@ namespace PlAttackDatas
 		0.27f, 0.31f,
 		0.1f, 1.0f,
 		0.7f,
-		0.7f, "calf_r",
+		0.9f, "calf_r",
 		1,
 		0.55f, 0.73f,
-		"hand_l"
+		0.9f,"hand_l"
 	};
 	static constexpr AttackData  strongAttack06 =
 	{
@@ -96,7 +97,7 @@ namespace PlAttackDatas
 		0.7f, "ball_r",
 		1,
 		0.5f, 0.65f,
-		"calf_r"
+		1.0f, "calf_r"
 	};
 	static constexpr AttackData weakAttack01_4 =
 	{
@@ -130,7 +131,7 @@ namespace PlAttackDatas
 		0.7f, "hand_r",
 		1,
 		0.5f, 0.75f,
-		"ball_r"
+		0.7f, "ball_r"
 	};
 	static constexpr AttackData weakAttack01_8 =
 	{

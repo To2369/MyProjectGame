@@ -229,12 +229,12 @@ void  LandState<Player>::Exit()
 void WeakAtkState01_1<Player>::Enter()
 {
     owner->GetModel()->PlayAnimation(static_cast<int>(Player::AnimationNum::AnimAttack01), false);
-    owner->SetWeekAtkNextFlag(false); // “ü—Í‰Šú‰»
+    owner->SetWeekAtkNextFlag(false);
 }
 
 void  WeakAtkState01_1<Player>::Execute(float elapsedTime)
 {
-
+    owner->AttackMove(elapsedTime);
     owner->ActiveAttackCollider(PlAttackDatas::weakAttack01_1);
 
 

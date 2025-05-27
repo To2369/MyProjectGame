@@ -153,7 +153,7 @@ public:
 
 	void InputAttackNext(float currentAnimSeconds, AttackData attackData);
 	void ActiveAttackCollider(AttackData attackData);
-	void ActiveSecondAttackCollider(AttackData attackData);
+	void AttackMove(float elapsedTime);
 	void TeleportBehindEnemy();
 protected:
 	// ’…’n‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é

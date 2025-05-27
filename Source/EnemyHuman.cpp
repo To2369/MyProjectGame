@@ -29,7 +29,7 @@ void EnemyHuman::Update(float elapsedTime)
     stateTimer -= elapsedTime;
     if (stateTimer < 0.0f)
     {
-        Test(elapsedTime);
+        //Test(elapsedTime);
     }
     
     UpdateAnimation(elapsedTime);

@@ -501,14 +501,6 @@ DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4 quaternion)
 void Character::UpdateVerticalMove(float elapsedTime)
 {
     float moveY = velocity.y * elapsedTime;
-    // 垂直方向の移動量
-    if (flyingFlag)
-    {
-        // 飛行中は自由に上下移動
-        position.y += moveY;
-        groundedFlag = false;
-        return;
-    }
     slopeRate = 0.0f;
 
     // 姿勢制御用法線ベクトル（デフォルトは上方向）
@@ -557,6 +549,12 @@ void Character::UpdateVerticalMove(float elapsedTime)
         groundedFlag = false;
     }
 
+    // 垂直方向の移動量
+    if (flyingFlag)
+    {
+        // 飛行中は自由に上下移動
+        position.y += moveY;
+    }
 #if 01
     DirectX::XMVECTOR Normal = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
     DirectX::XMVECTOR Up = DirectX::XMVectorSet(0, 1, 0, 0);

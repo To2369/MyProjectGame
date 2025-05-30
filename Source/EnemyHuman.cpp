@@ -4,7 +4,7 @@
 #include "Player.h"
 EnemyHuman::EnemyHuman()
 {
-	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
+	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\Enemy\\EnemyBoxer.fbx");
 
 	const float scaleFactor = 0.01f;
 	scale = { scaleFactor,scaleFactor,scaleFactor };

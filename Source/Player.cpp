@@ -1192,13 +1192,21 @@ void Player::ActiveAttackCollider(AttackData attackData)
 
 void Player::AttackMove(float elapsedTime)
 {
-    // プレイヤーの前方ベクトルを取得（例：正面方向がZ軸）
-    Vector3 forward = GetForwardVector(); // プレイヤーの前方向を取得する関数（あなたの実装に合わせてください）
+    // 前方向ベクトル（すでに正規化されていることを想定）
+    DirectX::XMVECTOR forward = front;
 
-    // 移動距離（例：攻撃で前に出る速度 * 経過時間）
-    float attackMoveSpeed = 2.0f; // 前に出る速さ（必要に応じて調整）
-    Vector3 movement = forward * attackMoveSpeed * elapsedTime;
+    // 攻撃時の前進速度
+    float attackMoveSpeed = 5.0f;
 
-    // プレイヤーの位置を更新（あなたの座標系に合わせて調整）
-    position += movement;
+    // 前方向への移動距離ベクトル = front * speed
+    DirectX::XMVECTOR movement = DirectX::XMVectorScale(forward, attackMoveSpeed);
+
+    // 現在の position（XMFLOAT3）を XMVECTOR に変換
+    DirectX::XMVECTOR currentPos = DirectX::XMLoadFloat3(&position);
+
+    // 移動ベクトルを加算
+    DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(currentPos, movement);
+
+    // 新しい位置を XMFLOAT3 に戻して保存
+    DirectX::XMStoreFloat3(&position, newPos);
 }

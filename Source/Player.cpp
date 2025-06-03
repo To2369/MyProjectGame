@@ -1190,7 +1190,7 @@ void Player::ActiveAttackCollider(AttackData attackData)
     }
 }
 
-void Player::AttackMove(float elapsedTime)
+void Player::AttackMove()
 {
     // 前方向ベクトル（すでに正規化されていることを想定）
     DirectX::XMVECTOR forward = front;

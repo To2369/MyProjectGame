@@ -133,6 +133,8 @@ protected:
 
 	// Ž€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
 	virtual void OnDead() {}
+
+	virtual void InputData() {}
 protected:
 	std::unique_ptr<Model> model;
 	DirectX::XMFLOAT3 position = { 0,0,0 };

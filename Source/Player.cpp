@@ -1190,23 +1190,210 @@ void Player::ActiveAttackCollider(AttackData attackData)
     }
 }
 
-void Player::AttackMove()
+void Player::AttackMove(float startMoveTimer,float endMoveTime,float speed)
 {
-    // 前方向ベクトル（すでに正規化されていることを想定）
+    // 前方向ベクトル
     DirectX::XMVECTOR forward = front;
+    if (model->currentAnimationSeconds >= startMoveTimer
+        && model->currentAnimationSeconds <= endMoveTime)
+    {
 
-    // 攻撃時の前進速度
-    float attackMoveSpeed = 5.0f;
+        // 前方向への移動距離ベクトル = front * speed
+        DirectX::XMVECTOR movement = DirectX::XMVectorScale(forward, speed);
 
-    // 前方向への移動距離ベクトル = front * speed
-    DirectX::XMVECTOR movement = DirectX::XMVectorScale(forward, attackMoveSpeed);
+        // 現在の position（XMFLOAT3）を XMVECTOR に変換
+        DirectX::XMVECTOR currentPos = DirectX::XMLoadFloat3(&position);
 
-    // 現在の position（XMFLOAT3）を XMVECTOR に変換
-    DirectX::XMVECTOR currentPos = DirectX::XMLoadFloat3(&position);
+        // 移動ベクトルを加算
+        DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(currentPos, movement);
 
-    // 移動ベクトルを加算
-    DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(currentPos, movement);
-
-    // 新しい位置を XMFLOAT3 に戻して保存
-    DirectX::XMStoreFloat3(&position, newPos);
+        // 新しい位置を XMFLOAT3 に戻して保存
+        DirectX::XMStoreFloat3(&position, newPos);
+    }
 }
+
+void Player::InputData()
+{
+}
+
+//void Player::InputWeakAttackData()
+//{
+//    // WeakAttack01_1
+//    atkData.weakAttack01_1.hitStartTime = 0.4f;
+//    atkData.weakAttack01_1.hitEndTime = 0.9f;
+//    atkData.weakAttack01_1.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_1.inputAcceptEndTime = 1.4f;
+//    atkData.weakAttack01_1.progressLimit = 0.5f;
+//    atkData.weakAttack01_1.hitRadius = 0.7f;
+//    atkData.weakAttack01_1.hitBoneName = "lowerarm_l";
+//    atkData.weakAttack01_1.damage = 1;
+//
+//    // WeakAttack01_2
+//    atkData.weakAttack01_2.hitStartTime = 0.45f;
+//    atkData.weakAttack01_2.hitEndTime = 0.7f;
+//    atkData.weakAttack01_2.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_2.inputAcceptEndTime = 1.0f;
+//    atkData.weakAttack01_2.progressLimit = 0.5f;
+//    atkData.weakAttack01_2.hitRadius = 0.7f;
+//    atkData.weakAttack01_2.hitBoneName = "ball_r";
+//    atkData.weakAttack01_2.damage = 1;
+//
+//    // WeakAttack01_3
+//    atkData.weakAttack01_3.hitStartTime = 0.3f;
+//    atkData.weakAttack01_3.hitEndTime = 0.4f;
+//    atkData.weakAttack01_3.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_3.inputAcceptEndTime = 0.9f;
+//    atkData.weakAttack01_3.progressLimit = 0.5f;
+//    atkData.weakAttack01_3.hitRadius = 0.7f;
+//    atkData.weakAttack01_3.hitBoneName = "ball_r";
+//    atkData.weakAttack01_3.damage = 1;
+//
+//    atkData.weakAttack01_3.secondHitStartTime = 0.5f;
+//    atkData.weakAttack01_3.secondHitEndTime = 0.65f;
+//    atkData.weakAttack01_3.secondHitRadius = 1.0f;
+//    atkData.weakAttack01_3.hitBoneName = "calf_r";
+//
+//    // WeakAttack01_4
+//    atkData.weakAttack01_4.hitStartTime = 0.4f;
+//    atkData.weakAttack01_4.hitEndTime = 0.55f;
+//    atkData.weakAttack01_4.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_4.inputAcceptEndTime = 0.8f;
+//    atkData.weakAttack01_4.progressLimit = 0.5f;
+//    atkData.weakAttack01_4.hitRadius = 0.7f;
+//    atkData.weakAttack01_4.hitBoneName = "ball_r";
+//    atkData.weakAttack01_4.damage = 1;
+//
+//    // WeakAttack01_5
+//    atkData.weakAttack01_5.hitStartTime = 0.45f;
+//    atkData.weakAttack01_5.hitEndTime = 0.6f;
+//    atkData.weakAttack01_5.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_5.inputAcceptEndTime = 1.0f;
+//    atkData.weakAttack01_5.progressLimit = 0.5f;
+//    atkData.weakAttack01_5.hitRadius = 0.7f;
+//    atkData.weakAttack01_5.hitBoneName = "ball_l";
+//    atkData.weakAttack01_5.damage = 1;
+//
+//    // WeakAttack01_6
+//    atkData.weakAttack01_6.hitStartTime = 0.4f;
+//    atkData.weakAttack01_6.hitEndTime = 0.5f;
+//    atkData.weakAttack01_6.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_6.inputAcceptEndTime = 0.9f;
+//    atkData.weakAttack01_6.progressLimit = 0.5f;
+//    atkData.weakAttack01_6.hitRadius = 0.7f;
+//    atkData.weakAttack01_6.hitBoneName = "ball_r";
+//    atkData.weakAttack01_6.damage = 1;
+//
+//    // WeakAttack01_7
+//    atkData.weakAttack01_7.hitStartTime = 0.25f;
+//    atkData.weakAttack01_7.hitEndTime = 0.3f;
+//    atkData.weakAttack01_7.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_7.inputAcceptEndTime = 1.0f;
+//    atkData.weakAttack01_7.progressLimit = 0.5f;
+//    atkData.weakAttack01_7.hitRadius = 0.7f;
+//    atkData.weakAttack01_7.hitBoneName = "hand_r";
+//    atkData.weakAttack01_7.damage = 1;
+//
+//    atkData.weakAttack01_7.secondHitStartTime = 0.5f;
+//    atkData.weakAttack01_7.secondHitEndTime = 0.75f;
+//    atkData.weakAttack01_7.secondHitRadius = 0.7f;
+//    atkData.weakAttack01_7.hitBoneName = "ball_r";
+//
+//    // WeakAttack01_8
+//    atkData.weakAttack01_8.hitStartTime = 0.3f;
+//    atkData.weakAttack01_8.hitEndTime = 0.5f;
+//    atkData.weakAttack01_8.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack01_8.inputAcceptEndTime = 0.8f;
+//    atkData.weakAttack01_8.progressLimit = 0.5f;
+//    atkData.weakAttack01_8.hitRadius = 0.7f;
+//    atkData.weakAttack01_8.hitBoneName = "calf_r";
+//    atkData.weakAttack01_8.damage = 1;
+//
+//    // WeakAttack02_1
+//    atkData.weakAttack02_1.hitStartTime = 0.4f;
+//    atkData.weakAttack02_1.hitEndTime = 0.9f;
+//    atkData.weakAttack02_1.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack02_1.inputAcceptEndTime = 1.4f;
+//    atkData.weakAttack02_1.progressLimit = 0.5f;
+//    atkData.weakAttack02_1.hitRadius = 0.7f;
+//    atkData.weakAttack02_1.hitBoneName = "lowerarm_l";
+//    atkData.weakAttack02_1.damage = 1;
+//
+//    // WeakAttack02_2
+//    atkData.weakAttack02_2.hitStartTime = 0.45f;
+//    atkData.weakAttack02_2.hitEndTime = 0.7f;
+//    atkData.weakAttack02_2.inputAcceptStartTime = 0.1f;
+//    atkData.weakAttack02_2.inputAcceptEndTime = 1.0f;
+//    atkData.weakAttack02_2.progressLimit = 0.5f;
+//    atkData.weakAttack02_2.hitRadius = 0.7f;
+//    atkData.weakAttack02_2.hitBoneName = "ball_r";
+//    atkData.weakAttack02_2.damage = 1;
+//}
+//
+//void Player::InputStrongAttackData()
+//{
+//    // StrongAttack01_1
+//    atkData.strongAttack01_1.hitStartTime = 0.4f;
+//    atkData.strongAttack01_1.hitEndTime = 0.45f;
+//    atkData.strongAttack01_1.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_1.inputAcceptEndTime = 0.9f;
+//    atkData.strongAttack01_1.progressLimit = 0.5f;
+//    atkData.strongAttack01_1.hitRadius = 0.7f;
+//    atkData.strongAttack01_1.hitBoneName = "ball_l";
+//    atkData.strongAttack01_1.damage = 1;
+//
+//    // StrongAttack01_2
+//    atkData.strongAttack01_2.hitStartTime = 0.25f;
+//    atkData.strongAttack01_2.hitEndTime = 0.3f;
+//    atkData.strongAttack01_2.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_2.inputAcceptEndTime = 0.8f;
+//    atkData.strongAttack01_2.progressLimit = 0.6f;
+//    atkData.strongAttack01_2.hitRadius = 0.7f;
+//    atkData.strongAttack01_2.hitBoneName = "ball_r";
+//    atkData.strongAttack01_2.damage = 1;
+//
+//    // StrongAttack01_3
+//    atkData.strongAttack01_3.hitStartTime = 0.38f;
+//    atkData.strongAttack01_3.hitEndTime = 0.45f;
+//    atkData.strongAttack01_3.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_3.inputAcceptEndTime = 1.0f;
+//    atkData.strongAttack01_3.progressLimit = 0.5f;
+//    atkData.strongAttack01_3.hitRadius = 0.7f;
+//    atkData.strongAttack01_3.hitBoneName = "ball_l";
+//    atkData.strongAttack01_3.damage = 1;
+//
+//    // StrongAttack01_4
+//    atkData.strongAttack01_4.hitStartTime = 0.2f;
+//    atkData.strongAttack01_4.hitEndTime = 0.4f;
+//    atkData.strongAttack01_4.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_4.inputAcceptEndTime = 0.9f;
+//    atkData.strongAttack01_4.progressLimit = 0.4f;
+//    atkData.strongAttack01_4.hitRadius = 0.7f;
+//    atkData.strongAttack01_4.hitBoneName = "calf_r";
+//    atkData.strongAttack01_4.damage = 1;
+//
+//    // StrongAttack01_5
+//    atkData.strongAttack01_5.hitStartTime = 0.27f;
+//    atkData.strongAttack01_5.hitEndTime = 0.31f;
+//    atkData.strongAttack01_5.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_5.inputAcceptEndTime = 1.0f;
+//    atkData.strongAttack01_5.progressLimit = 0.7f;
+//    atkData.strongAttack01_5.hitRadius = 0.9f;
+//    atkData.strongAttack01_5.hitBoneName = "calf_r";
+//    atkData.strongAttack01_5.damage = 1;
+//    
+//    atkData.strongAttack01_5.secondHitStartTime = 0.55f;
+//    atkData.strongAttack01_5.secondHitEndTime = 0.73f;
+//    atkData.strongAttack01_5.secondHitRadius = 0.9f;
+//    atkData.strongAttack01_5.hitBoneName = "hand_l";
+//
+//    // StrongAttack01_6
+//    atkData.strongAttack01_6.hitStartTime = 0.4f;
+//    atkData.strongAttack01_6.hitEndTime = 0.5f;
+//    atkData.strongAttack01_6.inputAcceptStartTime = 0.1f;
+//    atkData.strongAttack01_6.inputAcceptEndTime = 0.9f;
+//    atkData.strongAttack01_6.progressLimit = 0.5f;
+//    atkData.strongAttack01_6.hitRadius = 0.7f;
+//    atkData.strongAttack01_6.hitBoneName = "ball_r";
+//    atkData.strongAttack01_6.damage = 1;
+//
+//}

@@ -17,6 +17,25 @@ struct AttackData
 	const char* secondHitBoneName = nullptr;	// 二回目の当たり判定をつけるボーンの名前
 };
 
+//struct PlAttackDatas
+//{
+//	AttackData strongAttack01_1;
+//	AttackData strongAttack01_2;
+//	AttackData strongAttack01_3;
+//	AttackData strongAttack01_4;
+//	AttackData strongAttack01_5;
+//	AttackData strongAttack01_6;
+//	AttackData weakAttack01_1;
+//	AttackData weakAttack01_2;
+//	AttackData weakAttack01_3;
+//	AttackData weakAttack01_4;
+//	AttackData weakAttack01_5;
+//	AttackData weakAttack01_6;
+//	AttackData weakAttack01_7;
+//	AttackData weakAttack01_8;
+//	AttackData weakAttack02_1;
+//	AttackData weakAttack02_2;
+//};
 // 攻撃に使用しているデータ
 namespace PlAttackDatas
 {

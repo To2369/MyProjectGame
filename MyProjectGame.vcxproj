@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include;.\tinygltf-release;.\Effekseer170e\include\Effekseer;.\Effekseer170e\include\EffekseerRendererDX11</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\External\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include;.\External\tinygltf-release;.\External\Effekseer170e\include\Effekseer;.\External\Effekseer170e\include\EffekseerRendererDX11;.\External\DirectXTK-main\Inc;%(AdditionalIncludeDirextories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>USE_IMGUI;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\DirectXTK-main\Inc;%(AdditionalIncludeDirectories);.\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include;.\tinygltf-release;.\Effekseer170e\include\Effekseer;.\Effekseer170e\include\EffekseerRendererDX11</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\External\DirectXTK-main\Inc;.\External\cereal-master\include;\Program Files\Autodesk\FBX\FBX SDK\2020.3.2\include;.\External\tinygltf-release;.\External\Effekseer170e\include\Effekseer;.\External\Effekseer170e\include\EffekseerRendererDX11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>

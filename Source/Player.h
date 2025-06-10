@@ -11,7 +11,6 @@
 
 
 
-
 // プレイヤー
 class Player :public Character
 {
@@ -153,11 +152,13 @@ public:
 
 	void InputAttackNext(float currentAnimSeconds, AttackData attackData);
 	void ActiveAttackCollider(AttackData attackData);
-	void AttackMove();
+	void AttackMove(float startMoveTimer, float endMoveTime, float speed);
 	void TeleportBehindEnemy();
 protected:
 	// 着地したときに呼び出される
 	void OnLanding() override;
+
+	void InputData() override;
 private:
 	std::unique_ptr<StateMachine<Player>> stateMachine;
 	std::unique_ptr<GeometricPrimitive> geo;
@@ -203,4 +204,5 @@ private:
 	Enemy* lockonEnemy = nullptr;
 	std::unique_ptr<Effect> hitEffect;
 	float flyTimer = 1;
+	//PlAttackDatas atkData = {};
 };

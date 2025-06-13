@@ -27,58 +27,32 @@
 // SV_TARGET                0   xyzw        0   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed | skipOptimization
+dcl_globalFlags refactoringAllowed
 dcl_sampler s1, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v2.xy
 dcl_output o0.xyzw
 dcl_temps 1
-//
-// Initial variable locations:
-//   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
-//   v1.x <- pin.color.x; v1.y <- pin.color.y; v1.z <- pin.color.z; v1.w <- pin.color.w; 
-//   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
-//   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
-//
-#line 10 "C:\Users\2220082\OneDrive - yamaguchigakuen\チEクトップ\MyProjectGame\HLSL\EffectPS.hlsl"
 lt r0.x, v2.y, l(0.250000)
 if_nz r0.x
-
-#line 12
   sample_indexable(texture2d)(float,float,float,float) o0.xyzw, v2.xyxx, t0.xyzw, s1
   ret 
-
-#line 13
 else 
-
-#line 14
   lt r0.x, v2.y, l(0.500000)
   if_nz r0.x
-
-#line 16
     sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s1
-    mul o0.xyzw, r0.xyzw, l(0.750000, 0.750000, 0.750000, 0.750000)  // o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
+    mul o0.xyzw, r0.xyzw, l(0.750000, 0.750000, 0.750000, 0.750000)
     ret 
-
-#line 17
   else 
-
-#line 18
     lt r0.x, v2.y, l(0.750000)
     if_nz r0.x
-
-#line 20
       sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s1
-      mul o0.xyzw, r0.xyzw, l(0.500000, 0.500000, 0.500000, 0.500000)  // o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
+      mul o0.xyzw, r0.xyzw, l(0.500000, 0.500000, 0.500000, 0.500000)
       ret 
-
-#line 21
     endif 
   endif 
 endif 
-
-#line 23
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s1
-mul o0.xyzw, r0.xyzw, l(0.250000, 0.250000, 0.250000, 0.250000)  // o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
+mul o0.xyzw, r0.xyzw, l(0.250000, 0.250000, 0.250000, 0.250000)
 ret 
 // Approximately 22 instruction slots used

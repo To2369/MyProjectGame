@@ -1,11 +1,6 @@
 #pragma once
 
-#include "../Imgui/imgui.h"
-#include "../Imgui/imgui_internal.h"
-#include "../Imgui/imgui_impl_dx11.h"
-#include "../Imgui/imgui_impl_win32.h"
-//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-//extern ImWchar glyphRangesJapanese[];
+#include <imgui.h>
 
 #include<wrl.h>
 #include<DirectXMath.h>

@@ -10,9 +10,6 @@
     <Filter Include="HLSL">
       <UniqueIdentifier>{3f4336d2-9a1b-4ad9-8c1e-5fba258e8073}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Imgui">
-      <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Camera">
       <UniqueIdentifier>{a8756cf2-516a-478b-aaf1-5a0e61636fa7}</UniqueIdentifier>
     </Filter>
@@ -37,32 +34,14 @@
     <Filter Include="Sources\Data">
       <UniqueIdentifier>{f251f991-20bd-4369-847e-673362389607}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{ebbb8411-e340-4ea6-9ea1-36ff815dff1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Imgui">
+      <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Imgui\imconfig.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imgui.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imgui_impl_dx11.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imgui_impl_win32.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imgui_internal.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imstb_rectpack.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imstb_textedit.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Imgui\imstb_truetype.h">
-      <Filter>Sources\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
@@ -252,26 +231,32 @@
     <ClInclude Include="Source\PlayerStateDerived.h">
       <Filter>Sources\Character</Filter>
     </ClInclude>
+    <ClInclude Include="External\imgui\imconfig.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imgui.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imgui_impl_dx11.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imgui_impl_win32.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imgui_internal.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imstb_rectpack.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imstb_textedit.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\imstb_truetype.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Imgui\imgui.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_draw.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_impl_dx11.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_impl_win32.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_ja_gryph_ranges.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Imgui\imgui_widgets.cpp">
-      <Filter>Sources\Imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SceneManeger.cpp">
       <Filter>Sources\Scene</Filter>
     </ClCompile>
@@ -418,6 +403,24 @@
     </ClCompile>
     <ClCompile Include="Source\Effect\EffectManager.cpp">
       <Filter>Sources\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_draw.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_impl_dx11.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_impl_win32.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_ja_gryph_ranges.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\imgui_widgets.cpp">
+      <Filter>External\Imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -702,7 +702,7 @@ void Player::CollisionPlayerAndArts()
     }
 }
 
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invTimer, int damage)
+void Player::CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius, float invTimer, int damage)
 {
     atkCollisionFlag = true;
     //ƒm[ƒhŽæ“¾
@@ -1172,7 +1172,7 @@ void Player::ActiveAttackCollider(AttackData attackData)
         isHit = false;
     }
 
-    if (attackData.secondHitBoneName != nullptr)
+    if (attackData.secondHitBoneName!="")
     {
         if (model->currentAnimationSeconds >= attackData.secondHitStartTime
             && model->currentAnimationSeconds <= attackData.secondHitEndTime)

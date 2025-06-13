@@ -351,7 +351,7 @@ public:
 		return animProgress;
 	}
 
-	Skeleton::Bone* FindNode(const char* node);
+	Skeleton::Bone* FindNode(std::string node);
 
 	Mesh* FindMesh(const char* name);
 	ModelScene sceneView;

@@ -25,9 +25,6 @@
     <Filter Include="Sources\Effect">
       <UniqueIdentifier>{46d8d1b1-71a0-4335-a01b-32db9c37cb9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Skill">
-      <UniqueIdentifier>{85ecbfb4-69a7-4c82-a2f9-d8beb87bb9db}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
@@ -39,6 +36,9 @@
     </Filter>
     <Filter Include="External\Imgui">
       <UniqueIdentifier>{731d954e-ceda-4444-9dd3-0df7083a030e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Skill">
+      <UniqueIdentifier>{85ecbfb4-69a7-4c82-a2f9-d8beb87bb9db}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -204,9 +204,6 @@
     <ClInclude Include="Source\Graphics\SkyMap.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UIData.h">
-      <Filter>Sources\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AttackData.h">
       <Filter>Sources\Data</Filter>
     </ClInclude>
@@ -254,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="External\imgui\imstb_truetype.h">
       <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UIData.h">
+      <Filter>Sources\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,6 +422,9 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AttackData.cpp">
+      <Filter>Sources\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -474,6 +477,9 @@
     </None>
     <None Include="HLSL\SkyMap.hlsli">
       <Filter>HLSL</Filter>
+    </None>
+    <None Include="Source\AttackData.json">
+      <Filter>Sources\Data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

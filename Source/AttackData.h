@@ -1,4 +1,9 @@
 #pragma once
+#include "json.hpp"
+#include <optional>
+#include <string>
+
+using json = nlohmann::json;
 struct AttackData
 {
 	float hitStartTime;							// 当たり判定が始まる時間
@@ -7,174 +12,51 @@ struct AttackData
 	float inputAcceptEndTime;					// 次の攻撃に遷移するための入力受付終了
 	float progressLimit;						// 次の攻撃に移る際のアニメーション進行度リミット
 	float hitRadius;							// 当たり判定の大きさ
-	const char* hitBoneName;					// 当たり判定を付けるボーンの名前
+	std::string hitBoneName;					// 当たり判定を付けるボーンの名前
 	int damage;
 
 	/*アニメーションに二つ以上攻撃判定があるときの情報*/
-	float secondHitStartTime = 0.0f;			// 二回目の当たり判定が始まる時間
-	float secondHitEndTime = 0.0f;				// 二回目の当たり判定が終わる時間
-	float secondHitRadius = 0.0f;
-	const char* secondHitBoneName = nullptr;	// 二回目の当たり判定をつけるボーンの名前
+	float secondHitStartTime;		// 二回目の当たり判定が始まる時間
+	float secondHitEndTime;			// 二回目の当たり判定が終わる時間
+	float secondHitRadius;			// 二回目の当たり判定の範囲
+	std::string secondHitBoneName;	// 二回目の当たり判定をつけるボーンの名前
 };
 
-//struct PlAttackDatas
-//{
-//	AttackData strongAttack01_1;
-//	AttackData strongAttack01_2;
-//	AttackData strongAttack01_3;
-//	AttackData strongAttack01_4;
-//	AttackData strongAttack01_5;
-//	AttackData strongAttack01_6;
-//	AttackData weakAttack01_1;
-//	AttackData weakAttack01_2;
-//	AttackData weakAttack01_3;
-//	AttackData weakAttack01_4;
-//	AttackData weakAttack01_5;
-//	AttackData weakAttack01_6;
-//	AttackData weakAttack01_7;
-//	AttackData weakAttack01_8;
-//	AttackData weakAttack02_1;
-//	AttackData weakAttack02_2;
-//};
-// 攻撃に使用しているデータ
-namespace PlAttackDatas
-{
-	// 弱攻撃
-	static constexpr AttackData strongAttack01 =
+inline void to_json(json& j, const AttackData& atkData) {
+	j = json
 	{
-		0.4f, 0.45f,
-		0.1f, 0.9f,
-		0.5f,
-		0.7f, "ball_l",
-		1
-	};
-	static constexpr AttackData strongAttack02 =
-	{
-		0.25f, 0.3f,
-		0.1f, 0.8f,
-		0.6f,
-		0.7f, "ball_r",
-		1
-	};
-	static constexpr AttackData strongAttack03 =
-	{
-		0.38f, 0.45f,
-		0.1f, 1.0f,
-		0.5f,
-		0.7f, "hand_l",
-		1
-	};
-	static constexpr AttackData strongAttack04 =
-	{
-		0.2f,  0.4f,
-		0.1f, 0.9f,
-		0.4f,
-		0.7f, "calf_r",
-		1
-	};
-	static constexpr AttackData strongAttack05 =
-	{
-		0.27f, 0.31f,
-		0.1f, 1.0f,
-		0.7f,
-		0.9f, "calf_r",
-		1,
-		0.55f, 0.73f,
-		0.9f,"hand_l"
-	};
-	static constexpr AttackData  strongAttack06 =
-	{
-		0.4f, 0.5f,
-		0.1f, 0.9f,
-		0.5f,
-		0.7f, "ball_r",
-		1
-	};
-
-	// 強攻撃
-	static constexpr AttackData weakAttack01_1 =
-	{
-		0.4f, 0.9f,
-		0.1f, 1.4f,
-		0.5f,
-		0.7f, "lowerarm_l",
-		1
-	};
-	static constexpr AttackData weakAttack01_2 =
-	{
-		0.45f, 0.7f,
-		0.1f, 1.0f,
-		0.5f,
-		0.7f, "ball_r",
-		1
-	};
-	static constexpr AttackData weakAttack01_3 =
-	{
-		0.3f, 0.4f,
-		0.1f, 0.9f,
-		0.5f,
-		0.7f, "ball_r",
-		1,
-		0.5f, 0.65f,
-		1.0f, "calf_r"
-	};
-	static constexpr AttackData weakAttack01_4 =
-	{
-		0.4f, 0.55f,
-		0.1f, 0.8f,
-		0.5f,
-		0.7f, "ball_r",
-		1
-	};
-	static constexpr AttackData weakAttack01_5 =
-	{
-		0.45f, 0.6f,
-		0.1f, 1.0f,
-		0.5f,
-		0.7f, "ball_l",
-		1
-	};
-	static constexpr AttackData weakAttack01_6 =
-	{
-		0.4f, 0.5f,
-		0.1f, 0.9f,
-		0.5f,
-		0.7f, "ball_r",
-		1
-	};
-	static constexpr AttackData weakAttack01_7 =
-	{
-		0.25f, 0.3f,
-		0.1f, 1.0f,
-		0.5f,
-		0.7f, "hand_r",
-		1,
-		0.5f, 0.75f,
-		0.7f, "ball_r"
-	};
-	static constexpr AttackData weakAttack01_8 =
-	{
-		0.3f, 0.5f,
-		0.1f, 0.8f,
-		0.5f,
-		0.7f,"calf_r",
-		1
-	};
-
-	static constexpr AttackData weakAttack02_1 =
-	{
-		0.4f, 0.9f,
-		0.1f, 1.4f,
-		0.5f,
-		0.7f, "lowerarm_l",
-		1
-	};
-	static constexpr AttackData weakAttack02_2 =
-	{
-		0.45f, 0.7f,
-		0.1f, 1.0f,
-		0.5f,
-		0.7f, "ball_r",
-		1
+		{"hitStartTime", atkData.hitStartTime},
+		{"hitEndTime", atkData.hitEndTime},
+		{"inputAcceptStartTime", atkData.inputAcceptStartTime},
+		{"inputAcceptEndTime", atkData.inputAcceptEndTime},
+		{"progressLimit", atkData.progressLimit},
+		{"hitRadius", atkData.hitRadius},
+		{"hitBoneName", atkData.hitBoneName},
+		{"damage", atkData.damage},
+		{"secondHitStartTime", atkData.secondHitStartTime},
+		{"secondHitEndTime", atkData.secondHitEndTime},
+		{"secondHitRadius", atkData.secondHitRadius},
+		{"secondHitBoneName", atkData.secondHitBoneName}
 	};
 }
+
+// JSONからAttackDataに変換する関数
+inline void from_json(const json& j, AttackData& atkData) 
+{
+	j.at("hitStartTime").get_to(atkData.hitStartTime);
+	j.at("hitEndTime").get_to(atkData.hitEndTime);
+	j.at("inputAcceptStartTime").get_to(atkData.inputAcceptStartTime);
+	j.at("inputAcceptEndTime").get_to(atkData.inputAcceptEndTime);
+	j.at("progressLimit").get_to(atkData.progressLimit);
+	j.at("hitRadius").get_to(atkData.hitRadius);
+	j.at("hitBoneName").get_to(atkData.hitBoneName);
+	j.at("damage").get_to(atkData.damage);
+
+	// optional
+	if (j.contains("secondHitStartTime")) j.at("secondHitStartTime").get_to(atkData.secondHitStartTime);
+	if (j.contains("secondHitEndTime")) j.at("secondHitEndTime").get_to(atkData.secondHitEndTime);
+	if (j.contains("secondHitRadius")) j.at("secondHitRadius").get_to(atkData.secondHitRadius);
+	if (j.contains("secondHitBoneName")) j.at("secondHitBoneName").get_to(atkData.secondHitBoneName);
+}
+
+std::unordered_map<std::string, AttackData> LoadAttackData(const std::string& filePath);

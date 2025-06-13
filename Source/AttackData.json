@@ -1,0 +1,174 @@
+{
+  "strongAttack01_1": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.45,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.9,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_l",
+    "damage": 1
+  },
+  "strongAttack01_2": {
+    "hitStartTime": 0.25,
+    "hitEndTime": 0.3,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.8,
+    "progressLimit": 0.6,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  },
+  "strongAttack01_3": {
+    "hitStartTime": 0.38,
+    "hitEndTime": 0.45,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "hand_l",
+    "damage": 1
+  },
+  "strongAttack01_4": {
+    "hitStartTime": 0.2,
+    "hitEndTime": 0.4,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.9,
+    "progressLimit": 0.4,
+    "hitRadius": 0.7,
+    "hitBoneName": "calf_r",
+    "damage": 1
+  },
+  "strongAttack01_5": {
+    "hitStartTime": 0.27,
+    "hitEndTime": 0.31,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.7,
+    "hitRadius": 0.9,
+    "hitBoneName": "calf_r",
+    "damage": 1,
+    "secondHitStartTime": 0.55,
+    "secondHitEndTime": 0.73,
+    "secondHitRadius": 0.9,
+    "secondHitBoneName": "hand_l"
+  },
+  "strongAttack01_6": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.5,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.9,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  },
+  "weakAttack01_1": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.9,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.4,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "lowerarm_l",
+    "damage": 1
+  },
+  "weakAttack01_2": {
+    "hitStartTime": 0.45,
+    "hitEndTime": 0.7,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  },
+  "weakAttack01_3": {
+    "hitStartTime": 0.3,
+    "hitEndTime": 0.4,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.9,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1,
+    "secondHitStartTime": 0.5,
+    "secondHitEndTime": 0.65,
+    "secondHitRadius": 1.0,
+    "secondHitBoneName": "calf_r"
+  },
+  "weakAttack01_4": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.55,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.8,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  },
+  "weakAttack01_5": {
+    "hitStartTime": 0.45,
+    "hitEndTime": 0.6,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_l",
+    "damage": 1
+  },
+  "weakAttack01_6": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.5,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.9,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  },
+  "weakAttack01_7": {
+    "hitStartTime": 0.25,
+    "hitEndTime": 0.3,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "hand_r",
+    "damage": 1,
+    "secondHitStartTime": 0.5,
+    "secondHitEndTime": 0.75,
+    "secondHitRadius": 0.7,
+    "secondHitBoneName": "ball_r"
+  },
+  "weakAttack01_8": {
+    "hitStartTime": 0.3,
+    "hitEndTime": 0.5,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 0.8,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "calf_r",
+    "damage": 1
+  },
+  "weakAttack02_1": {
+    "hitStartTime": 0.4,
+    "hitEndTime": 0.9,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.4,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "lowerarm_r",
+    "damage": 1
+  },
+  "weakAttack02_2": {
+    "hitStartTime": 0.45,
+    "hitEndTime": 0.7,
+    "inputAcceptStartTime": 0.1,
+    "inputAcceptEndTime": 1.0,
+    "progressLimit": 0.5,
+    "hitRadius": 0.7,
+    "hitBoneName": "ball_r",
+    "damage": 1
+  }
+}

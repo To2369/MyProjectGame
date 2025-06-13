@@ -7,7 +7,7 @@
 #include "Enemy.h"
 #include "AttackData.h"
 #include "Effect/Effect.h"
-
+#include <string>
 
 
 
@@ -148,7 +148,7 @@ public:
 	// ’e‚Æ“G‚ÌÕ“Ëˆ—
 	void CollisionArtsAndEnemies();
 	void CollisionPlayerAndArts();
-	void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, float invicibleTimer, int damage);
+	void CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius, float invicibleTimer, int damage);
 
 	void InputAttackNext(float currentAnimSeconds, AttackData attackData);
 	void ActiveAttackCollider(AttackData attackData);

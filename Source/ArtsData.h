@@ -1,9 +1,6 @@
 #pragma once
 #include <string>
 #include <optional>
-#include "../External/json.hpp"
-
-using json = nlohmann::json;
 struct ArtsData
 {
 	int useEnergy;

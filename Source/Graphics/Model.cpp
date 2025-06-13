@@ -1015,7 +1015,7 @@ bool Model::IsPlayAnimation()const
     return true;
 }
 
-Skeleton::Bone* Model::FindNode(const char* name)
+Skeleton::Bone* Model::FindNode(std::string name)
 {
     // すべてのメッシュをループ
     for (auto& mesh : meshes)

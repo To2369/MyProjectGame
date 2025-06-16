@@ -478,7 +478,7 @@
     <None Include="HLSL\SkyMap.hlsli">
       <Filter>HLSL</Filter>
     </None>
-    <None Include="Source\AttackData.json">
+    <None Include="Source\PlayerAttackData.json">
       <Filter>Sources\Data</Filter>
     </None>
   </ItemGroup>

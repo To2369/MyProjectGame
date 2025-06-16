@@ -317,7 +317,7 @@
     <None Include="HLSL\Sprite.hlsli" />
     <None Include="HLSL\StaticMesh.hlsli" />
     <None Include="HLSL\UVScroll.hlsli" />
-    <None Include="Source\AttackData.json" />
+    <None Include="Source\PlayerAttackData.json" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\ColorFilterPS.hlsl">

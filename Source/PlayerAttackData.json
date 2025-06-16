@@ -1,5 +1,5 @@
 {
-  "strongAttack01_1": {
+  "plStrongAttack01_1": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.45,
     "inputAcceptStartTime": 0.1,
@@ -9,7 +9,7 @@
     "hitBoneName": "ball_l",
     "damage": 1
   },
-  "strongAttack01_2": {
+  "plStrongAttack01_2": {
     "hitStartTime": 0.25,
     "hitEndTime": 0.3,
     "inputAcceptStartTime": 0.1,
@@ -19,7 +19,7 @@
     "hitBoneName": "ball_r",
     "damage": 1
   },
-  "strongAttack01_3": {
+  "plStrongAttack01_3": {
     "hitStartTime": 0.38,
     "hitEndTime": 0.45,
     "inputAcceptStartTime": 0.1,
@@ -29,7 +29,7 @@
     "hitBoneName": "hand_l",
     "damage": 1
   },
-  "strongAttack01_4": {
+  "plStrongAttack01_4": {
     "hitStartTime": 0.2,
     "hitEndTime": 0.4,
     "inputAcceptStartTime": 0.1,
@@ -39,7 +39,7 @@
     "hitBoneName": "calf_r",
     "damage": 1
   },
-  "strongAttack01_5": {
+  "plStrongAttack01_5": {
     "hitStartTime": 0.27,
     "hitEndTime": 0.31,
     "inputAcceptStartTime": 0.1,
@@ -53,7 +53,7 @@
     "secondHitRadius": 0.9,
     "secondHitBoneName": "hand_l"
   },
-  "strongAttack01_6": {
+  "plStrongAttack01_6": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.5,
     "inputAcceptStartTime": 0.1,
@@ -63,7 +63,7 @@
     "hitBoneName": "ball_r",
     "damage": 1
   },
-  "weakAttack01_1": {
+  "plWeakAttack01_1": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.9,
     "inputAcceptStartTime": 0.1,
@@ -73,7 +73,7 @@
     "hitBoneName": "lowerarm_l",
     "damage": 1
   },
-  "weakAttack01_2": {
+  "plWeakAttack01_2": {
     "hitStartTime": 0.45,
     "hitEndTime": 0.7,
     "inputAcceptStartTime": 0.1,
@@ -83,7 +83,7 @@
     "hitBoneName": "ball_r",
     "damage": 1
   },
-  "weakAttack01_3": {
+  "plWeakAttack01_3": {
     "hitStartTime": 0.3,
     "hitEndTime": 0.4,
     "inputAcceptStartTime": 0.1,
@@ -97,7 +97,7 @@
     "secondHitRadius": 1.0,
     "secondHitBoneName": "calf_r"
   },
-  "weakAttack01_4": {
+  "plWeakAttack01_4": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.55,
     "inputAcceptStartTime": 0.1,
@@ -107,7 +107,7 @@
     "hitBoneName": "ball_r",
     "damage": 1
   },
-  "weakAttack01_5": {
+  "plWeakAttack01_5": {
     "hitStartTime": 0.45,
     "hitEndTime": 0.6,
     "inputAcceptStartTime": 0.1,
@@ -117,7 +117,7 @@
     "hitBoneName": "ball_l",
     "damage": 1
   },
-  "weakAttack01_6": {
+  "plWeakAttack01_6": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.5,
     "inputAcceptStartTime": 0.1,
@@ -127,7 +127,7 @@
     "hitBoneName": "ball_r",
     "damage": 1
   },
-  "weakAttack01_7": {
+  "plWeakAttack01_7": {
     "hitStartTime": 0.25,
     "hitEndTime": 0.3,
     "inputAcceptStartTime": 0.1,
@@ -141,7 +141,7 @@
     "secondHitRadius": 0.7,
     "secondHitBoneName": "ball_r"
   },
-  "weakAttack01_8": {
+  "plWeakAttack01_8": {
     "hitStartTime": 0.3,
     "hitEndTime": 0.5,
     "inputAcceptStartTime": 0.1,
@@ -151,7 +151,7 @@
     "hitBoneName": "calf_r",
     "damage": 1
   },
-  "weakAttack02_1": {
+  "plWeakAttack02_1": {
     "hitStartTime": 0.4,
     "hitEndTime": 0.9,
     "inputAcceptStartTime": 0.1,
@@ -161,7 +161,7 @@
     "hitBoneName": "lowerarm_r",
     "damage": 1
   },
-  "weakAttack02_2": {
+  "plWeakAttack02_2": {
     "hitStartTime": 0.45,
     "hitEndTime": 0.7,
     "inputAcceptStartTime": 0.1,

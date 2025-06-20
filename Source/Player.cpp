@@ -103,11 +103,6 @@ void Player::Update(float elapsedTime)
      {
          TeleportBehindEnemy();
      }*/
-    GamePad* gamePad = InputManager::Instance()->getGamePad();
-    if (flyingFlag)
-    {
-        velocity.y += 2;
-    }
     UpdateStatus(elapsedTime);
 
 
@@ -331,18 +326,6 @@ bool Player::InputJump()
             Jump(jumpSpeed);
             return true;
         }
-        else if(jumpCount>=jumpLimit)
-        {
-            if (!flyingFlag)
-            {
-                flyingFlag = true;
-                jumpCount = 0;
-            }
-            else
-            {
-                flyingFlag = false;
-            }
-        }
     }
     return false;
 }
@@ -350,6 +333,18 @@ void Player::InputFlying(float elapsedTime)
 {
    
     GamePad* gamePad = InputManager::Instance()->getGamePad();
+     if (jumpCount >= jumpLimit)
+     {
+         if (!flyingFlag)
+         {
+             flyingFlag = true;
+             jumpCount = 0;
+         }
+         else
+         {
+             flyingFlag = false;
+         }
+     }
     if (gamePad->GetButton() & GamePad::BTN_A && !artSkillReady && flyingFlag)
     {
         flySpeed = 3;

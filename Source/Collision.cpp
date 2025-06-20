@@ -308,6 +308,7 @@ bool Collision::IntersectRayVsModel(
     const DirectX::XMFLOAT3& start,
     const DirectX::XMFLOAT3& end,
     const Model* model,
+    const DirectX::XMFLOAT4X4& modelTransform,
     HitResult& result)
 {
     // ワールド空間上でのレイの始点
@@ -322,10 +323,11 @@ bool Collision::IntersectRayVsModel(
 
     // true...衝突した
     bool hit = false;
-
+    DirectX::XMMATRIX modelTransformMat = DirectX::XMLoadFloat4x4(&modelTransform);
     // メッシュごとに処理を行う
     for (const Model::Mesh& mesh_ : model->meshes)
     {
+
         // AABBの最小・最大点を取得
         DirectX::XMFLOAT3 meshMin = mesh_.boundingBox[0];
         DirectX::XMFLOAT3 meshMax = mesh_.boundingBox[1];
@@ -339,7 +341,10 @@ bool Collision::IntersectRayVsModel(
         }
 
         // AABBと交差する場合に三角形との交差判定を行う
-        DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
+        //DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
+        // メッシュ単体の transform
+        DirectX::XMMATRIX meshTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
+        DirectX::XMMATRIX worldTransformMat = meshTransformMat * modelTransformMat;
         DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
 
         // ローカル空間でのレイの始点と終点を計算

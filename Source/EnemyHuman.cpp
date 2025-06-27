@@ -53,7 +53,7 @@ void EnemyHuman::DrawDebugGUI()
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             //位置
-            ImGui::InputFloat3("Position", &ppos.x);
+            ImGui::InputFloat3("Position", &position.x);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);

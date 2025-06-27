@@ -17,7 +17,9 @@ Player::Player()
     geo = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
     const float scale_factor = 0.01f;
     scale = { scale_factor,scale_factor,scale_factor };
-    height = 1.5f;
+    radius = 0.5f;  // 幅
+    height = 1.0f;  // 高さ
+
     stateMachine = std::make_unique<StateMachine<Player>>();
 
     stateMachine->RegisterState(new MovementState(this));
@@ -64,6 +66,7 @@ Player::Player()
     //待機ステートへ遷移
     stateMachine->SetState(static_cast<int>(State::Movement));
     position.y = 5.0f;
+    position.x=position.z = 0.0f;
     // カメラモード設定
     {
         MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
@@ -81,23 +84,24 @@ void Player::Update(float elapsedTime)
 {
     //ステート毎の処理
     stateMachine->Update(elapsedTime);
-    // 速度処理更新
-    UpdateVelocity(elapsedTime);
 
+      // 速度処理更新
+    UpdateVelocity(elapsedTime);
     //InputFlying(elapsedTime);
 
-    // プレイヤーと敵との衝突処置
-    CollisionPlayerAndEnemies();
+    //// プレイヤーと敵との衝突処置
+    //CollisionPlayerAndEnemies();
 
-    CollisionArtsAndEnemies();
-    //CollisionPlayerAndArts();
-    artsMgr.Update(elapsedTime);
+    //CollisionArtsAndEnemies();
+    ////CollisionPlayerAndArts();
+    //artsMgr.Update(elapsedTime);
 
-    Lockon();
+    //Lockon();
 
-    InputDash(elapsedTime);
+    //InputDash(elapsedTime);
     Fly(elapsedTime);
     InputFlying(elapsedTime);
+    //InputJump();
     /* Mouse* mouse = InputManager::Instance()->getMouse();
      if (mouse->GetButton() & Mouse::BTN_RIGHT)
      {
@@ -106,7 +110,7 @@ void Player::Update(float elapsedTime)
     UpdateStatus(elapsedTime);
 
 
-    UpdateAnimation(elapsedTime);
+    //UpdateAnimation(elapsedTime);
 
     // ワールド行列更新
     UpdateTransform();

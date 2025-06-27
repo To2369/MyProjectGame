@@ -458,6 +458,7 @@ void Character::UpdateInvincibleTimer(float elapsedTime)
 // 垂直速度更新処理
 void Character::UpdateVerticalVelocity(float elapsedTime)
 {
+    
     // 重力処理（フレーム単位で計算）
     if (!flyingFlag)
     {
@@ -510,7 +511,7 @@ void Character::UpdateVerticalMove(float elapsedTime)
         // 落下中
 
         // レイの開始位置を設定（足もとより少し上）
-        DirectX::XMFLOAT3 start = { position.x, position.y + 1.0f, position.z };
+        DirectX::XMFLOAT3 start = { position.x, position.y + 2.0f, position.z };
         // レイの終点位置を設定（移動後の位置）
         DirectX::XMFLOAT3 end = { position.x, position.y + moveY, position.z };
 
@@ -550,11 +551,11 @@ void Character::UpdateVerticalMove(float elapsedTime)
     }
 
     // 垂直方向の移動量
-    if (flyingFlag)
-    {
-        // 飛行中は自由に上下移動
-        position.y += moveY;
-    }
+    //if (flyingFlag)
+    //{
+    //    // 飛行中は自由に上下移動
+    //    position.y += moveY;
+    //}
 #if 01
     DirectX::XMVECTOR Normal = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
     DirectX::XMVECTOR Up = DirectX::XMVectorSet(0, 1, 0, 0);

@@ -40,7 +40,7 @@ void SceneGame::Initialize()
     for (int i = 0; i < 1; i++)
     {
         std::unique_ptr<EnemyHuman> slime = std::make_unique<EnemyHuman>();
-        slime->SetPosition({ 0,0,5 });
+        slime->SetPosition({ 0,5,5 });
 
         //敵管理クラス取付
         EnemyManager& eneMgr = EnemyManager::Instance();
@@ -155,6 +155,7 @@ void SceneGame::Update(float elapsedTime)
     ImGui::Separator();
     if (ImGui::TreeNode("Mask"))
     {
+        ImGui::SliderFloat3("light_direction", &light_direction.x, -1.0f, +1.0f);
         //ImGui::SliderFloat("dissolve_value", &mask.get()->dissolve_value, 0.0f, +1.0f);
         //ImGui::Checkbox("utility flag", &flag);
 
@@ -195,7 +196,7 @@ void SceneGame::Render()
     // プロジェクション行列
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     DirectX::XMStoreFloat4x4(&scene_data.viewProjection, View * Projection);
-    scene_data.lightDirection = graphics->GetLight()->directionalLightDirection;
+    scene_data.lightDirection = light_direction;;
 
    /* framebuffers[0]->Clear(dc, 0, 0, 1, 0);
     framebuffers[0]->Activate(dc);*/

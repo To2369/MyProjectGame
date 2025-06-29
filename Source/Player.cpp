@@ -65,7 +65,7 @@ Player::Player()
 
     //待機ステートへ遷移
     stateMachine->SetState(static_cast<int>(State::Movement));
-    position.y = 5.0f;
+    position.y = 10.0f;
     position.x=position.z = 0.0f;
     // カメラモード設定
     {

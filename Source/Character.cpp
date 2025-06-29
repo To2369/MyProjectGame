@@ -460,12 +460,12 @@ void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     
     // 重力処理（フレーム単位で計算）
-    if (!flyingFlag)
+    if (!groundedFlag)
     {
         velocity.y += gravity * elapsedTime * 60.0f;
     }
     // 空を飛んでいる場合
-    else
+    else if(flyingFlag)
     {
         // 2に飛行速度を入れる
         velocity.y = flySpeed * elapsedTime * 60.0f;

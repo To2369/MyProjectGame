@@ -227,18 +227,10 @@ bool Collision::IntersectSphereVsCylinder(
 
 inline DirectX::XMFLOAT3 GetTriangleNormVector(DirectX::XMFLOAT3 p0, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2)
 {
-    //①三角形trの法線nを求める
-    //※３点が時計回りに見える側を表とする
     DirectX::XMFLOAT3 n = {};
 
-    //p1-p0のベクトル
-    DirectX::XMVECTOR a = DirectX::XMVectorSubtract(
-        DirectX::XMLoadFloat3(&p1), DirectX::XMLoadFloat3(&p0));
-    //p2-p1のベクトル
-    DirectX::XMVECTOR b = DirectX::XMVectorSubtract(
-        DirectX::XMLoadFloat3(&p2), DirectX::XMLoadFloat3(&p1)
-    );
-    //上記の2辺の外積の正規化された値
+    DirectX::XMVECTOR a = DirectX::XMVectorSubtract(XMLoadFloat3(&p1), XMLoadFloat3(&p0));
+    DirectX::XMVECTOR b = DirectX::XMVectorSubtract(XMLoadFloat3(&p2), XMLoadFloat3(&p0));
     DirectX::XMStoreFloat3(&n, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(a, b)));
 
     return n;
@@ -246,60 +238,53 @@ inline DirectX::XMFLOAT3 GetTriangleNormVector(DirectX::XMFLOAT3 p0, DirectX::XM
 
 bool RayVsTriangle(DirectX::XMFLOAT3* p, const Ray& r, const Triangle& t, float& neart)
 {
-    //④光線rが三角形tの表側から交差し、かつ、交点pが三角形tの内部にある場合のみ、trueを返す
-    DirectX::XMFLOAT3 n = GetTriangleNormVector(t.p0, t.p1, t.p2);
+   
+    using namespace DirectX;
 
+    constexpr float EPSILON = 1e-6f;
 
+    XMVECTOR orig = XMLoadFloat3(&r.p);
+    XMVECTOR dir = XMLoadFloat3(&r.d);
+    XMVECTOR v0 = XMLoadFloat3(&t.p0);
+    XMVECTOR v1 = XMLoadFloat3(&t.p1);
+    XMVECTOR v2 = XMLoadFloat3(&t.p2);
 
-    //光線(レイ)の方向ベクトルr.dと面法線ベクトルnの内積fDotを計算します
-    float fDot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&r.d), DirectX::XMLoadFloat3(&n)));
+    // 辺ベクトル
+    XMVECTOR edge1 = XMVectorSubtract(v1, v0);
+    XMVECTOR edge2 = XMVectorSubtract(v2, v0);
 
-    // 内積がマイナスかどうか判定（表面ならを続ける）
-    if (fDot < 0.0f)
+    // 計算用ベクトル
+    XMVECTOR h = XMVector3Cross(dir, edge2);
+    float a = XMVectorGetX(XMVector3Dot(edge1, h));
+
+    // レイが三角形と平行な場合
+    if (fabs(a) < EPSILON)
+        return false;
+
+    float f = 1.0f / a;
+    XMVECTOR s = XMVectorSubtract(orig, v0);
+    float u = f * XMVectorGetX(XMVector3Dot(s, h));
+
+    if (u < 0.0f || u > 1.0f)
+        return false;
+
+    XMVECTOR q = XMVector3Cross(s, edge1);
+    float v = f * XMVectorGetX(XMVector3Dot(dir, q));
+
+    if (v < 0.0f || u + v > 1.0f)
+        return false;
+
+    float tempT = f * XMVectorGetX(XMVector3Dot(edge2, q));
+
+    if (tempT > EPSILON && tempT < neart)
     {
-        // 光線が真横から当たっていないか判定（fabs(fDot) > 1e-6f）
-        if (fabs(fDot) > 1e-6f)
-        {
-            // 光線と三角形の交点までの光線上の距離を計算（スケール値の計算）
-            float l;
-            DirectX::XMVECTOR tmp = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&t.p0), DirectX::XMLoadFloat3(&r.p));
-            l = DirectX::XMVectorGetX(DirectX::XMVector3Dot(tmp, DirectX::XMLoadFloat3(&n))) / fDot;
-
-            if (l > neart)
-                return false;
-
-            // 距離が０より大きいかどうか判定
-            if (l > 0)
-            {
-                // 交点の座標位置を計算
-                //*p = {r.p.x+r.d.x+l,r.p.y + r.d.y + l, r.p.z + r.d.z + l };
-                DirectX::XMStoreFloat3(p,
-                    DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&r.p),
-                        DirectX::XMVectorScale(DirectX::XMLoadFloat3(&r.d), l)));
-                //平面上にある点pを計算(始点＋方向ベクトル＊スケール)
-                // 交点から三角形のそれぞれの点までのベクトルを計算
-                DirectX::XMVECTOR tmp0 = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&t.p0), DirectX::XMLoadFloat3(p));
-                DirectX::XMVECTOR tmp1 = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&t.p1), DirectX::XMLoadFloat3(p));
-                DirectX::XMVECTOR tmp2 = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&t.p2), DirectX::XMLoadFloat3(p));
-
-                // 上記で計算したベクトルのそれぞれの外積を計算
-                DirectX::XMVECTOR n0 = DirectX::XMVector3Cross(tmp0, tmp1);
-                DirectX::XMVECTOR n1 = DirectX::XMVector3Cross(tmp1, tmp2);
-                DirectX::XMVECTOR n2 = DirectX::XMVector3Cross(tmp2, tmp0);
-
-                // 計算した外積の値と三角形の内積がすべて同じ方向を向いていたら（内積の値がプラスなら）
-                if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(n0, DirectX::XMLoadFloat3(&n))) > 0 &&
-                    DirectX::XMVectorGetX(DirectX::XMVector3Dot(n1, DirectX::XMLoadFloat3(&n))) > 0 &&
-                    DirectX::XMVectorGetX(DirectX::XMVector3Dot(n2, DirectX::XMLoadFloat3(&n))) > 0)
-                {
-                    neart = l;
-                    // 光線が三角形に交差している
-                    return true;
-                }
-            }
-        }
+        // 交点座標を計算
+        XMVECTOR hitPoint = XMVectorAdd(orig, XMVectorScale(dir, tempT));
+        XMStoreFloat3(p, hitPoint);
+        neart = tempT;
+        return true;
     }
-    *p = {};
+
     return false;
 }
 
@@ -308,7 +293,7 @@ bool Collision::IntersectRayVsModel(
     const DirectX::XMFLOAT3& start,
     const DirectX::XMFLOAT3& end,
     const Model* model,
-    const DirectX::XMFLOAT4X4& modelTransform,
+    DirectX::XMFLOAT4X4 modelTransform,
     HitResult& result)
 {
     // ワールド空間上でのレイの始点
@@ -436,6 +421,7 @@ bool Collision::IntersectRayVsModel(
     }
 
     return hit;
+
 }
 
 ////bool Collision::IntersectSphereRayVsModel(

@@ -180,7 +180,7 @@ public:
 		const DirectX::XMFLOAT3& start,
 		const DirectX::XMFLOAT3& end,
 		const Model* model,
-		const DirectX::XMFLOAT4X4& modelTransform,
+		DirectX::XMFLOAT4X4 modelTransform,
 		HitResult& result);
 
 	/*static bool Collision::IntersectSphereRayVsModel(

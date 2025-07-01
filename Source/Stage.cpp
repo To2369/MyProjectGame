@@ -4,7 +4,7 @@ Stage::Stage()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(),
 		".//Data//Model//Stage//Colosseum.fbx");
-    scale.x = scale.y = scale.z = 0.01f;
+    scale.x = scale.y = scale.z = 0.05f;
 }
 
 void Stage::Update(float elapsedTime)
@@ -14,32 +14,6 @@ void Stage::Update(float elapsedTime)
 
 void Stage::Render(ID3D11DeviceContext* dc)
 {
-    DebugPrimitive* debugPrimitive = Graphics::Instance()->GetDebugPrimitive();
-    for (const Model::Mesh& mesh : model->meshes)
-    {
-        // AABBの最小・最大点を取得
-        DirectX::XMFLOAT3 min = mesh.boundingBox[0];
-        DirectX::XMFLOAT3 max = mesh.boundingBox[1];
-        DirectX::XMFLOAT3 Center = { (min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, (min.z + max.z) * 0.5f };
-        DirectX::XMFLOAT3 size = {
-    max.x - min.x,
-    max.y - min.y,
-    max.z - min.z
-        };
-        // スケール適用（非一様スケール対応）
-        DirectX::XMFLOAT3 worldCenter = {
-            Center.x * scale.x,
-            Center.y * scale.y,
-            Center.z * scale.z
-        };
-
-        DirectX::XMFLOAT3 worldSize = {
-            size.x * scale.x,
-            size.y * scale.y,
-            size.z * scale.z
-        };
-        debugPrimitive->DrawCube(worldCenter, worldSize, { 1,1,1,1 });
-    }
 	model->Render(dc, { transform }, { 1.0f,1.0f,1.0f,1.0f });
 }
 

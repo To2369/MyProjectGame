@@ -380,7 +380,6 @@ void Character::Fly(float elapsedTime)
 {
     if (flyingFlag)
     {
-        //velocity.y = 0.0f; // 重力リセット
         groundedFlag = false;
     }
 }
@@ -460,44 +459,17 @@ void Character::UpdateVerticalVelocity(float elapsedTime)
 {
     
     // 重力処理（フレーム単位で計算）
-    if (!groundedFlag)
+    if (!flyingFlag)
     {
         velocity.y += gravity * elapsedTime * 60.0f;
     }
     // 空を飛んでいる場合
-    else if(flyingFlag)
+    else
     {
-        // 2に飛行速度を入れる
         velocity.y = flySpeed * elapsedTime * 60.0f;
     }
 }
 
-DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4X4 rotation)
-{
-    //	ZXY回転
-    DirectX::XMFLOAT3 euler;
-    if (1.0f - fabs(rotation.m[2][1]) < 1.0e-6f)
-    {
-        euler.x = rotation.m[2][1] < 0 ? DirectX::XM_PIDIV2 : -DirectX::XM_PIDIV2;
-        euler.y = atan2f(rotation.m[1][0], rotation.m[0][0]);
-        euler.z = 0;
-    }
-    else
-    {
-        euler.x = asinf(-rotation.m[2][1]);
-        euler.y = atan2f(rotation.m[2][0], rotation.m[2][2]);
-        euler.z = atan2f(rotation.m[0][1], rotation.m[1][1]);
-    }
-    return euler;
-}
-
-DirectX::XMFLOAT3 convert_quaternion_to_euler(DirectX::XMFLOAT4 quaternion)
-{
-    DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quaternion));
-    DirectX::XMFLOAT4X4 rotation;
-    DirectX::XMStoreFloat4x4(&rotation, Rotation);
-    return convert_quaternion_to_euler(rotation);
-}
 // 垂直移動更新処理
 void Character::UpdateVerticalMove(float elapsedTime)
 {
@@ -532,10 +504,6 @@ void Character::UpdateVerticalMove(float elapsedTime)
             }
             groundedFlag = true;
             velocity.y = 0.0f;
-
-            // 傾斜率の計算
-            float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z + 0.001f);
-            slopeRate = 1.0f - (hit.normal.y / (normalLengthXZ + hit.normal.y));
         }
         else
         {
@@ -551,38 +519,11 @@ void Character::UpdateVerticalMove(float elapsedTime)
     }
 
     // 垂直方向の移動量
-    //if (flyingFlag)
-    //{
-    //    // 飛行中は自由に上下移動
-    //    position.y += moveY;
-    //}
-#if 01
-    DirectX::XMVECTOR Normal = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
-    DirectX::XMVECTOR Up = DirectX::XMVectorSet(0, 1, 0, 0);
-    //  上ベクトルと法線から回転差分クォータニオンを算出
-    DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Normal, Up);
-    float dot = DirectX::XMVectorGetX(Dot);
-    DirectX::XMVECTOR NQ = DirectX::XMQuaternionIdentity();
-    DirectX::XMVECTOR QuaternionAdditional = DirectX::XMLoadFloat4(&quaternion_additional);
-    if (abs(dot) < 0.999f)
+    if (flyingFlag)
     {
-        DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Up, Normal);
-        NQ = DirectX::XMQuaternionRotationAxis(Axis, acosf(DirectX::XMVectorGetX(Dot)));
+        // 飛行中は自由に上下移動
+        position.y += moveY;
     }
-    NQ = DirectX::XMQuaternionSlerp(QuaternionAdditional, NQ, 0.1f);
-    //  今の姿勢に差分を適応
-    DirectX::XMVECTOR Quaternion = DirectX::XMLoadFloat4(&quaternion);
-    {
-        //  差分適応前に前回の回転量を打ち消す
-        QuaternionAdditional = DirectX::XMQuaternionInverse(QuaternionAdditional);
-        Quaternion = DirectX::XMQuaternionMultiply(Quaternion, QuaternionAdditional);
-        //  改めて乗算
-        Quaternion = DirectX::XMQuaternionMultiply(Quaternion, NQ);
-    }
-    //記録
-    DirectX::XMStoreFloat4(&quaternion, Quaternion);
-    DirectX::XMStoreFloat4(&quaternion_additional, NQ);
-#endif
 }
 
 // 水平速度更新処理

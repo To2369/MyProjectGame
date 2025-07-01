@@ -5,7 +5,6 @@ NormalBallet::NormalBallet(ArtsManager* manager) : Arts(manager)
     damage = 1;
     useSkillEnergy = 2;
     radius = 0.5f;
-    //angle.x = DirectX::XMConvertToRadians(90);
 }
 
 NormalBallet::~NormalBallet()

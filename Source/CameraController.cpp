@@ -17,8 +17,6 @@ CameraController::CameraController()
     newPosition = Camera::Instance().GetEye();
     CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
     CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
-   /* CAMERACHANGEMOTIONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEMOTIONMODE, [&](void* data) { OnMotionMode(data); });
-    CAMERASHAKEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERASHAKE, [&](void* data) { OnShake(data); });*/
 }
 
 //更新処理
@@ -29,7 +27,6 @@ void CameraController::Update(float elapsedTime)
     case	Mode::FreeCamera:	FreeCamera(elapsedTime);	break;
     case	Mode::LockonCamera:	LockonCamera(elapsedTime);	break;
     }
-    //LockOnMode(elapsedTime);
 
     // 徐々に目標に近づける
     static	constexpr	float	Speed = 1.0f / 8.0f;
@@ -164,6 +161,7 @@ void CameraController::FreeCamera(float elapsedTime)
 }
 void CameraController::LockonCamera(float elapsedTime)
 {
+
     //	後方斜に移動させる
     DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, 0.5f, targetWork[0].z, 0);
     DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, 0.5f, targetWork[1].z, 0);
@@ -176,7 +174,7 @@ void CameraController::LockonCamera(float elapsedTime)
     t1 = DirectX::XMLoadFloat3(&targetWork[1]);
 
     //	新しい注視点を算出
-    DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(0.5f), t0));
+    DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(10.5f), t0));
 
     //	新しい座標を算出
     l = DirectX::XMVectorClamp(l

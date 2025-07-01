@@ -147,7 +147,6 @@ public:
 
 	// ’e‚Æ“G‚ÌÕ“Ëˆ—
 	void CollisionArtsAndEnemies();
-	void CollisionPlayerAndArts();
 	void CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius, float invicibleTimer, int damage);
 
 	void InputAttackNext(float currentAnimSeconds, AttackData attackData);
@@ -157,11 +156,8 @@ public:
 protected:
 	// ’…’n‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é
 	void OnLanding() override;
-
-	void InputData() override;
 private:
 	std::unique_ptr<StateMachine<Player>> stateMachine;
-	std::unique_ptr<GeometricPrimitive> geo;
 
 	enum class LockonState
 	{
@@ -204,5 +200,4 @@ private:
 	Enemy* lockonEnemy = nullptr;
 	std::unique_ptr<Effect> hitEffect;
 	float flyTimer = 1;
-	//PlAttackDatas atkData = {};
 };

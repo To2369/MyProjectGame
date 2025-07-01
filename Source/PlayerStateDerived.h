@@ -386,7 +386,7 @@ void WeakAtkState01_5<Player>::Enter()
 
 void  WeakAtkState01_5<Player>::Execute(float elapsedTime)
 {
-    owner->ActiveAttackCollider(attackMap["plWeakAttack01_4"]);
+    owner->ActiveAttackCollider(attackMap["plWeakAttack01_5"]);
 
     //@ŽŸ‚ÌUŒ‚‚ÉˆÚ‚é‚½‚ß‚Ì“ü—ÍŽó•tŽžŠÔ
     owner->InputAttackNext(owner->GetModel()->currentAnimationSeconds, attackMap["plWeakAttack01_5"]);

@@ -324,8 +324,6 @@ bool Collision::IntersectRayVsModel(
             continue;  // AABBとレイが交差しない場合、このメッシュをスキップ
         }
 
-        // AABBと交差する場合に三角形との交差判定を行う
-        //DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
         // メッシュ単体の transform
         DirectX::XMMATRIX worldTransformMat = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&mesh.defaultGlobalTransform), DirectX::XMLoadFloat4x4(&modelTransform));
         DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
@@ -380,8 +378,6 @@ bool Collision::IntersectRayVsModel(
 
                 if (RayVsTriangle(&p, r, t, localRayLength))
                 {
-                    // 最近距離を更新
-                    //localRayLength = length;
 
                     // マテリアル番号を更新
                     materialIndex = subset.materialUniqueID;
@@ -423,132 +419,3 @@ bool Collision::IntersectRayVsModel(
     return hit;
 
 }
-
-////bool Collision::IntersectSphereRayVsModel(
-////    const DirectX::XMFLOAT3& start,
-////    const DirectX::XMFLOAT3& end,
-////    const float radius,
-////    const Model* model,
-////    HitResult& result)
-////{
-////    // ワールド空間上でのレイの始点
-////    DirectX::XMVECTOR worldRayStartVec = DirectX::XMLoadFloat3(&start);
-////    // ワールド空間上でのレイの終点
-////    DirectX::XMVECTOR worldRayEndVec = DirectX::XMLoadFloat3(&end);
-////    // ワールド空間上でのレイの始点から終点までのベクトル
-////    DirectX::XMVECTOR worldRayVec = DirectX::XMVectorSubtract(worldRayEndVec, worldRayStartVec);
-////    // ワールド空間上でのレイの長さ
-////    DirectX::XMVECTOR worldRayLength = DirectX::XMVector3Length(worldRayVec);
-////    DirectX::XMStoreFloat(&result.distance, worldRayLength);
-////
-////    // true...衝突した
-////    bool hit = false;
-////
-////    // メッシュごとに処理を行う
-////    for (const Model::Mesh& mesh_ : model->meshes)
-////    {
-////        // AABBの最小・最大点を取得
-////        DirectX::XMFLOAT3 meshMin = mesh_.boundingBox[0];
-////        DirectX::XMFLOAT3 meshMax = mesh_.boundingBox[1];
-////
-////        // AABBの交差判定
-////        float tMin = 0.0f, tMax = 1.0f;
-////        AABB meshAABB = { meshMin, meshMax };
-////        if (!meshAABB.IntersectsRay(start, end, tMin, tMax))
-////        {
-////            continue;  // AABBとレイが交差しない場合、このメッシュをスキップ
-////        }
-////
-////        // AABBと交差する場合に三角形との交差判定を行う
-////        DirectX::XMMATRIX worldTransformMat = DirectX::XMLoadFloat4x4(&mesh_.defaultGlobalTransform);
-////        DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
-////
-////        // ローカル空間でのレイの始点と終点を計算
-////        DirectX::XMVECTOR localRayStartVec = DirectX::XMVector3TransformCoord(worldRayStartVec, inverseWorldTransformMat);
-////        DirectX::XMVECTOR localRayEndVec = DirectX::XMVector3TransformCoord(worldRayEndVec, inverseWorldTransformMat);
-////        DirectX::XMVECTOR localRayVec = DirectX::XMVectorSubtract(localRayEndVec, localRayStartVec);
-////        DirectX::XMVECTOR localRayDirectVec = DirectX::XMVector3Normalize(localRayVec);
-////        DirectX::XMVECTOR localRayLengthVec = DirectX::XMVector3Length(localRayVec);
-////        float localRayLength;
-////        DirectX::XMStoreFloat(&localRayLength, localRayLengthVec);
-////
-////        // 頂点データを取得
-////        const std::vector<Model::vertex>& vertices = mesh_.vertices;
-////        const std::vector<UINT>& indices = mesh_.indices;
-////
-////        // 候補となる情報
-////        int materialIndex = -1;
-////        DirectX::XMVECTOR hitPosition;
-////        DirectX::XMVECTOR hitNormal;
-////
-////        for (const Model::Mesh::Subset& subset : mesh_.subsets)
-////        {
-////            for (UINT i = 0; i < subset.indexCount; i += 3)
-////            {
-////                UINT index = subset.startIndexLocation + i;
-////
-////                // 三角形の頂点の抽出
-////                const Model::vertex& a = vertices.at(indices.at(index));
-////                const Model::vertex& b = vertices.at(indices.at(index + 1));
-////                const Model::vertex& c = vertices.at(indices.at(index + 2));
-////
-////                // レイと三角形の交点の座標（出力用）
-////                DirectX::XMFLOAT3 p;
-////
-////                Ray r;
-////                DirectX::XMStoreFloat3(&r.p, localRayStartVec);
-////                DirectX::XMStoreFloat3(&r.d, localRayDirectVec);
-////                DirectX::XMStoreFloat(&r.l, localRayLengthVec);
-////
-////                Triangle t;
-////                t.p0 = a.position;
-////                t.p1 = b.position;
-////                t.p2 = c.position;
-////
-////                Sphere s;
-////                DirectX::XMStoreFloat3(&s.p, localRayStartVec);
-////
-////                if (SphereCastVsTriangle(&p, r, t,s, localRayLength))
-////                {
-////                    // 最近距離を更新
-////                    //localRayLength = length;
-////
-////                    // マテリアル番号を更新
-////                    materialIndex = subset.materialUniqueID;
-////
-////                    // 交点と法線を更新
-////                    hitPosition = DirectX::XMLoadFloat3(&p);
-////                    DirectX::XMFLOAT3 n = GetTriangleNormVector(t.p0, t.p1, t.p2);
-////                    hitNormal = DirectX::XMLoadFloat3(&n);
-////                }
-////            }
-////        }
-////
-////        if (materialIndex >= 0)
-////        {
-////            // 交点座標をローカル空間からワールド空間へ変換
-////            DirectX::XMVECTOR worldPositionVec = DirectX::XMVector3TransformCoord(hitPosition, worldTransformMat);
-////            // ワールド空間上でのレイの始点から交点までのベクトル
-////            DirectX::XMVECTOR worldVec = DirectX::XMVectorSubtract(worldPositionVec, worldRayStartVec);
-////            // ワールド空間上でのレイの視点から交点までの長さ
-////            DirectX::XMVECTOR worldLengthVec = DirectX::XMVector3Length(worldVec);
-////            float distance;
-////            DirectX::XMStoreFloat(&distance, worldLengthVec);
-////
-////            // ヒット結果情報保存
-////            if (result.distance > distance)
-////            {
-////                // ヒット時の面の法線をローカル空間からワールド空間へ変換
-////                DirectX::XMVECTOR worldNormal = DirectX::XMVector3TransformNormal(hitNormal, worldTransformMat);
-////
-////                result.distance = distance;
-////                result.materialIndex = materialIndex;
-////                DirectX::XMStoreFloat3(&result.position, worldPositionVec);
-////                DirectX::XMStoreFloat3(&result.normal, DirectX::XMVector3Normalize(worldNormal));
-////                hit = true;
-////            }
-////        }
-////    }
-////
-////    return hit;
-////}

@@ -14,11 +14,10 @@
 Player::Player()
 {
     model = std::make_unique<Model>(Graphics::Instance()->GetDevice(), ".\\Data\\Model\\pl\\Character1.fbx");
-    geo = std::make_unique<GeometricCapsule>(Graphics::Instance()->GetDevice(), height, radius, 12, 6, 6);
     const float scale_factor = 0.01f;
     scale = { scale_factor,scale_factor,scale_factor };
     radius = 0.5f;  // 幅
-    height = 1.0f;  // 高さ
+    height = 2.0f;  // 高さ
 
     stateMachine = std::make_unique<StateMachine<Player>>();
 
@@ -87,21 +86,19 @@ void Player::Update(float elapsedTime)
 
       // 速度処理更新
     UpdateVelocity(elapsedTime);
-    //InputFlying(elapsedTime);
 
-    //// プレイヤーと敵との衝突処置
-    //CollisionPlayerAndEnemies();
+    // プレイヤーと敵との衝突処置
+    CollisionPlayerAndEnemies();
 
-    //CollisionArtsAndEnemies();
-    ////CollisionPlayerAndArts();
-    //artsMgr.Update(elapsedTime);
+    CollisionArtsAndEnemies();
+    artsMgr.Update(elapsedTime);
 
-    //Lockon();
+    Lockon();
 
-    //InputDash(elapsedTime);
+    InputDash(elapsedTime);
     Fly(elapsedTime);
     InputFlying(elapsedTime);
-    //InputJump();
+    InputJump();
     /* Mouse* mouse = InputManager::Instance()->getMouse();
      if (mouse->GetButton() & Mouse::BTN_RIGHT)
      {
@@ -110,7 +107,7 @@ void Player::Update(float elapsedTime)
     UpdateStatus(elapsedTime);
 
 
-    //UpdateAnimation(elapsedTime);
+    UpdateAnimation(elapsedTime);
 
     // ワールド行列更新
     UpdateTransform();
@@ -121,7 +118,7 @@ void Player::Render(ID3D11DeviceContext* dc)
     model->Render(dc, transform, { color });
     artsMgr.Render(dc);
 }
-float c = 0;
+
 void Player::DrawDebugGUI()
 {
 #ifdef USE_IMGUI
@@ -210,15 +207,9 @@ void Player::DrawDebugGUI()
             //位置
             ImGui::InputFloat3("Position", &position.x);
             ImGui::SliderFloat("Position", &position.y, -10, 10);
-            //回転
-            DirectX::XMVECTOR p = DirectX::XMQuaternionRotationAxis(right, c);
-            DirectX::XMVECTOR orientationVec = DirectX::XMLoadFloat4(&quaternion);
-            orientationVec = DirectX::XMQuaternionMultiply(orientationVec, p);
             // 結果を保存
-            DirectX::XMStoreFloat4(&quaternion, orientationVec);
             ImGui::InputFloat("movespeed", &moveSpeed);
             ImGui::InputFloat4("quaternion", &quaternion.x);
-            ImGui::SliderFloat("quaternion", &c, -1, 1);
             //スケール
             ImGui::InputFloat3("Scale", &scale.x);
             ImGui::InputInt("helth", &health);
@@ -330,6 +321,18 @@ bool Player::InputJump()
             Jump(jumpSpeed);
             return true;
         }
+        else if (jumpCount >= jumpLimit)
+        {
+            if (!flyingFlag)
+            {
+                flyingFlag = true;
+                jumpCount = 0;
+            }
+            else
+            {
+                flyingFlag = false;
+            }
+        }
     }
     return false;
 }
@@ -337,25 +340,13 @@ void Player::InputFlying(float elapsedTime)
 {
    
     GamePad* gamePad = InputManager::Instance()->getGamePad();
-     if (jumpCount >= jumpLimit)
-     {
-         if (!flyingFlag)
-         {
-             flyingFlag = true;
-             jumpCount = 0;
-         }
-         else
-         {
-             flyingFlag = false;
-         }
-     }
     if (gamePad->GetButton() & GamePad::BTN_A && !artSkillReady && flyingFlag)
     {
-        flySpeed = 3;
+        flySpeed = 10;
     }
-    else if (gamePad->GetButton() & GamePad::BTN_B&&flyingFlag)
+    else if (gamePad->GetButton() & GamePad::BTN_B && flyingFlag)
     {
-        flySpeed = -3;
+        flySpeed = -10;
     }
     else
     {
@@ -542,7 +533,6 @@ void Player::CollisionPlayerAndEnemies()
             outVec
         ))
         {
-            //OutputDebugStringA("衝突\n");
 
             dashTowardEnemyFlag = false;
 
@@ -610,7 +600,7 @@ void Player::CollisionArtsAndEnemies()
                         // ヒットエフェクトの再生
                         DirectX::XMFLOAT3 enePos = enemy->GetPosition();
                         enePos.y += enemy->GetHeight() * 0.5f;
-                        //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+                        Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
                         // 弾の破棄
                         arts->Destroy();
@@ -638,7 +628,7 @@ void Player::CollisionArtsAndEnemies()
                         // ヒットエフェクトの再生
                         DirectX::XMFLOAT3 enePos = enemy->GetPosition();
                         enePos.y += enemy->GetHeight() * 0.5f;
-                        //Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
+                        Effekseer::Handle handle = hitEffect->Play(&enePos, 0.5f);
 
                         
                     }
@@ -654,48 +644,6 @@ void Player::CollisionArtsAndEnemies()
                         enemy->AddImpulse(impulse);
                     }
                 }
-            }
-        }
-    }
-}
-
-void Player::CollisionPlayerAndArts()
-{
-    // 全ての弾と全ての敵を総当たりで衝突処理
-    int artsCount = artsMgr.GetArtsCount();
-    IntersectionResult result;
-    for (int i = 0; i < artsCount; ++i)
-    {
-        Arts* arts = artsMgr.GetArts(i);
-
-        if (arts->GetType() == BalletType::SkillStraight)
-        {
-            //プレイやー高さ1.5f
-            // 衝突処理
-            DirectX::XMFLOAT3 outVec;
-            DirectX::XMFLOAT3 dir = { 0,1,0 };
-            DirectX::XMFLOAT3 plPos = position;
-            if (Collision::IntersectCapsuleVsCapsule(
-                DirectX::XMLoadFloat3(&plPos),
-                DirectX::XMLoadFloat3(&dir),
-                height,
-                radius,
-                DirectX::XMLoadFloat3(&arts->GetPosition()),
-                DirectX::XMLoadFloat3(&arts->GetDirection()),
-                arts->GetHeight(),
-                arts->GetRadius(),
-                &result))
-            {
-                // プレイヤーが敵に押し出される処理
-                DirectX::XMVECTOR pushVec = DirectX::XMVectorScale(result.normal, result.penetration);
-                DirectX::XMVECTOR newPosition = DirectX::XMLoadFloat3(&position);
-                newPosition = DirectX::XMVectorAdd(newPosition, pushVec);
-                DirectX::XMStoreFloat3(&position, newPosition); // 新しい位置をpositionに反映
-                hit = 1;
-            }
-            else
-            {
-                hit = 0;
             }
         }
     }
@@ -735,7 +683,7 @@ void Player::CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius
             ))
             {
                 if (enemys->ApplyDamage(invTimer, damage))
-                {  //hitEffect->Play(e);
+                { 
                     // ノックバック方向 = 敵位置 - プレイヤー位置
                     DirectX::XMFLOAT3 enemyPos = enemys->GetPosition();
 
@@ -759,7 +707,7 @@ void Player::CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius
                         dir.z * power
                     };
 
-                    // プレイヤーもその反対方向に少しだけ前進
+                    // プレイヤーもその方向に少しだけ前進
                     if (!awayFlag)
                     {
                         this->AddImpulse(impulse);
@@ -1210,189 +1158,3 @@ void Player::AttackMove(float startMoveTimer,float endMoveTime,float speed)
         DirectX::XMStoreFloat3(&position, newPos);
     }
 }
-
-void Player::InputData()
-{
-}
-
-//void Player::InputWeakAttackData()
-//{
-//    // WeakAttack01_1
-//    atkData.weakAttack01_1.hitStartTime = 0.4f;
-//    atkData.weakAttack01_1.hitEndTime = 0.9f;
-//    atkData.weakAttack01_1.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_1.inputAcceptEndTime = 1.4f;
-//    atkData.weakAttack01_1.progressLimit = 0.5f;
-//    atkData.weakAttack01_1.hitRadius = 0.7f;
-//    atkData.weakAttack01_1.hitBoneName = "lowerarm_l";
-//    atkData.weakAttack01_1.damage = 1;
-//
-//    // WeakAttack01_2
-//    atkData.weakAttack01_2.hitStartTime = 0.45f;
-//    atkData.weakAttack01_2.hitEndTime = 0.7f;
-//    atkData.weakAttack01_2.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_2.inputAcceptEndTime = 1.0f;
-//    atkData.weakAttack01_2.progressLimit = 0.5f;
-//    atkData.weakAttack01_2.hitRadius = 0.7f;
-//    atkData.weakAttack01_2.hitBoneName = "ball_r";
-//    atkData.weakAttack01_2.damage = 1;
-//
-//    // WeakAttack01_3
-//    atkData.weakAttack01_3.hitStartTime = 0.3f;
-//    atkData.weakAttack01_3.hitEndTime = 0.4f;
-//    atkData.weakAttack01_3.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_3.inputAcceptEndTime = 0.9f;
-//    atkData.weakAttack01_3.progressLimit = 0.5f;
-//    atkData.weakAttack01_3.hitRadius = 0.7f;
-//    atkData.weakAttack01_3.hitBoneName = "ball_r";
-//    atkData.weakAttack01_3.damage = 1;
-//
-//    atkData.weakAttack01_3.secondHitStartTime = 0.5f;
-//    atkData.weakAttack01_3.secondHitEndTime = 0.65f;
-//    atkData.weakAttack01_3.secondHitRadius = 1.0f;
-//    atkData.weakAttack01_3.hitBoneName = "calf_r";
-//
-//    // WeakAttack01_4
-//    atkData.weakAttack01_4.hitStartTime = 0.4f;
-//    atkData.weakAttack01_4.hitEndTime = 0.55f;
-//    atkData.weakAttack01_4.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_4.inputAcceptEndTime = 0.8f;
-//    atkData.weakAttack01_4.progressLimit = 0.5f;
-//    atkData.weakAttack01_4.hitRadius = 0.7f;
-//    atkData.weakAttack01_4.hitBoneName = "ball_r";
-//    atkData.weakAttack01_4.damage = 1;
-//
-//    // WeakAttack01_5
-//    atkData.weakAttack01_5.hitStartTime = 0.45f;
-//    atkData.weakAttack01_5.hitEndTime = 0.6f;
-//    atkData.weakAttack01_5.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_5.inputAcceptEndTime = 1.0f;
-//    atkData.weakAttack01_5.progressLimit = 0.5f;
-//    atkData.weakAttack01_5.hitRadius = 0.7f;
-//    atkData.weakAttack01_5.hitBoneName = "ball_l";
-//    atkData.weakAttack01_5.damage = 1;
-//
-//    // WeakAttack01_6
-//    atkData.weakAttack01_6.hitStartTime = 0.4f;
-//    atkData.weakAttack01_6.hitEndTime = 0.5f;
-//    atkData.weakAttack01_6.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_6.inputAcceptEndTime = 0.9f;
-//    atkData.weakAttack01_6.progressLimit = 0.5f;
-//    atkData.weakAttack01_6.hitRadius = 0.7f;
-//    atkData.weakAttack01_6.hitBoneName = "ball_r";
-//    atkData.weakAttack01_6.damage = 1;
-//
-//    // WeakAttack01_7
-//    atkData.weakAttack01_7.hitStartTime = 0.25f;
-//    atkData.weakAttack01_7.hitEndTime = 0.3f;
-//    atkData.weakAttack01_7.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_7.inputAcceptEndTime = 1.0f;
-//    atkData.weakAttack01_7.progressLimit = 0.5f;
-//    atkData.weakAttack01_7.hitRadius = 0.7f;
-//    atkData.weakAttack01_7.hitBoneName = "hand_r";
-//    atkData.weakAttack01_7.damage = 1;
-//
-//    atkData.weakAttack01_7.secondHitStartTime = 0.5f;
-//    atkData.weakAttack01_7.secondHitEndTime = 0.75f;
-//    atkData.weakAttack01_7.secondHitRadius = 0.7f;
-//    atkData.weakAttack01_7.hitBoneName = "ball_r";
-//
-//    // WeakAttack01_8
-//    atkData.weakAttack01_8.hitStartTime = 0.3f;
-//    atkData.weakAttack01_8.hitEndTime = 0.5f;
-//    atkData.weakAttack01_8.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack01_8.inputAcceptEndTime = 0.8f;
-//    atkData.weakAttack01_8.progressLimit = 0.5f;
-//    atkData.weakAttack01_8.hitRadius = 0.7f;
-//    atkData.weakAttack01_8.hitBoneName = "calf_r";
-//    atkData.weakAttack01_8.damage = 1;
-//
-//    // WeakAttack02_1
-//    atkData.weakAttack02_1.hitStartTime = 0.4f;
-//    atkData.weakAttack02_1.hitEndTime = 0.9f;
-//    atkData.weakAttack02_1.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack02_1.inputAcceptEndTime = 1.4f;
-//    atkData.weakAttack02_1.progressLimit = 0.5f;
-//    atkData.weakAttack02_1.hitRadius = 0.7f;
-//    atkData.weakAttack02_1.hitBoneName = "lowerarm_l";
-//    atkData.weakAttack02_1.damage = 1;
-//
-//    // WeakAttack02_2
-//    atkData.weakAttack02_2.hitStartTime = 0.45f;
-//    atkData.weakAttack02_2.hitEndTime = 0.7f;
-//    atkData.weakAttack02_2.inputAcceptStartTime = 0.1f;
-//    atkData.weakAttack02_2.inputAcceptEndTime = 1.0f;
-//    atkData.weakAttack02_2.progressLimit = 0.5f;
-//    atkData.weakAttack02_2.hitRadius = 0.7f;
-//    atkData.weakAttack02_2.hitBoneName = "ball_r";
-//    atkData.weakAttack02_2.damage = 1;
-//}
-//
-//void Player::InputStrongAttackData()
-//{
-//    // StrongAttack01_1
-//    atkData.strongAttack01_1.hitStartTime = 0.4f;
-//    atkData.strongAttack01_1.hitEndTime = 0.45f;
-//    atkData.strongAttack01_1.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_1.inputAcceptEndTime = 0.9f;
-//    atkData.strongAttack01_1.progressLimit = 0.5f;
-//    atkData.strongAttack01_1.hitRadius = 0.7f;
-//    atkData.strongAttack01_1.hitBoneName = "ball_l";
-//    atkData.strongAttack01_1.damage = 1;
-//
-//    // StrongAttack01_2
-//    atkData.strongAttack01_2.hitStartTime = 0.25f;
-//    atkData.strongAttack01_2.hitEndTime = 0.3f;
-//    atkData.strongAttack01_2.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_2.inputAcceptEndTime = 0.8f;
-//    atkData.strongAttack01_2.progressLimit = 0.6f;
-//    atkData.strongAttack01_2.hitRadius = 0.7f;
-//    atkData.strongAttack01_2.hitBoneName = "ball_r";
-//    atkData.strongAttack01_2.damage = 1;
-//
-//    // StrongAttack01_3
-//    atkData.strongAttack01_3.hitStartTime = 0.38f;
-//    atkData.strongAttack01_3.hitEndTime = 0.45f;
-//    atkData.strongAttack01_3.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_3.inputAcceptEndTime = 1.0f;
-//    atkData.strongAttack01_3.progressLimit = 0.5f;
-//    atkData.strongAttack01_3.hitRadius = 0.7f;
-//    atkData.strongAttack01_3.hitBoneName = "ball_l";
-//    atkData.strongAttack01_3.damage = 1;
-//
-//    // StrongAttack01_4
-//    atkData.strongAttack01_4.hitStartTime = 0.2f;
-//    atkData.strongAttack01_4.hitEndTime = 0.4f;
-//    atkData.strongAttack01_4.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_4.inputAcceptEndTime = 0.9f;
-//    atkData.strongAttack01_4.progressLimit = 0.4f;
-//    atkData.strongAttack01_4.hitRadius = 0.7f;
-//    atkData.strongAttack01_4.hitBoneName = "calf_r";
-//    atkData.strongAttack01_4.damage = 1;
-//
-//    // StrongAttack01_5
-//    atkData.strongAttack01_5.hitStartTime = 0.27f;
-//    atkData.strongAttack01_5.hitEndTime = 0.31f;
-//    atkData.strongAttack01_5.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_5.inputAcceptEndTime = 1.0f;
-//    atkData.strongAttack01_5.progressLimit = 0.7f;
-//    atkData.strongAttack01_5.hitRadius = 0.9f;
-//    atkData.strongAttack01_5.hitBoneName = "calf_r";
-//    atkData.strongAttack01_5.damage = 1;
-//    
-//    atkData.strongAttack01_5.secondHitStartTime = 0.55f;
-//    atkData.strongAttack01_5.secondHitEndTime = 0.73f;
-//    atkData.strongAttack01_5.secondHitRadius = 0.9f;
-//    atkData.strongAttack01_5.hitBoneName = "hand_l";
-//
-//    // StrongAttack01_6
-//    atkData.strongAttack01_6.hitStartTime = 0.4f;
-//    atkData.strongAttack01_6.hitEndTime = 0.5f;
-//    atkData.strongAttack01_6.inputAcceptStartTime = 0.1f;
-//    atkData.strongAttack01_6.inputAcceptEndTime = 0.9f;
-//    atkData.strongAttack01_6.progressLimit = 0.5f;
-//    atkData.strongAttack01_6.hitRadius = 0.7f;
-//    atkData.strongAttack01_6.hitBoneName = "ball_r";
-//    atkData.strongAttack01_6.damage = 1;
-//
-//}

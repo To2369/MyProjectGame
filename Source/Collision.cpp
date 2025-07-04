@@ -477,90 +477,103 @@ bool Collision::IntersectSphereVsModel(
     DirectX::XMFLOAT4X4 modelTransform,
     HitResult& result)
 {
-    using namespace DirectX;
+     // ワールド空間上でのレイの始点
+    DirectX::XMVECTOR worldRayStartVec = DirectX::XMLoadFloat3(&start);
+    // ワールド空間上でのレイの終点
+    DirectX::XMVECTOR worldRayEndVec = DirectX::XMLoadFloat3(&end);
+    // ワールド空間上でのレイの始点から終点までのベクトル
+    DirectX::XMVECTOR worldRayVec = DirectX::XMVectorSubtract(worldRayEndVec, worldRayStartVec);
+    // ワールド空間上でのレイの長さ
+    DirectX::XMVECTOR worldRayLength = DirectX::XMVector3Length(worldRayVec);
+    DirectX::XMStoreFloat(&result.distance, worldRayLength);
 
-    XMVECTOR worldStart = XMLoadFloat3(&start);
-    XMVECTOR worldEnd = XMLoadFloat3(&end);
-    XMVECTOR worldDir = XMVectorSubtract(worldEnd, worldStart);
-    float worldLength = XMVectorGetX(XMVector3Length(worldDir));
-    if (worldLength <= 0.0f) return false;
-    XMVECTOR worldDirN = XMVector3Normalize(worldDir);
-
+    // true...衝突した
     bool hit = false;
-    result.distance = FLT_MAX;
-
+    // メッシュごとに処理を行う
     for (const Model::Mesh& mesh : model->meshes)
     {
-        // モデルのワールド行列と逆行列
-        XMMATRIX worldMat = XMMatrixMultiply(XMLoadFloat4x4(&mesh.defaultGlobalTransform), XMLoadFloat4x4(&modelTransform));
-        XMMATRIX invWorldMat = XMMatrixInverse(nullptr, worldMat);
 
-        // レイをローカル空間に変換
-        XMVECTOR localStart = XMVector3TransformCoord(worldStart, invWorldMat);
-        XMVECTOR localEnd = XMVector3TransformCoord(worldEnd, invWorldMat);
-        XMVECTOR localDir = XMVectorSubtract(localEnd, localStart);
-        float localLength = XMVectorGetX(XMVector3Length(localDir));
-        if (localLength <= 0.0f) continue;
-        XMVECTOR localDirN = XMVector3Normalize(localDir);
+        // メッシュ単体の transform
+        DirectX::XMMATRIX worldTransformMat = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&mesh.defaultGlobalTransform), DirectX::XMLoadFloat4x4(&modelTransform));
+        DirectX::XMMATRIX inverseWorldTransformMat = DirectX::XMMatrixInverse(nullptr, worldTransformMat);
 
-        // 検査に使うデータ
-        const auto& vertices = mesh.vertices;
-        const auto& indices = mesh.indices;
+        // ローカル空間でのレイの始点と終点を計算
+        DirectX::XMVECTOR localRayStartVec = DirectX::XMVector3TransformCoord(worldRayStartVec, inverseWorldTransformMat);
+        DirectX::XMVECTOR localRayEndVec = DirectX::XMVector3TransformCoord(worldRayEndVec, inverseWorldTransformMat);
+        DirectX::XMVECTOR localRayVec = DirectX::XMVectorSubtract(localRayEndVec, localRayStartVec);
+        DirectX::XMVECTOR localRayDirectVec = DirectX::XMVector3Normalize(localRayVec);
+        DirectX::XMVECTOR localRayLengthVec = DirectX::XMVector3Length(localRayVec);
+        float localRayLength;
+        DirectX::XMStoreFloat(&localRayLength, localRayLengthVec);
 
-        DirectX::XMFLOAT3 hitPos{};
-        DirectX::XMFLOAT3 hitNorm{};
-        int hitMatIndex = -1;
-        float closest = localLength;
+        // 頂点データを取得
+        const std::vector<Model::vertex>& vertices = mesh.vertices;
+        const std::vector<UINT>& indices = mesh.indices;
 
-        for (const auto& subset : mesh.subsets)
+        // 候補となる情報
+        int materialIndex = -1;
+        DirectX::XMVECTOR hitPosition;
+        DirectX::XMVECTOR hitNormal;
+
+        for (const Model::Mesh::Subset& subset : mesh.subsets)
         {
             for (UINT i = 0; i < subset.indexCount; i += 3)
             {
                 UINT index = subset.startIndexLocation + i;
-                const auto& a = vertices.at(indices.at(index));
-                const auto& b = vertices.at(indices.at(index + 1));
-                const auto& c = vertices.at(indices.at(index + 2));
 
-                Triangle tri = { a.position, b.position, c.position };
-                Sphere movingSphere;
-                XMStoreFloat3(&movingSphere.p, localStart);
-                XMStoreFloat3(&movingSphere.d, localDirN);
-                movingSphere.r = radius;
+                // 三角形の頂点の抽出
+                const Model::vertex& a = vertices.at(indices.at(index));
+                const Model::vertex& b = vertices.at(indices.at(index + 1));
+                const Model::vertex& c = vertices.at(indices.at(index + 2));
 
-                float t = closest;
-                XMFLOAT3 localHit{};
-                if (SphereVsTriangle(&localHit, movingSphere, tri, t))
+                // レイと三角形の交点の座標（出力用）
+                DirectX::XMFLOAT3 p;
+
+                Triangle t;
+                t.p0 = a.position;
+                t.p1 = b.position;
+                t.p2 = c.position;
+
+                Sphere s;
+                DirectX::XMStoreFloat3(&s.p, localRayStartVec);
+                DirectX::XMStoreFloat3(&s.d, localRayDirectVec);
+                DirectX::XMStoreFloat(&s.l, localRayLengthVec);
+                s.r = radius;
+                if (SphereVsTriangle(&p, s, t, localRayLength))
                 {
-                    if (t < closest)
-                    {
-                        closest = t;
-                        hitPos = localHit;
-                        hitNorm = GetTriangleNormVector(tri.p0, tri.p1, tri.p2);
-                        hitMatIndex = subset.materialUniqueID;
-                    }
+
+                    // マテリアル番号を更新
+                    materialIndex = subset.materialUniqueID;
+
+                    // 交点と法線を更新
+                    hitPosition = DirectX::XMLoadFloat3(&p);
+                    DirectX::XMFLOAT3 n = GetTriangleNormVector(t.p0, t.p1, t.p2);
+                    hitNormal = DirectX::XMLoadFloat3(&n);
                 }
             }
         }
 
-        // ローカル空間でヒットしていたらワールドに変換
-        if (hitMatIndex >= 0)
+        if (materialIndex >= 0)
         {
-            XMVECTOR hitPosVec = XMLoadFloat3(&hitPos);
-            XMVECTOR hitNormVec = XMLoadFloat3(&hitNorm);
-            XMVECTOR worldHitPos = XMVector3TransformCoord(hitPosVec, worldMat);
-            XMVECTOR worldHitNorm = XMVector3TransformNormal(hitNormVec, worldMat);
+            // 交点座標をローカル空間からワールド空間へ変換
+            DirectX::XMVECTOR worldPositionVec = DirectX::XMVector3TransformCoord(hitPosition, worldTransformMat);
+            // ワールド空間上でのレイの始点から交点までのベクトル
+            DirectX::XMVECTOR worldVec = DirectX::XMVectorSubtract(worldPositionVec, worldRayStartVec);
+            // ワールド空間上でのレイの視点から交点までの長さ
+            DirectX::XMVECTOR worldLengthVec = DirectX::XMVector3Length(worldVec);
+            float distance;
+            DirectX::XMStoreFloat(&distance, worldLengthVec);
 
-            XMVECTOR vecFromStart = XMVectorSubtract(worldHitPos, worldStart);
-            float dist = XMVectorGetX(XMVector3Length(vecFromStart));
-
-            if (dist < result.distance)
+            // ヒット結果情報保存
+            if (result.distance > distance)
             {
-                result.position = {};
-                result.normal = {};
-                result.materialIndex = hitMatIndex;
-                result.distance = dist;
-                XMStoreFloat3(&result.position, worldHitPos);
-                XMStoreFloat3(&result.normal, XMVector3Normalize(worldHitNorm));
+                // ヒット時の面の法線をローカル空間からワールド空間へ変換
+                DirectX::XMVECTOR worldNormal = DirectX::XMVector3TransformNormal(hitNormal, worldTransformMat);
+
+                result.distance = distance;
+                result.materialIndex = materialIndex;
+                DirectX::XMStoreFloat3(&result.position, worldPositionVec);
+                DirectX::XMStoreFloat3(&result.normal, DirectX::XMVector3Normalize(worldNormal));
                 hit = true;
             }
         }

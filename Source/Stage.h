@@ -17,6 +17,7 @@ public:
 
 	// レイキャスト
 	bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit);
+	bool SphereCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, const float r, HitResult& hit);
 private:
 	std::unique_ptr<Model> model;
 	DirectX::XMFLOAT3 position = { 0,0,0 };

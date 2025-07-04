@@ -2,8 +2,6 @@
 #include "Enemy.h"
 #include "Player.h"
 
-
-
 class EnemyHuman :public Enemy
 {
 public:
@@ -16,16 +14,13 @@ public:
 
 	void DrawDebugGUI() override;
 
-	void Moving(float elapsedTime, float speedRate);
 	bool SearchPlayer();
-	void Lockon();
 	void SetRandomTargetPosition();
 	//ナワバリ設定
 	void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 	// 死亡したときに呼ばれる
 	void OnDead() override;
 
-	void Test(float elapsedTime);
 private:
 	
 	Player* lockonPlayer = nullptr;
@@ -79,4 +74,67 @@ private:
 		AnimRise,
 		AnimUnequip,
 	};
+private:
+
+	//目標地点へ移動
+	void MoveToTarget(float elapsedTime, float speedRate);
+
+
+	//ノードとプレイヤーの衝突処理
+	void CollisionNodeVsPlayer(const char* nodeName, float boneRadius);
+
+	//俳諧ステートへ遷移
+	void TransitionWanderState();
+
+	//俳諧ステート更新処理
+	void UpdateWanderState(float elapsedTime);
+
+	//待機ステートへ遷移
+	void TransitionIdleState();
+
+	//待機ステート更新処理
+	void UpdateIdleState(float elapsedTime);
+
+	//追跡ステートへ遷移
+	void TransitionPursuitState();
+
+	//追跡ステート更新処理
+	void UpdatePursuitState(float elapsedTime);
+
+	//攻撃ステートへ遷移
+	void TransitionAttackState();
+
+	//攻撃ステート更新処理
+	void UpdateAttackState(float elapsedTime);
+
+	//戦闘待機ステートへ遷移
+	void TransitionIdleBattleState();
+
+	//戦闘待機ステート更新処理
+	void UpdateIdleBattleState(float elapsedTime);
+
+	//ダメージステートへ遷移
+	void TransitionDamageState();
+
+	//ダメージステート更新処理
+	void UpdateDamageState(float elapsedTime);
+
+	//死亡ステートへ遷移
+	void TransitionDeathState();
+
+	//死亡ステート更新処理
+	void UpdateDeathState(float elapsedTime);
+	//ステート
+	enum class State
+	{
+		Wander,
+		Idle,
+		Pursuit,
+		Attack,
+		IdleBattle,
+		Damage,
+		Death,
+	};
+	State state = State::Wander;
+	float attackRange = 1.5f;
 };

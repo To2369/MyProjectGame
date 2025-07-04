@@ -186,7 +186,6 @@ private:
 		SpiritBlast,
 		SkillMax,
 	};
-	//State state = State::Idle;
 	Skill skill = Skill::SkillMax;
 	bool dashTowardEnemyFlag = false;
 	// ヒットエフェクト

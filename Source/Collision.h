@@ -183,10 +183,11 @@ public:
 		DirectX::XMFLOAT4X4 modelTransform,
 		HitResult& result);
 
-	/*static bool Collision::IntersectSphereRayVsModel(
+	static bool IntersectSphereVsModel(
 		const DirectX::XMFLOAT3& start,
 		const DirectX::XMFLOAT3& end,
 		const float radius,
 		const Model* model,
-		HitResult& result)*/
+		DirectX::XMFLOAT4X4 modelTransform,
+		HitResult& result);
 };

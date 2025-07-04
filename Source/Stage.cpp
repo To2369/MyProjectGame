@@ -3,8 +3,8 @@
 Stage::Stage()
 {
 	model = std::make_unique<Model>(Graphics::Instance()->GetDevice(),
-		".//Data//Model//Stage//Colosseum.fbx");
-    scale.x = scale.y = scale.z = 0.05f;
+		".//Data//Model//Stage//ExampleStage.fbx");
+    //scale.x = scale.y = scale.z = 0.05f;
 }
 
 void Stage::Update(float elapsedTime)
@@ -21,6 +21,11 @@ void Stage::Render(ID3D11DeviceContext* dc)
 bool Stage::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& hit)
 {
 	return Collision::IntersectRayVsModel(start, end, model.get(),transform, hit);
+}
+
+bool Stage::SphereCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, const float r, HitResult& hit)
+{
+    return Collision::IntersectSphereVsModel(start, end, r,model.get(), transform, hit);
 }
 
 void Stage::UpdateTransform()

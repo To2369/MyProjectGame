@@ -288,6 +288,61 @@ bool RayVsTriangle(DirectX::XMFLOAT3* p, const Ray& r, const Triangle& t, float&
     return false;
 }
 
+bool SphereVsTriangle(DirectX::XMFLOAT3* p, const Sphere& s, const Triangle& t, float& neart)
+{
+    using namespace DirectX;
+
+    constexpr float EPSILON = 1e-6f;
+
+    XMVECTOR orig = XMLoadFloat3(&s.p);
+    XMVECTOR dir = XMLoadFloat3(&s.d);
+    float radius = s.r;
+
+    XMVECTOR v0 = XMLoadFloat3(&t.p0);
+    XMVECTOR v1 = XMLoadFloat3(&t.p1);
+    XMVECTOR v2 = XMLoadFloat3(&t.p2);
+
+    // 三角形の辺
+    XMVECTOR edge1 = XMVectorSubtract(v1, v0);
+    XMVECTOR edge2 = XMVectorSubtract(v2, v0);
+    XMVECTOR normal = XMVector3Normalize(XMVector3Cross(edge1, edge2));
+
+    // 球心から三角形面までの距離
+    float distToPlane = XMVectorGetX(XMVector3Dot(v0 - orig, normal));
+    float dot = XMVectorGetX(XMVector3Dot(dir, normal));
+
+    if (fabs(dot) < EPSILON)
+        return false; // 平行なので衝突しない
+
+    // 球の表面が三角形面に接触する時の中心点までの距離
+    float tHit = (distToPlane - radius) / dot;
+
+    if (tHit < 0.0f || tHit >= neart)
+        return false;
+
+    // 球の中心位置（移動後）
+    XMVECTOR hitCenter = orig + dir * tHit;
+
+    // 接触点は法線方向に半径戻す
+    XMVECTOR contactPoint = hitCenter - normal * radius;
+
+    // 三角形内にあるか判定（バリツール）
+    XMVECTOR c0 = XMVector3Cross(v1 - v0, contactPoint - v0);
+    XMVECTOR c1 = XMVector3Cross(v2 - v1, contactPoint - v1);
+    XMVECTOR c2 = XMVector3Cross(v0 - v2, contactPoint - v2);
+
+    if (XMVectorGetX(XMVector3Dot(c0, normal)) >= 0 &&
+        XMVectorGetX(XMVector3Dot(c1, normal)) >= 0 &&
+        XMVectorGetX(XMVector3Dot(c2, normal)) >= 0)
+    {
+        XMStoreFloat3(p, contactPoint);
+        neart = tHit;
+        return true;
+    }
+
+    return false;
+}
+
 // レイとモデルの交差判定
 bool Collision::IntersectRayVsModel(
     const DirectX::XMFLOAT3& start,
@@ -370,12 +425,6 @@ bool Collision::IntersectRayVsModel(
                 t.p1 = b.position;
                 t.p2 = c.position;
 
-                Sphere s;
-                DirectX::XMStoreFloat3(&s.p, localRayStartVec);
-                DirectX::XMStoreFloat3(&r.d, localRayDirectVec);
-                DirectX::XMStoreFloat(&r.l, localRayLengthVec);
-                s.r = 0;
-
                 if (RayVsTriangle(&p, r, t, localRayLength))
                 {
 
@@ -418,4 +467,104 @@ bool Collision::IntersectRayVsModel(
 
     return hit;
 
+}
+
+bool Collision::IntersectSphereVsModel(
+    const DirectX::XMFLOAT3& start,
+    const DirectX::XMFLOAT3& end,
+    const float radius,
+    const Model* model,
+    DirectX::XMFLOAT4X4 modelTransform,
+    HitResult& result)
+{
+    using namespace DirectX;
+
+    XMVECTOR worldStart = XMLoadFloat3(&start);
+    XMVECTOR worldEnd = XMLoadFloat3(&end);
+    XMVECTOR worldDir = XMVectorSubtract(worldEnd, worldStart);
+    float worldLength = XMVectorGetX(XMVector3Length(worldDir));
+    if (worldLength <= 0.0f) return false;
+    XMVECTOR worldDirN = XMVector3Normalize(worldDir);
+
+    bool hit = false;
+    result.distance = FLT_MAX;
+
+    for (const Model::Mesh& mesh : model->meshes)
+    {
+        // モデルのワールド行列と逆行列
+        XMMATRIX worldMat = XMMatrixMultiply(XMLoadFloat4x4(&mesh.defaultGlobalTransform), XMLoadFloat4x4(&modelTransform));
+        XMMATRIX invWorldMat = XMMatrixInverse(nullptr, worldMat);
+
+        // レイをローカル空間に変換
+        XMVECTOR localStart = XMVector3TransformCoord(worldStart, invWorldMat);
+        XMVECTOR localEnd = XMVector3TransformCoord(worldEnd, invWorldMat);
+        XMVECTOR localDir = XMVectorSubtract(localEnd, localStart);
+        float localLength = XMVectorGetX(XMVector3Length(localDir));
+        if (localLength <= 0.0f) continue;
+        XMVECTOR localDirN = XMVector3Normalize(localDir);
+
+        // 検査に使うデータ
+        const auto& vertices = mesh.vertices;
+        const auto& indices = mesh.indices;
+
+        DirectX::XMFLOAT3 hitPos{};
+        DirectX::XMFLOAT3 hitNorm{};
+        int hitMatIndex = -1;
+        float closest = localLength;
+
+        for (const auto& subset : mesh.subsets)
+        {
+            for (UINT i = 0; i < subset.indexCount; i += 3)
+            {
+                UINT index = subset.startIndexLocation + i;
+                const auto& a = vertices.at(indices.at(index));
+                const auto& b = vertices.at(indices.at(index + 1));
+                const auto& c = vertices.at(indices.at(index + 2));
+
+                Triangle tri = { a.position, b.position, c.position };
+                Sphere movingSphere;
+                XMStoreFloat3(&movingSphere.p, localStart);
+                XMStoreFloat3(&movingSphere.d, localDirN);
+                movingSphere.r = radius;
+
+                float t = closest;
+                XMFLOAT3 localHit{};
+                if (SphereVsTriangle(&localHit, movingSphere, tri, t))
+                {
+                    if (t < closest)
+                    {
+                        closest = t;
+                        hitPos = localHit;
+                        hitNorm = GetTriangleNormVector(tri.p0, tri.p1, tri.p2);
+                        hitMatIndex = subset.materialUniqueID;
+                    }
+                }
+            }
+        }
+
+        // ローカル空間でヒットしていたらワールドに変換
+        if (hitMatIndex >= 0)
+        {
+            XMVECTOR hitPosVec = XMLoadFloat3(&hitPos);
+            XMVECTOR hitNormVec = XMLoadFloat3(&hitNorm);
+            XMVECTOR worldHitPos = XMVector3TransformCoord(hitPosVec, worldMat);
+            XMVECTOR worldHitNorm = XMVector3TransformNormal(hitNormVec, worldMat);
+
+            XMVECTOR vecFromStart = XMVectorSubtract(worldHitPos, worldStart);
+            float dist = XMVectorGetX(XMVector3Length(vecFromStart));
+
+            if (dist < result.distance)
+            {
+                result.position = {};
+                result.normal = {};
+                result.materialIndex = hitMatIndex;
+                result.distance = dist;
+                XMStoreFloat3(&result.position, worldHitPos);
+                XMStoreFloat3(&result.normal, XMVector3Normalize(worldHitNorm));
+                hit = true;
+            }
+        }
+    }
+
+    return hit;
 }

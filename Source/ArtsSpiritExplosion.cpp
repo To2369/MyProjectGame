@@ -7,6 +7,7 @@ ArtsSpiritExplosion::ArtsSpiritExplosion(ArtsManager* manager) : Arts(manager)
     radius = 2;
     damage = 1;
     lifeTimer = 3.0f;
+    effect= std::make_unique<Effect>(effMap["bariaEffect"].filename);
 }
 
 ArtsSpiritExplosion::~ArtsSpiritExplosion()
@@ -38,6 +39,8 @@ void ArtsSpiritExplosion::Render(ID3D11DeviceContext* dc)
 void ArtsSpiritExplosion::Launch(const DirectX::XMFLOAT3& direction,
     const DirectX::XMFLOAT3& position)
 {
+    
     this->direction = direction;
     this->position = position;
+    effect->Play(&position,effMap["bariaEffect"].scale);
 }

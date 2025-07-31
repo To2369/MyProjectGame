@@ -58,5 +58,3 @@ inline void from_json(const json& j, AttackData& atkData)
 	if (j.contains("secondHitRadius")) j.at("secondHitRadius").get_to(atkData.secondHitRadius);
 	if (j.contains("secondHitBoneName")) j.at("secondHitBoneName").get_to(atkData.secondHitBoneName);
 }
-
-std::unordered_map<std::string, AttackData> LoadAttackData(const std::string& filePath);

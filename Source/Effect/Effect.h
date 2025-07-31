@@ -6,7 +6,7 @@
 class Effect
 {
 public:
-    Effect(const char* filename);
+    Effect(const std::string& filename);
     ~Effect() {}
 
     // Ä¶

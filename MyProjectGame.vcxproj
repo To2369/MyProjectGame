@@ -178,7 +178,6 @@
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\ArtsSkillStraightBallet.h" />
-    <ClInclude Include="Source\AttackData.h" />
     <ClInclude Include="Source\BehaviorTree.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraController.h" />
@@ -220,7 +219,6 @@
     <ClInclude Include="Source\Messenger.h" />
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\NormalBallet.h" />
-    <ClInclude Include="Source\ParameterData.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PlayerStateDerived.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
@@ -232,14 +230,17 @@
     <ClInclude Include="Source\SceneTitle.h" />
     <ClInclude Include="Source\Arts.h" />
     <ClInclude Include="Source\ArtsManager.h" />
-    <ClInclude Include="Source\ArtsData.h" />
+    <ClInclude Include="Source\Setting\ArtsData.h" />
+    <ClInclude Include="Source\Setting\AttackData.h" />
+    <ClInclude Include="Source\Setting\EffectData.h" />
+    <ClInclude Include="Source\Setting\LoadData.h" />
+    <ClInclude Include="Source\Setting\UIData.h" />
     <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\StageManager.h" />
     <ClInclude Include="Source\StateBase.h" />
     <ClInclude Include="Source\StateDerived.h" />
     <ClInclude Include="Source\StateMachine.h" />
     <ClInclude Include="Source\ArtsSpiritExplosion.h" />
-    <ClInclude Include="Source\UIData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp" />
@@ -249,7 +250,6 @@
     <ClCompile Include="External\imgui\imgui_ja_gryph_ranges.cpp" />
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\ArtsSpiritExplosion.cpp" />
-    <ClCompile Include="Source\AttackData.cpp" />
     <ClCompile Include="Source\BehaviorTree.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\CameraController.cpp" />
@@ -317,7 +317,8 @@
     <None Include="HLSL\Sprite.hlsli" />
     <None Include="HLSL\StaticMesh.hlsli" />
     <None Include="HLSL\UVScroll.hlsli" />
-    <None Include="Source\PlayerAttackData.json" />
+    <None Include="Source\Setting\EffectSetting.json" />
+    <None Include="Source\Setting\PlayerAttackData.json" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\ColorFilterPS.hlsl">

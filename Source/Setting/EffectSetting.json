@@ -1,0 +1,14 @@
+{
+
+  "hitEffect": {
+    "filename": "./Data/Effect/Simple/HitEffect.efk",
+    "scale": 0.4
+  },
+  "chargeEffect": {
+    "filename": "./Data/Effect/Simple/Charge.efk"
+  },
+  "bariaEffect": {
+    "filename": "./Data/Effect/Baria/Baria.efk",
+    "scale": 0.2
+  }
+}

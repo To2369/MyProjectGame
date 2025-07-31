@@ -5,11 +5,11 @@
 #include "Graphics/GeometricPrimitive.h"
 #include "StateMachine.h"
 #include "Enemy.h"
-#include "AttackData.h"
+#include "Setting\AttackData.h"
 #include "Effect/Effect.h"
 #include <string>
-
-
+#include "Setting\LoadData.h"
+#include "Setting\EffectData.h"
 
 // ÉvÉåÉCÉÑÅ[
 class Player :public Character
@@ -199,4 +199,5 @@ private:
 	Enemy* lockonEnemy = nullptr;
 	std::unique_ptr<Effect> hitEffect;
 	float flyTimer = 1;
+	std::unordered_map<std::string, EffectData> effMap = LoadData<EffectData>(".\\Source\\Setting\\EffectSetting.json");
 };

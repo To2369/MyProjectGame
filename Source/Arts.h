@@ -2,6 +2,9 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "Effect/Effect.h"
+#include "Setting\LoadData.h"
+#include "Setting\EffectData.h"
 // ’eŠÇ—‚Ì‘O•ûéŒ¾
 class ArtsManager;
 
@@ -78,4 +81,7 @@ protected:
     int damage = 0;
     float currentCapsuleHeight = 0;
     float lifeTimer = 3.0f; // õ–½i‚R•bj
+
+    std::unique_ptr<Effect> effect;
+    std::unordered_map<std::string, EffectData> effMap = LoadData<EffectData>(".\\Source\\Setting\\EffectSetting.json");
 };

@@ -28,9 +28,6 @@
     <Filter Include="Sources\Scene">
       <UniqueIdentifier>{3fbfc900-088a-4f01-8dab-edeedeec9e85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Data">
-      <UniqueIdentifier>{f251f991-20bd-4369-847e-673362389607}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{ebbb8411-e340-4ea6-9ea1-36ff815dff1f}</UniqueIdentifier>
     </Filter>
@@ -39,6 +36,9 @@
     </Filter>
     <Filter Include="Sources\Skill">
       <UniqueIdentifier>{85ecbfb4-69a7-4c82-a2f9-d8beb87bb9db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Setting">
+      <UniqueIdentifier>{f251f991-20bd-4369-847e-673362389607}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -204,15 +204,6 @@
     <ClInclude Include="Source\Graphics\SkyMap.h">
       <Filter>Sources\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AttackData.h">
-      <Filter>Sources\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ParameterData.h">
-      <Filter>Sources\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ArtsData.h">
-      <Filter>Sources\Data</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Effect\Effect.h">
       <Filter>Sources\Effect</Filter>
     </ClInclude>
@@ -252,8 +243,20 @@
     <ClInclude Include="External\imgui\imstb_truetype.h">
       <Filter>External\Imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UIData.h">
-      <Filter>Sources\Data</Filter>
+    <ClInclude Include="Source\Setting\ArtsData.h">
+      <Filter>Sources\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Setting\AttackData.h">
+      <Filter>Sources\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Setting\EffectData.h">
+      <Filter>Sources\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Setting\LoadData.h">
+      <Filter>Sources\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Setting\UIData.h">
+      <Filter>Sources\Setting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,9 +425,6 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AttackData.cpp">
-      <Filter>Sources\Data</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Sprite.hlsli">
@@ -478,8 +478,11 @@
     <None Include="HLSL\SkyMap.hlsli">
       <Filter>HLSL</Filter>
     </None>
-    <None Include="Source\PlayerAttackData.json">
-      <Filter>Sources\Data</Filter>
+    <None Include="Source\Setting\EffectSetting.json">
+      <Filter>Sources\Setting</Filter>
+    </None>
+    <None Include="Source\Setting\PlayerAttackData.json">
+      <Filter>Sources\Setting</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -60,7 +60,7 @@ Player::Player()
     stateMachine->RegisterSubState(static_cast<int>(Player::State::HitDamege), new DamegeState(this));
 
     // ヒットエフェクト読み込み
-    hitEffect = std::make_unique<Effect>(".//Data//Effect//01_AndrewFM01//hit_eff.efk");
+    hitEffect = std::make_unique<Effect>(effMap["hitEffect"].filename);
 
     //待機ステートへ遷移
     stateMachine->SetState(static_cast<int>(State::Movement));
@@ -716,7 +716,8 @@ void Player::CollisionNodeVsEnemies(const std::string nodeName, float nodeRadius
                     enemys->AddImpulse(impulse);
                     {
                         DirectX::XMFLOAT3 e = enemys->GetPosition();
-                        hitEffect->Play(&e);
+                        e.y += 0.5f;
+                        hitEffect->Play(&e,effMap["hitEffect"].scale);
                     }
                     skillEnergy += 15;
                     isHit = true;

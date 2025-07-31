@@ -1,8 +1,9 @@
 #include "StateDerived.h"
-#include "AttackData.h"
+#include "Setting\AttackData.h"
+#include "Setting\LoadData.h"
 #include "Player.h"
 
-auto attackMap = LoadAttackData(".\\Source\\PlayerAttackData.json");
+std::unordered_map<std::string, AttackData>  attackMap = LoadData<AttackData>(".\\Source\\Setting\\PlayerAttackData.json");
 void MovementState<Player>::Enter()
 {
     SetSubState(static_cast<int>(Player::Movement::Idle));

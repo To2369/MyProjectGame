@@ -2,12 +2,12 @@
 #include "EffectManager.h"
 #include "../Graphics/Graphics.h"
 // コンストラクタ
-Effect::Effect(const char* filename)
+Effect::Effect(const std::string& filename)
 {
     std::lock_guard<std::mutex> lock(Graphics::Instance()->GetMutex());
     // ファイル名は UTF-16 しか対応していないので文字コードを変換
     char16_t utf16Filename[256];
-    Effekseer::ConvertUtf8ToUtf16(utf16Filename, 256, filename);
+    Effekseer::ConvertUtf8ToUtf16(utf16Filename, 256, filename.c_str());
 
     Effekseer::ManagerRef effekseerMgr = EffectManager::Instance().GetEffekseerManager();
 
